@@ -1,22 +1,15 @@
 <?xml version="1.0"?>
 <!--
 /**
- * Copyright 2016 Resurs Bank AB
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright © Resurs Bank AB. All rights reserved.
+ * See LICENSE for license details.
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="Resursbank_Simplified::css/fetch-address.css" />
+    </head>
+
     <body>
         <referenceBlock name="content">
             <block
@@ -29,5 +22,91 @@
                 </arguments>
             </block>
         </referenceBlock>
+        <referenceContainer name="content">
+            <referenceBlock name="checkout.root">
+                <arguments>
+                    <argument name="jsLayout" xsi:type="array">
+                        <item name="components" xsi:type="array">
+                            <item name="checkout" xsi:type="array">
+                                <item name="children" xsi:type="array">
+                                    <item name="steps" xsi:type="array">
+                                        <item name="children" xsi:type="array">
+                                            <item name="shipping-step" xsi:type="array">
+                                                <item name="children" xsi:type="array">
+                                                    <item name="shippingAddress" xsi:type="array">
+                                                        <item name="children" xsi:type="array">
+                                                            <item name="resursbank-simplified-flow" xsi:type="array">
+                                                                <item name="component" xsi:type="string">
+                                                                    Resursbank_Simplified/js/view/fetch-address
+                                                                </item>
+                                                                <item name="displayArea" xsi:type="string">before-fields</item>
+                                                                <item name="sortOrder" xsi:type="string">0</item>
+                                                            </item>
+<!--                                                            <item name="shipping-address-fieldset" xsi:type="array">-->
+<!--                                                                <item name="children" xsi:type="array">-->
+<!--                                                                    <item name="resursbank-simplified-telephone-validation" xsi:type="array">-->
+<!--                                                                        <item name="component" xsi:type="string">-->
+<!--                                                                            Resursbank_Checkout/js/view/simplified-flow-telephone-validation-->
+<!--                                                                        </item>-->
+<!--                                                                        <item name="sortOrder" xsi:type="string">120</item>-->
+<!--                                                                        <item name="config" xsi:type="array">-->
+<!--                                                                            <item name="deps" xsi:type="array">-->
+<!--                                                                                <item name="0" xsi:type="string">checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.country_id</item>-->
+<!--                                                                                <item name="1" xsi:type="string">checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.telephone</item>-->
+<!--                                                                            </item>-->
+<!--                                                                        </item>-->
+<!--                                                                    </item>-->
+<!--                                                                </item>-->
+<!--                                                            </item>-->
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+<!--                                            <item name="billing-step" xsi:type="array">-->
+<!--                                                <item name="children" xsi:type="array">-->
+<!--                                                    <item name="payment" xsi:type="array">-->
+<!--                                                        <item name="children" xsi:type="array">-->
+<!--                                                            <item name="renders" xsi:type="array">-->
+<!--                                                                <item name="children" xsi:type="array">-->
+<!--                                                                    <item name="resursbank" xsi:type="array">-->
+<!--                                                                        <item name="component" xsi:type="string">Resursbank_Checkout/js/view/payment/method-list</item>-->
+<!--                                                                    </item>-->
+<!--                                                                </item>-->
+<!--                                                            </item>-->
+<!--                                                        </item>-->
+<!--                                                    </item>-->
+<!--                                                </item>-->
+<!--                                            </item>-->
+                                        </item>
+                                    </item>
+<!--                                    <item name="sidebar" xsi:type="array">-->
+<!--                                        <item name="children" xsi:type="array">-->
+<!--                                            <item name="summary" xsi:type="array">-->
+<!--                                                <item name="children" xsi:type="array">-->
+<!--                                                    <item name="totals" xsi:type="array">-->
+<!--                                                        <item name="children" xsi:type="array">-->
+<!--                                                            <item name="resursbank_payment_fee" xsi:type="array">-->
+<!--                                                                <item name="component" xsi:type="string">Resursbank_Checkout/js/view/checkout/summary/fee</item>-->
+<!--                                                                <item name="sortOrder" xsi:type="string">99</item>-->
+<!--                                                                <item name="config" xsi:type="array">-->
+<!--                                                                    <item name="template" xsi:type="string">Resursbank_Checkout/checkout/summary/fee</item>-->
+<!--                                                                    <item name="title" xsi:type="string" translate="true">Payment Fee</item>-->
+<!--                                                                    <item name="titleIncl" xsi:type="string" translate="true">Payment Fee Incl. Tax</item>-->
+<!--                                                                    <item name="titleExcl" xsi:type="string" translate="true">Payment Fee Excl. Tax</item>-->
+<!--                                                                </item>-->
+<!--                                                            </item>-->
+<!--                                                        </item>-->
+<!--                                                    </item>-->
+<!--                                                </item>-->
+<!--                                            </item>-->
+<!--                                        </item>-->
+<!--                                    </item>-->
+                                </item>
+                            </item>
+                        </item>
+                    </argument>
+                </arguments>
+            </referenceBlock>
+        </referenceContainer>
     </body>
 </page>

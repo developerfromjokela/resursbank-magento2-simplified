@@ -1,0 +1,50 @@
+/**
+ * Copyright © Resurs Bank AB. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+ @media screen and (min-width: 768px) {
+     .resursbank-simplified-fetch-address {
+         max-width: 500px;
+     }
+ }
+
+.resursbank-simplified-fetch-address {
+    margin: 20px 0px 15px;
+}
+
+.resursbank-simplified-fetch-address button.action {
+    margin: 10px 0 0;
+}
+
+ .resursbank-simplified-fetch-address .radio-list {
+     margin: 0 0 10px;
+ }
+
+ .resursbank-simplified-fetch-address .radio-list > label {
+     margin-right: 10px;
+ }
+
+/* .payment-method .resursbank-payment-method-input > label {*/
+/*     margin-bottom: 5px;*/
+/*     display: block;*/
+/* }*/
+
+/*.payment-method .resursbank-payment-method-contact-ssn {*/
+/*    margin: 15px 0px 15px 0px;*/
+/*}*/
+
+/*.payment-method .resursbank-payment-method-card-number {*/
+/*    margin-bottom: 15px;*/
+/*}*/
+
+/*.payment-method ._error .input-text {*/
+/*    border-color: #ed8380;*/
+/*}*/
+
+/*.payment-method .required .label::after {*/
+/*    content: '*';*/
+/*    color: #e02b27;*/
+/*    font-size: 1.2rem;*/
+/*    margin: 0 0 0 5px;*/
+/*}*/
