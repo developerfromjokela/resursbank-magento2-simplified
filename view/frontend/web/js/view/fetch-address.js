@@ -163,8 +163,6 @@ define(
                  * @param {Simplified.Lib.FetchAddress.Response} response
                  */
                 function onFetchAddressDone(response) {
-                    console.log('DONE:', response, arguments);
-
                     if (response.error.message !== '') {
                         me.failedToFetchAddressError(response.error.message);
                     } else if (Object.keys(response.address).length > 0) {
