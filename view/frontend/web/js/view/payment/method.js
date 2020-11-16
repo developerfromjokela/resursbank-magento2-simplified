@@ -102,6 +102,41 @@ define(
             );
         }
 
+        /**
+         * Checks whether a payment method is connected to Swish.
+         *
+         * @param {string} code
+         * @returns {boolean}
+         */
+        function isSwishMethod(code) {
+            return CheckoutConfig.getPaymentMethods().some(
+                function(method) {
+                    return method.code === code
+                        && method.type === 'PAYMENT_PROVIDER'
+                        && method.specificType === 'SWISH';
+                }
+            );
+        }
+
+        /**
+         * Checks whether a payment method is connected to Visa or Mastercard.
+         *
+         * @param {string} code
+         * @returns {boolean}
+         */
+        function isVisaMcMethod(code) {
+            return CheckoutConfig.getPaymentMethods().some(
+                function(method) {
+                    return method.code === code
+                        && method.type === 'PAYMENT_PROVIDER'
+                        && (
+                            method.specificType === 'DEBIT_CARD'
+                            || method.specificType === 'CREDIT_CARD'
+                        );
+                }
+            );
+        }
+
         return Component.extend({
             defaults: {
                 redirectAfterPlaceOrder: true,
@@ -122,6 +157,21 @@ define(
                 );
 
                 /**
+                 * Whether this payment method is connected to Swish.
+                 *
+                 * @type {boolean}
+                 */
+                me.isSwishMethod = isSwishMethod(this.getCode());
+
+                /**
+                 * Whether this payment method is connected to Visa or
+                 * Mastercard.
+                 *
+                 * @type {boolean}
+                 */
+                me.isVisaMcMethod = isVisaMcMethod(this.getCode());
+
+                /**
                  * Whether the payment method has an SSN field. Some methods
                  * require the customer to specify their SSN before checking
                  * out.
@@ -129,6 +179,24 @@ define(
                  * @type {boolean}
                  */
                 me.hasSsnField = hasSsnField(me.getCode());
+
+                /**
+                 * Path to the logo of a Visa/Mastercard payment method.
+                 *
+                 * @type {string}
+                 */
+                me.visaMcLogo = require.toUrl(
+                    'Resursbank_Simplified/images/visa-mastercard-x2.png'
+                );
+
+                /**
+                 * Path to the logo of a Swish payment method.
+                 *
+                 * @type {string}
+                 */
+                me.swishLogo = require.toUrl(
+                    'Resursbank_Simplified/images/swish.png'
+                );
 
                 /**
                  * The id number that the customer has entered.
