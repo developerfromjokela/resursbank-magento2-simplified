@@ -14,8 +14,6 @@ use Resursbank\Core\Exception\ApiDataException;
  * This class is used to structure address information fetched through ECom.
  * Using this we can always be sure the properties we require exist and have the
  * correct type.
- *
- * @package Resursbank\Checkout\Model\Api\Adapter\Simplified
  */
 class Address
 {

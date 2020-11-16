@@ -12,8 +12,6 @@ use Magento\Framework\Exception\LocalizedException;
 
 /**
  * Indicates a problem with supplied data to a function, server call etc.
- *
- * @package Resursbank\Core\Exception
  */
 class InvalidDataException extends LocalizedException
 {
