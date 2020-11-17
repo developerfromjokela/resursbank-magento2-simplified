@@ -31,7 +31,7 @@
     <div class="payment-method-content">
         <!-- ko if: hasSsnField -->
         <div
-            class="resursbank-payment-method-ssn resursbank-payment-method-input field required"
+            class="resursbank-payment-method-ssn resursbank-simplified-payment-method-input field required"
             data-bind="css: {_error: invalidIdNumber }">
             <label class="label" data-bind="attr: {for: getCode() + '-id-number'}">
                 <!-- ko if: !isCompanyCustomer() -->
@@ -61,7 +61,7 @@
 
         <!-- ko if: isCompanyCustomer() -->
         <div
-            class="resursbank-payment-method-contact-ssn resursbank-payment-method-input field required"
+            class="resursbank-payment-method-contact-ssn resursbank-simplified-payment-method-input field required"
             data-bind="css: {_error: invalidContactId }">
             <label class="label" data-bind="attr: {for: getCode() + '-contact-id'}">
                 <span data-bind="i18n: 'Contact / Reference SSN'"></span>
@@ -79,6 +79,24 @@
                 <span data-bind="i18n: 'Wrong SSN/Org. number.'"></span>
             </div>
             <!-- /ko -->
+        </div>
+        <!-- /ko -->
+
+        <!-- ko if: hasCardAmount -->
+        <div class="resursbank-payment-method-card-amount resursbank-simplified-payment-method-input">
+            <label class="label"
+                   data-bind="attr: {for: getCode() + '-card-amount'}">
+                <span data-bind="i18n: 'Preferred credit limit'"></span>
+            </label>
+            <select
+                data-bind="
+                foreach: cardAmountOptions,
+                value: cardAmount,
+                attr: {
+                id: getCode() + '-card-amount'
+                }">
+                <option data-bind="text: text, value: value"></option>
+            </select>
         </div>
         <!-- /ko -->
 

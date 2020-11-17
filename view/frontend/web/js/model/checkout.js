@@ -23,6 +23,12 @@ define(
          */
 
         /**
+         * @callback Simplified.Model.Checkout.cardAmountInterval
+         * @param {number} [value]
+         * @return {number}
+         */
+
+        /**
          * @constant
          * @type {object}
          */
@@ -30,7 +36,7 @@ define(
             /**
              * @type {Simplified.Model.Checkout.isCompany}
              */
-            isCompany: ko.observable(false)
+            isCompany: ko.observable(false),
         });
 
         /**
@@ -38,6 +44,11 @@ define(
          * @constant
          */
         var EXPORT = {
+            /**
+             * @type {number}
+             */
+            cardAmountInterval: 5000,
+
             /**
              * The selected payment method of the iframe.
              *
