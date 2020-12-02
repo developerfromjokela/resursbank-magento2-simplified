@@ -9,63 +9,63 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Controller\Checkout;
 
 use Exception;
-use Resursbank\Simplified\Exception\InvalidDataException;
-use Resursbank\Simplified\Exception\MissingRequestParameterException;
-use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
+use Resursbank\Simplified\Exception\InvalidDataException;
+use Resursbank\Simplified\Exception\MissingRequestParameterException;
+use Resursbank\Simplified\Helper\Address as AddressHelper;
 use Resursbank\Simplified\Helper\Log;
-use Resursbank\Simplified\Helper\FetchAddress as FetchAddressHelper;
-use Resursbank\Simplified\Helper\ValidateSsn;
+use Resursbank\Simplified\Helper\ValidateGovernmentId;
 
 class FetchAddress implements HttpPostActionInterface
 {
     /**
      * @var Log
      */
-    private Log $log;
+    private $log;
 
     /**
-     * @var FetchAddressHelper
+     * @var AddressHelper
      */
-    private FetchAddressHelper $fetchAddressHelper;
+    private $addressHelper;
 
     /**
-     * @var ValidateSsn
+     * @var ValidateGovernmentId
      */
-    private ValidateSsn $validateSsn;
+    private $validateGovId;
 
     /**
      * @var ResultFactory
      */
-    protected ResultFactory $resultFactory;
+    protected $resultFactory;
 
     /**
      * @var RequestInterface
      */
-    private RequestInterface $request;
+    private $request;
 
     /**
      * @param Log $log
-     * @param FetchAddressHelper $fetchAddressHelper
+     * @param AddressHelper $fetchAddressHelper
      * @param ResultFactory $resultFactory
      * @param RequestInterface $request
-     * @param ValidateSsn $validateSsn
+     * @param ValidateGovernmentId $validateGovId
      */
     public function __construct(
         Log $log,
-        FetchAddressHelper $fetchAddressHelper,
+        AddressHelper $fetchAddressHelper,
         ResultFactory $resultFactory,
         RequestInterface $request,
-        ValidateSsn $validateSsn
+        ValidateGovernmentId $validateGovId
     ) {
         $this->log = $log;
-        $this->fetchAddressHelper = $fetchAddressHelper;
+        $this->addressHelper = $fetchAddressHelper;
         $this->resultFactory = $resultFactory;
         $this->request = $request;
-        $this->validateSsn = $validateSsn;
+        $this->validateGovId = $validateGovId;
     }
 
     /**
@@ -108,14 +108,16 @@ class FetchAddress implements HttpPostActionInterface
                 );
             }
 
-            if (!$this->validateSsn->sweden($idNum, $isCompany)) {
+            if (!$this->validateGovId->sweden($idNum, $isCompany)) {
                 throw new InvalidDataException(
                     __('Invalid swedish government ID was given.')
                 );
             }
 
-            $data['address'] = $this->fetchAddressHelper
-                ->fetch($idNum, $isCompany)
+            $data['address'] = $this->addressHelper
+                ->toCheckoutAddress(
+                    $this->addressHelper->fetch($idNum, $isCompany)
+                )
                 ->toArray();
         } catch (Exception $e) {
             $this->log->exception($e);
@@ -144,7 +146,7 @@ class FetchAddress implements HttpPostActionInterface
 
         if ($isCompany === 'true') {
             $result = true;
-        } else if ($isCompany === 'false') {
+        } elseif ($isCompany === 'false') {
             $result = false;
         }
 

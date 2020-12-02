@@ -23,6 +23,7 @@ define(
         'Magento_Ui/js/lib/validation/validator',
         'Resursbank_Simplified/js/lib/checkout-config',
         'Resursbank_Simplified/js/lib/credentials',
+        'Resursbank_Simplified/js/lib/session',
         'Resursbank_Simplified/js/model/checkout'
     ],
 
@@ -38,8 +39,9 @@ define(
      * @param totals
      * @param CheckoutData
      * @param validator
-     * @param CheckoutConfig {Simplified.Lib.CheckoutConfig}
-     * @param Credentials {Simplified.Lib.Credentials}
+     * @param CheckoutConfigLib {Simplified.Lib.CheckoutConfig}
+     * @param CredentialsLib {Simplified.Lib.Credentials}
+     * @param SessionLib {Simplified.Lib.Session}
      * @param CheckoutModel {Simplified.Model.Checkout}
      * @returns {*}
      */
@@ -55,8 +57,9 @@ define(
         totals,
         CheckoutData,
         validator,
-        CheckoutConfig,
-        Credentials,
+        CheckoutConfigLib,
+        CredentialsLib,
+        SessionLib,
         CheckoutModel
     ) {
         'use strict';
@@ -91,10 +94,10 @@ define(
          * @returns {boolean}
          */
         function hasSsnField(code) {
-            var method = CheckoutConfig.getPaymentMethod(code);
+            var method = CheckoutConfigLib.getPaymentMethod(code);
 
             return typeof method !== 'undefined' ?
-                method.type === 'PAYMENT_PROVIDER' :
+                method.type !== 'PAYMENT_PROVIDER' :
                 false;
         }
 
@@ -106,7 +109,7 @@ define(
          * @returns {boolean}
          */
         function isResursInternalMethod(code) {
-            return CheckoutConfig.getPaymentMethods().some(
+            return CheckoutConfigLib.getPaymentMethods().some(
                 function(method) {
                     return method.code === code
                         && method.type !== 'PAYMENT_PROVIDER';
@@ -121,7 +124,7 @@ define(
          * @returns {boolean}
          */
         function isSwishMethod(code) {
-            return CheckoutConfig.getPaymentMethods().some(
+            return CheckoutConfigLib.getPaymentMethods().some(
                 function(method) {
                     return method.code === code
                         && method.type === 'PAYMENT_PROVIDER'
@@ -137,7 +140,7 @@ define(
          * @returns {boolean}
          */
         function isVisaMcMethod(code) {
-            return CheckoutConfig.getPaymentMethods().some(
+            return CheckoutConfigLib.getPaymentMethods().some(
                 function(method) {
                     return method.code === code
                         && method.type === 'PAYMENT_PROVIDER'
@@ -156,10 +159,11 @@ define(
          * @returns {boolean}
          */
         function hasCardAmount(code) {
-            var method = CheckoutConfig.getPaymentMethod(code);
+            var method = CheckoutConfigLib.getPaymentMethod(code);
             var maxOrderTotal = parseFloat(String(method.maxOrderTotal));
 
-            return method.type === 'REVOLVING_CREDIT' &&
+            return typeof method !== 'undefined' &&
+                method.type === 'REVOLVING_CREDIT' &&
                 method.specificType === 'REVOLVING_CREDIT' &&
                 !isNaN(maxOrderTotal) && maxOrderTotal > 0;
         }
@@ -176,12 +180,14 @@ define(
             var grandTotal;
             var interval;
             var result = [];
-            var method = CheckoutConfig.getPaymentMethod(code);
+            var method = CheckoutConfigLib.getPaymentMethod(code);
             var maxOrderTotal = parseFloat(
                 String(method.maxOrderTotal)
             );
 
-            if (!isNaN(maxOrderTotal)) {
+            if (typeof method !== 'undefined' &&
+                !isNaN(maxOrderTotal)
+            ) {
                 grandTotal = Math.ceil(Quote.totals().base_grand_total);
                 interval = CheckoutModel.cardAmountInterval;
                 i = grandTotal + interval - grandTotal % interval;
@@ -212,6 +218,22 @@ define(
                 value: value,
                 text: text
             }
+        }
+
+        /**
+         * Takes a payment method code and checks whether the payment method
+         * requires a card number.
+         *
+         * @param {string} code
+         * @returns {boolean}
+         */
+        function doesRequireCardNumber(code) {
+            var method = CheckoutConfigLib.getPaymentMethod(code);
+
+            console.log(method, method.type, method.disableInput);
+
+            return typeof method !== 'undefined' &&
+                method.type === 'CARD'
         }
 
         return Component.extend({
@@ -290,7 +312,7 @@ define(
                 me.invalidIdNumber = ko.computed(function () {
                     var address = getRelevantQuoteAddress();
 
-                    return !Credentials.validate(
+                    return !CredentialsLib.validate(
                         me.idNumber(),
                         address.countryId || '',
                         CheckoutModel.isCompany()
@@ -342,11 +364,35 @@ define(
                 me.invalidContactId = ko.computed(function() {
                     var address = getRelevantQuoteAddress();
 
-                    return !Credentials.validate(
+                    return !CredentialsLib.validate(
                         me.contactId(),
                         address.countryId || '',
                         CheckoutModel.isCompany()
                     );
+                });
+
+                /**
+                 * Checks if payment method requires a card number.
+                 *
+                 * @type {boolean}
+                 */
+                me.requiresCardNumber = doesRequireCardNumber(this.getCode());
+
+                /**
+                 * The value of the payment method's card input.
+                 *
+                 * @type {Simplified.Observable.String}
+                 */
+                me.cardNumber = ko.observable('');
+
+                /**
+                 * Whether the card number is invalid .
+                 *
+                 * @type {Simplified.Observable.Boolean}
+                 */
+                me.invalidCardNumber = ko.computed(function() {
+                    return typeof me.cardNumber() !== 'string' ||
+                        !CredentialsLib.validateCard(me.cardNumber());
                 });
 
                 /**
@@ -390,7 +436,7 @@ define(
                  * @returns {string}
                  */
                 me.getTitle = function () {
-                    var method = CheckoutConfig.getPaymentMethod(
+                    var method = CheckoutConfigLib.getPaymentMethod(
                         me.getCode()
                     );
 
@@ -408,20 +454,31 @@ define(
                 /**
                  * Whether all requirements for an order placement has been met.
                  *
-                 * @todo Full implementation in a later issue. Needed now to
-                 *      render payment method.
                  * @type {Simplified.Observable.Boolean}
                  */
                 me.canPlaceOrder = ko.computed(function () {
-                    return false;
+                    var idResult =
+                        !me.hasSsnField ||
+                        (me.idNumber() !== '' && !me.invalidIdNumber());
+
+                    var cardNumberResult =
+                        !me.requiresCardNumber ||
+                        (me.cardNumber() !== '' && !me.invalidCardNumber());
+
+                    var companyResult =
+                        !me.isCompanyCustomer() ||
+                        (me.contactId() !== '' && !me.invalidContactId());
+
+                    return idResult &&
+                        cardNumberResult &&
+                        companyResult &&
+                        me.isPlaceOrderActionAllowed();
                 });
 
                 // noinspection JSUnusedLocalSymbols
                 /**
                  * Starts the order placement process.
                  *
-                 * @todo Full implementation in a later issue. Needed now to
-                 *      render payment method.
                  * @param {object} data - Data that KnockoutJS supplies.
                  * @param {object} event
                  */
@@ -429,8 +486,45 @@ define(
                     data,
                     event
                 ) {
-                    console.log('Placing order');
+                    if (me.canPlaceOrder()) {
+                        SessionLib.setSessionData({
+                            gov_id: me.idNumber(),
+                            is_company: me.isCompanyCustomer(),
+
+                            contact_gov_id:
+                                me.isCompanyCustomer() ?
+                                    me.contactId() :
+                                    null,
+
+                            card_number:
+                                me.requiresCardNumber ?
+                                    me.cardNumber() :
+                                    null,
+
+                            card_amount:
+                                me.hasCardAmount ?
+                                    me.cardAmount() :
+                                    null
+                        }).done(function (response) {
+                            onSetSessionDataDone(response, data, event);
+                        });
+                    }
                 };
+
+                /**
+                 * @param {Simplified.Lib.FetchAddress.Response} response
+                 * @param {object} data - Data that KnockoutJS supplies.
+                 * @param {object} event
+                 */
+                function onSetSessionDataDone (
+                    response,
+                    data,
+                    event
+                ) {
+                    if (response.error.message === '') {
+                        me.placeOrder(data, event);
+                    }
+                }
 
                 if (me.hasCardAmount) {
                     me.cardAmount(Quote.totals().base_grand_total);

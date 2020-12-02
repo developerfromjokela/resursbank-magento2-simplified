@@ -19,7 +19,7 @@ define(
              * @param {string} country
              * @returns {boolean}
              */
-            isCountryAllowed: function(country) {
+            isCountryAllowed: function (country) {
                 return EXPORT.isSweden(country) ||
                     EXPORT.isNorway(country) ||
                     EXPORT.isFinland(country);
@@ -31,7 +31,7 @@ define(
              * @param {string} country
              * @returns {boolean}
              */
-            isSweden: function(country) {
+            isSweden: function (country) {
                 return country === 'SE';
             },
 
@@ -41,7 +41,7 @@ define(
              * @param {string} country
              * @returns {boolean}
              */
-            isNorway: function(country) {
+            isNorway: function (country) {
                 return country === 'NO';
             },
 
@@ -51,7 +51,7 @@ define(
              * @param {string} country
              * @returns {boolean}
              */
-            isFinland: function(country) {
+            isFinland: function (country) {
                 return country === 'FI';
             },
 
@@ -68,7 +68,7 @@ define(
              * @param {boolean} isCompany
              * @returns {boolean}
              */
-            validate: function(idNum, country, isCompany) {
+            validate: function (idNum, country, isCompany) {
                 var result = false;
 
                 if (idNum !== '') {
@@ -95,7 +95,7 @@ define(
              * @param {string} country
              * @returns {boolean}
              */
-            validateSsn: function(ssn, country) {
+            validateSsn: function (ssn, country) {
                 var result = false;
                 var norway = /^([0][1-9]|[1-2][0-9]|3[0-1])(0[1-9]|1[0-2])(\d{2})(\-)?([\d]{5})$/;
                 var finland = /^([\d]{6})[\+-A]([\d]{3})([0123456789ABCDEFHJKLMNPRSTUVWXY])$/;
@@ -121,7 +121,7 @@ define(
              * @param {string} country
              * @returns {boolean}
              */
-            validateOrg: function(org, country) {
+            validateOrg: function (org, country) {
                 var result = false;
                 var finland = /^((\d{7})(\-)?\d)$/;
                 var sweden = /^(16\d{2}|18\d{2}|19\d{2}|20\d{2}|\d{2})(\d{2})(\d{2})(\-|\+)?([\d]{4})$/;
@@ -144,7 +144,7 @@ define(
              * @param {string} num
              * @returns {boolean}
              */
-            validateCard: function(num) {
+            validateCard: function (num) {
                 return num === '' ||
                     /^([1-9][0-9]{3}[ ]{0,1}[0-9]{4}[ ]{0,1}[0-9]{4}[ ]{0,1}[0-9]{4})$/.test(num);
             },
@@ -156,7 +156,7 @@ define(
              * @param {string} country
              * @returns {boolean}
              */
-            validatePhone: function(num, country) {
+            validatePhone: function (num, country) {
                 return (
                     EXPORT.isSweden(country) &&
                     EXPORT.validatePhoneSweden(num)
@@ -175,7 +175,7 @@ define(
              * @param {string} num
              * @returns {boolean}
              */
-            validatePhoneSweden: function(num) {
+            validatePhoneSweden: function (num) {
                 return /^(0|\+46|0046)[ |-]?(200|20|70|73|76|74|[1-9][0-9]{0,2})([ |-]?[0-9]){5,8}$/.test(num);
             },
 
@@ -185,7 +185,7 @@ define(
              * @param {string} num
              * @returns {boolean}
              */
-            validatePhoneNorway: function(num) {
+            validatePhoneNorway: function (num) {
                 return /^(\+47|0047|)?[ |-]?[2-9]([ |-]?[0-9]){7,7}$/.test(num);
             },
 
@@ -195,7 +195,7 @@ define(
              * @param {string} num
              * @returns {boolean}
              */
-            validatePhoneFinland: function(num) {
+            validatePhoneFinland: function (num) {
                 return /^((\+358|00358|0)[-| ]?(1[1-9]|[2-9]|[1][0][1-9]|201|2021|[2][0][2][4-9]|[2][0][3-8]|29|[3][0][1-9]|71|73|[7][5][0][0][3-9]|[7][5][3][0][3-9]|[7][5][3][2][3-9]|[7][5][7][5][3-9]|[7][5][9][8][3-9]|[5][0][0-9]{0,2}|[4][0-9]{1,3})([-| ]?[0-9]){3,10})?$/.test(num);
             }
         };
