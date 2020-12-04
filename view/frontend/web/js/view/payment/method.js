@@ -230,8 +230,6 @@ define(
         function doesRequireCardNumber(code) {
             var method = CheckoutConfigLib.getPaymentMethod(code);
 
-            console.log(method, method.type, method.disableInput);
-
             return typeof method !== 'undefined' &&
                 method.type === 'CARD'
         }
