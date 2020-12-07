@@ -510,6 +510,15 @@ define(
                 };
 
                 /**
+                 * Action taken after order has successfully been created.
+                 */
+                me.afterPlaceOrder = function () {
+                    redirectOnSuccessAction.redirectUrl = url.build(
+                        'resursbank_simplified/checkout/redirect'
+                    );
+                };
+
+                /**
                  * @param {Simplified.Lib.FetchAddress.Response} response
                  * @param {object} data - Data that KnockoutJS supplies.
                  * @param {object} event
