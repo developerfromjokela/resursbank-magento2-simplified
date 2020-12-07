@@ -15,9 +15,9 @@ use function strpos;
  * This plugin will exclude our overriding layout file for checkout_index_index
  * if the module has been disabled.
  *
- * This plugin is necessary to ensure different flows can be utilised in various
- * store configuration. Otherwise the extending checkout_index_index.xml files
- * would conflict with each other.
+ * This plugin is necessary to ensure different API flows may be applied
+ * individually in each store. Otherwise the extending checkout_index_index.xml
+ * files might conflict with each other.
  */
 class Collector
 {
@@ -36,6 +36,9 @@ class Collector
     }
 
     /**
+     * If this module is disabled, remove our checkout_index_index.xml file
+     * from the collection of XML files assembled by Magento.
+     *
      * @param Aggregated $subject
      * @param array $result
      * @return File[]
