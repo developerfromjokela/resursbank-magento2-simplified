@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Resurs Bank AB. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <section id="payment">
+            <group id="resursbank_section">
+                <group id="resursbank">
+                    <group id="simplified" translate="label" sortOrder="0" showInDefault="1" showInWebsite="1" showInStore="0">
+                        <label>Resurs Bank Simplified</label>
+                        <field id="active" type="select" sortOrder="0" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Active</label>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>resursbank/simplified/active</config_path>
+                        </field>
+                        <field id="debug" type="select" sortOrder="1" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Debug enabled</label>
+                            <comment>Log entries will be stored in var/log/resursbank_simplified.log</comment>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>resursbank/simplified/debug</config_path>
+                        </field>
+                    </group>
+                </group>
+            </group>
+        </section>
+    </system>
+</config>
