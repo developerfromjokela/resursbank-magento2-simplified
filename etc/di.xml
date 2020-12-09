@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Resurs Bank AB. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Avoid loading custom checkout layout when module is inactive. -->
+    <type name="Magento\Framework\View\Layout\File\Collector\Aggregated">
+        <plugin name="resursbank_simplified_layout_file_collector" type="Resursbank\Simplified\Plugin\Layout\File\Collector" />
+    </type>
+</config>
