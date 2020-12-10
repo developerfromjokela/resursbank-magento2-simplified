@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
 
 class Api extends AbstractHelper
 {
@@ -18,21 +17,12 @@ class Api extends AbstractHelper
      *
      * @var string
      */
-    const CUSTOMER_TYPE_COMPANY = 'LEGAL';
+    public const CUSTOMER_TYPE_COMPANY = 'LEGAL';
 
     /**
      * Customer type for private citizens.
      *
      * @var string
      */
-    const CUSTOMER_TYPE_PRIVATE = 'NATURAL';
-
-    /**
-     * @inheritDoc
-     */
-    public function __construct(
-        Context $context
-    ) {
-        parent::__construct($context);
-    }
+    public const CUSTOMER_TYPE_PRIVATE = 'NATURAL';
 }
