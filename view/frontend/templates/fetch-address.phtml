@@ -1,0 +1,30 @@
+<?php
+/**
+ * Copyright © Resurs Bank AB. All rights reserved.
+ * See LICENSE for license details.
+ */
+?>
+<?php
+/**
+ * @var $block Magento\Framework\View\Element\Template
+ */
+/**
+ * @var Resursbank\Simplified\ViewModel\FetchAddress $viewModel
+ */
+$viewModel = $block->getViewModel();
+?>
+
+<script>
+    require([
+        // Add initialization module here.
+    ], function(
+        // Add initialization module here.
+    ) {
+        var initializationData = {
+            privateCustomerType:
+                '<?php echo $viewModel->getPrivateCustomerType(); ?>',
+            companyCustomerType:
+                '<?php echo $viewModel->getCompanyCustomerType(); ?>',
+        }
+    });
+</script>
