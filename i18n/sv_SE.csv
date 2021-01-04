@@ -8,3 +8,5 @@
 "Not you?","Inte du?"
 "Fetch address","Hämta adress"
 "Wrong SSN/Org. number.","Felaktigt personnummer eller organisationsnummer."
+"Debug enabled","Felsökning aktiverad"
+"Log entries will be stored in var/log/resursbank_simplified.log","Loggdata kommer sparas i var/log/resursbank_simplified.log"
