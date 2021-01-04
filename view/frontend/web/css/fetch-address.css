@@ -1,0 +1,26 @@
+/**
+ * Copyright © Resurs Bank AB. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+ @media screen and (min-width: 768px) {
+     .resursbank-simplified-fetch-address {
+         max-width: 500px;
+     }
+ }
+
+.resursbank-simplified-fetch-address {
+    margin: 20px 0px 15px;
+}
+
+.resursbank-simplified-fetch-address button.action {
+    margin: 10px 0 0;
+}
+
+ .resursbank-simplified-fetch-address .radio-list {
+     margin: 0 0 10px;
+ }
+
+ .resursbank-simplified-fetch-address .radio-list > label {
+     margin-right: 10px;
+ }

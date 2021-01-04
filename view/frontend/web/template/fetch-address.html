@@ -1,0 +1,73 @@
+<!--
+/**
+ * Copyright © Resurs Bank AB. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+
+<div
+    class="resursbank-simplified-fetch-address field"
+    data-bind="css: {_error: hasError }">
+     <!-- ko if: showComponent() -->
+        <div class="radio-list">
+            <label>
+                <input type="radio"
+                       name="customerType"
+                       value="private_person"
+                       data-bind="checked: selectedCustomerType">
+                <span data-bind="i18n: 'Private person'"></span>
+            </label>
+            <label>
+                <input type="radio"
+                       name="customerType"
+                       value="company"
+                       data-bind="checked: selectedCustomerType">
+                <span data-bind="i18n: 'Company'"></span>
+            </label>
+        </div>
+        <label
+            for="resursbank-simplified-fetch-address-id-number-field"
+            data-bind="if: !isCompanyCustomer()">
+            <span data-bind="i18n: 'SSN (YYYYMMDDXXXX)'"></span>
+        </label>
+        <label
+            for="resursbank-simplified-fetch-address-id-number-field"
+            data-bind="if: isCompanyCustomer()">
+            <span data-bind="i18n: 'Org. number (XXXXXXXXXX)'"></span>
+        </label>
+        <div class="control">
+            <input
+                type="text"
+                id="resursbank-simplified-fetch-address-id-number-field"
+                class="input-text"
+                data-bind="
+                    value: idNumber,
+                    disable: !isFetchingEnabled()">
+            <!-- ko if: failedToFetchAddressError() !== '' -->
+                <div class="field-error">
+                    <span data-bind="text: failedToFetchAddressError"></span>
+                </div>
+            <!-- /ko -->
+        </div>
+        <!-- ko if: isFetchingEnabled -->
+            <button
+                type="button"
+                class="action primary"
+                data-bind="
+                    click: fetchAddress,
+                    disable: !isFetchingEnabled()">
+                <span data-bind="i18n: 'Fetch address'"></span>
+            </button>
+        <!-- /ko -->
+        <!-- ko if: !isFetchingEnabled() -->
+            <button
+                type="button"
+                class="action primary"
+                data-bind="
+                    click: removeAddress,
+                    disable: isFetchingEnabled">
+                <span data-bind="i18n: 'Not you?'"></span>
+            </button>
+        <!-- /ko -->
+    <!-- /ko -->
+</div>
