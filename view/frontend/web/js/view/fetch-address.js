@@ -3,6 +3,7 @@
  * See LICENSE for license details.
  */
 
+// phpcs:ignoreFile
 define(
     [
         'jquery',
@@ -15,7 +16,6 @@ define(
         'Resursbank_Simplified/js/lib/fetch-address'
     ],
     /**
-     *
      * @param $
      * @param ko
      * @param translate
@@ -98,7 +98,6 @@ define(
                 };
 
                 me.removeAddress = function () {
-                    console.log('REMOVE ADDRESS');
                     me.isFetchingAddress(false);
                 }
             }
