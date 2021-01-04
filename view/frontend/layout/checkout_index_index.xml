@@ -42,65 +42,12 @@
                                                                 <item name="displayArea" xsi:type="string">before-fields</item>
                                                                 <item name="sortOrder" xsi:type="string">0</item>
                                                             </item>
-<!--                                                            <item name="shipping-address-fieldset" xsi:type="array">-->
-<!--                                                                <item name="children" xsi:type="array">-->
-<!--                                                                    <item name="resursbank-simplified-telephone-validation" xsi:type="array">-->
-<!--                                                                        <item name="component" xsi:type="string">-->
-<!--                                                                            Resursbank_Checkout/js/view/simplified-flow-telephone-validation-->
-<!--                                                                        </item>-->
-<!--                                                                        <item name="sortOrder" xsi:type="string">120</item>-->
-<!--                                                                        <item name="config" xsi:type="array">-->
-<!--                                                                            <item name="deps" xsi:type="array">-->
-<!--                                                                                <item name="0" xsi:type="string">checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.country_id</item>-->
-<!--                                                                                <item name="1" xsi:type="string">checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.telephone</item>-->
-<!--                                                                            </item>-->
-<!--                                                                        </item>-->
-<!--                                                                    </item>-->
-<!--                                                                </item>-->
-<!--                                                            </item>-->
                                                         </item>
                                                     </item>
                                                 </item>
                                             </item>
-<!--                                            <item name="billing-step" xsi:type="array">-->
-<!--                                                <item name="children" xsi:type="array">-->
-<!--                                                    <item name="payment" xsi:type="array">-->
-<!--                                                        <item name="children" xsi:type="array">-->
-<!--                                                            <item name="renders" xsi:type="array">-->
-<!--                                                                <item name="children" xsi:type="array">-->
-<!--                                                                    <item name="resursbank" xsi:type="array">-->
-<!--                                                                        <item name="component" xsi:type="string">Resursbank_Checkout/js/view/payment/method-list</item>-->
-<!--                                                                    </item>-->
-<!--                                                                </item>-->
-<!--                                                            </item>-->
-<!--                                                        </item>-->
-<!--                                                    </item>-->
-<!--                                                </item>-->
-<!--                                            </item>-->
                                         </item>
                                     </item>
-<!--                                    <item name="sidebar" xsi:type="array">-->
-<!--                                        <item name="children" xsi:type="array">-->
-<!--                                            <item name="summary" xsi:type="array">-->
-<!--                                                <item name="children" xsi:type="array">-->
-<!--                                                    <item name="totals" xsi:type="array">-->
-<!--                                                        <item name="children" xsi:type="array">-->
-<!--                                                            <item name="resursbank_payment_fee" xsi:type="array">-->
-<!--                                                                <item name="component" xsi:type="string">Resursbank_Checkout/js/view/checkout/summary/fee</item>-->
-<!--                                                                <item name="sortOrder" xsi:type="string">99</item>-->
-<!--                                                                <item name="config" xsi:type="array">-->
-<!--                                                                    <item name="template" xsi:type="string">Resursbank_Checkout/checkout/summary/fee</item>-->
-<!--                                                                    <item name="title" xsi:type="string" translate="true">Payment Fee</item>-->
-<!--                                                                    <item name="titleIncl" xsi:type="string" translate="true">Payment Fee Incl. Tax</item>-->
-<!--                                                                    <item name="titleExcl" xsi:type="string" translate="true">Payment Fee Excl. Tax</item>-->
-<!--                                                                </item>-->
-<!--                                                            </item>-->
-<!--                                                        </item>-->
-<!--                                                    </item>-->
-<!--                                                </item>-->
-<!--                                            </item>-->
-<!--                                        </item>-->
-<!--                                    </item>-->
                                 </item>
                             </item>
                         </item>
