@@ -11,22 +11,27 @@ namespace Resursbank\Simplified\Helper;
 use Exception;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Exception\ValidatorException;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
+use Resursbank\Core\Helper\Api as CoreApi;
+use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\Core\Model\Api\Payment\Converter\QuoteConverter;
 use Resursbank\Core\Model\PaymentMethodRepository;
 use Resursbank\RBEcomPHP\ResursBank;
 use Resursbank\Simplified\Exception\PaymentDataException;
-use Resursbank\Simplified\Helper\Session;
 use Resursbank\Simplified\Helper\Address as AddressHelper;
-use Resursbank\Simplified\Model\Api\Address;
 use Resursbank\Simplified\Model\Api\Customer;
 use Resursbank\Simplified\Model\Api\Payment as PaymentModel;
+use ResursException;
 use stdClass;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Payment extends AbstractHelper
 {
     /**
@@ -47,26 +52,42 @@ class Payment extends AbstractHelper
     /**
      * @var PaymentMethodRepository
      */
-    private $paymentMethodRepository;
+    private $paymentMethodRepo;
 
     /**
+     * @var CoreApi
+     */
+    public $coreApi;
+
+    /**
+     * @var Credentials
+     */
+    private $credentials;
+
+    /**
+     * @param Credentials $credentials
      * @param Context $context
      * @param Session $session
      * @param AddressHelper $addressHelper
      * @param QuoteConverter $quoteConverter
-     * @param PaymentMethodRepository $paymentMethodRepository
+     * @param PaymentMethodRepository $paymentMethodRepo
+     * @param CoreApi $coreApi
      */
     public function __construct(
+        Credentials $credentials,
         Context $context,
         Session $session,
         AddressHelper $addressHelper,
         QuoteConverter $quoteConverter,
-        PaymentMethodRepository $paymentMethodRepository
+        PaymentMethodRepository $paymentMethodRepo,
+        CoreApi $coreApi
     ) {
         $this->session = $session;
         $this->addressHelper = $addressHelper;
         $this->quoteConverter = $quoteConverter;
-        $this->paymentMethodRepository = $paymentMethodRepository;
+        $this->paymentMethodRepo = $paymentMethodRepo;
+        $this->coreApi = $coreApi;
+        $this->credentials = $credentials;
 
         parent::__construct($context);
     }
@@ -224,23 +245,19 @@ class Payment extends AbstractHelper
 
     /**
      * @param ResursBank $connection
-     * @param OrderInterface $order
      * @param Quote $quote
      * @return self
      * @throws Exception
      */
     public function setSigningUrls(
         ResursBank $connection,
-        OrderInterface $order,
         Quote $quote
     ): self {
         $connection->setSigning(
             $this->session->getSuccessCallbackUrl(
-                $order->getIncrementId(),
                 (string) $quote->getId()
             ),
             $this->session->getFailureCallbackUrl(
-                $order->getIncrementId(),
                 (string) $quote->getId()
             )
         );
@@ -270,7 +287,7 @@ class Payment extends AbstractHelper
      * @throws PaymentDataException
      * @throws Exception
      */
-    public function createPayment(
+    public function createPaymentSession(
         OrderInterface $order,
         ResursBank $connection
     ): PaymentModel {
@@ -283,7 +300,7 @@ class Payment extends AbstractHelper
             ));
         }
 
-        $paymentMethod = $this->paymentMethodRepository->getByCode(
+        $paymentMethod = $this->paymentMethodRepo->getByCode(
             $orderPayment->getMethod()
         );
 
@@ -292,22 +309,38 @@ class Payment extends AbstractHelper
             $paymentMethod->getIdentifier()
         );
 
-        return $this->toPayment(
-            $isCompany,
-            $payment
+        return $this->toPayment($payment, $isCompany);
+    }
+
+    /**
+     * @param string $paymentId
+     * @return PaymentModel|null
+     * @throws ResursException
+     * @throws ValidatorException
+     * @throws Exception
+     */
+    public function getPayment(
+        string $paymentId
+    ): ?PaymentModel {
+        $connection = $this->coreApi->getConnection(
+            $this->credentials->resolveFromConfig()
         );
+
+        $payment = $connection->getPayment($paymentId);
+
+        return $payment !== null ?
+            $this->toPayment($payment) :
+            null;
     }
 
     /**
      * @param PaymentModel $payment
-     * @param OrderInterface $order
      * @param array|string[] $reject
      * @return self
      * @throws PaymentDataException
      */
     public function handlePaymentStatus(
         PaymentModel $payment,
-        OrderInterface $order,
         array $reject = ['DENIED']
     ): self {
         // Handle reject statuses.
@@ -350,18 +383,24 @@ class Payment extends AbstractHelper
      * but it's not required to. Missing properties will be created using
      * default values.
      *
-     * @param bool $isCompany
+     * @param bool|null $isCompany
      * @param stdClass $payment
      * @return PaymentModel
      */
     public function toPayment(
-        bool $isCompany,
-        stdClass $payment
+        stdClass $payment,
+        bool $isCompany = null
     ): PaymentModel {
+        $paymentId = '';
+
+        if (property_exists($payment, 'paymentId')) {
+            $paymentId = (string) $payment->paymentId;
+        } elseif (property_exists($payment, 'id')) {
+            $paymentId = (string) $payment->id;
+        }
+
         return new PaymentModel(
-            property_exists($payment, 'paymentId') ?
-                (string) $payment->paymentId :
-                '',
+            $paymentId,
             property_exists(
                 $payment,
                 'bookPaymentStatus'
@@ -376,8 +415,8 @@ class Payment extends AbstractHelper
                 '',
             property_exists($payment, 'customer') ?
                 $this->toCustomer(
-                    $isCompany,
-                    $payment->customer
+                    $payment->customer,
+                    $isCompany
                 ) :
                 new Customer(),
         );
@@ -389,13 +428,13 @@ class Payment extends AbstractHelper
      * but it's not required to. Missing properties will be created using
      * default values.
      *
-     * @param bool $isCompany
+     * @param bool|null $isCompany
      * @param stdClass $customer
      * @return Customer
      */
     public function toCustomer(
-        bool $isCompany,
-        stdClass $customer
+        stdClass $customer,
+        bool $isCompany = null
     ): Customer {
         return new Customer(
             property_exists($customer, 'governmentId') ?
@@ -412,10 +451,47 @@ class Payment extends AbstractHelper
                 '',
             property_exists($customer, 'address') ?
                 $this->addressHelper->toAddress(
-                    $isCompany,
-                    $customer->address
+                    $customer->address,
+                    $isCompany
                 ) :
                 null
+        );
+    }
+
+    /**
+     * Book payment after it's been signed by the client.
+     *
+     * @param string $paymentId
+     * @return PaymentModel
+     * @throws Exception
+     */
+    public function bookPaymentSession(
+        string $paymentId
+    ): PaymentModel {
+        // Fill data on payment object.
+        $payment = $this->coreApi->getConnection(
+            $this->credentials->resolveFromConfig()
+        )->bookSignedPayment($paymentId);
+
+        $result = $this->toPayment($payment);
+
+        // Handle payment status (like "DENIED" etc.).
+        $this->handlePaymentStatus(
+            $result,
+            ['DENIED', 'SIGNING']
+        );
+
+        return $result;
+    }
+
+    /**
+     * @return ResursBank
+     * @throws ValidatorException|Exception
+     */
+    public function getConnection(): ResursBank
+    {
+        return $this->coreApi->getConnection(
+            $this->credentials->resolveFromConfig()
         );
     }
 }

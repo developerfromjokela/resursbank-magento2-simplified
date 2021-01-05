@@ -124,11 +124,12 @@ class Address
 
     /**
      * @see Address::$isCompany
-     * @return string
+     * @return bool
+     * @SuppressWarnings(PHPMD.BooleanGetMethodName)
      */
-    public function getIsCompany(): string
+    public function getIsCompany(): bool
     {
-        return $this->fullName;
+        return $this->isCompany;
     }
 
     /**

@@ -87,7 +87,7 @@ class Address extends AbstractHelper
             throw new ApiDataException(__('Failed to fetch address.'));
         }
 
-        return $this->toAddress($isCompany, $address);
+        return $this->toAddress($address, $isCompany);
     }
 
     /**
@@ -118,17 +118,24 @@ class Address extends AbstractHelper
      * but it's not required to. Missing properties will be created using
      * default values.
      *
-     * @param bool $isCompany
+     * @param bool|null $isCompany
      * @param stdClass $address
      * @return ApiAddress
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function toAddress(
-        bool $isCompany,
-        stdClass $address
+        stdClass $address,
+        bool $isCompany = null
     ): ApiAddress {
+        $hasFullName = property_exists($address, 'fullName');
+
         return new ApiAddress(
-            $isCompany,
-            property_exists($address, 'fullName') ?
+            (
+                $isCompany === null &&
+                $hasFullName &&
+                (string) $address->fullName !== ''
+            ) || $isCompany,
+            $hasFullName ?
                 (string) $address->fullName :
                 '',
             property_exists($address, 'firstName') ?

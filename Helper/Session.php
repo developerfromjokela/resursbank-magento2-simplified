@@ -16,9 +16,10 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Quote\Model\Quote;
 use Resursbank\Simplified\Exception\InvalidDataException;
-use Resursbank\Simplified\Helper\ValidateCard;
-use Resursbank\Simplified\Helper\ValidateGovernmentId;
 
+/**
+ * @SuppressWarnings(PHP.TooManyPublicMethods)
+ */
 class Session extends AbstractHelper
 {
     /**
@@ -127,18 +128,18 @@ class Session extends AbstractHelper
     /**
      * Stores a customer's SSN/Org nr. in the session.
      *
-     * @param string $id - Must be a valid swedish SSN/Org. number.
+     * @param string $govId - Must be a valid swedish SSN/Org. number.
      * @param bool $isCompany
      * @return self
      * @throws InvalidDataException
      * @noinspection PhpUndefinedMethodInspection
      */
     public function setGovernmentId(
-        string $id,
+        string $govId,
         bool $isCompany
     ): self {
         $valid = $this->validateGovId->sweden(
-            $id,
+            $govId,
             $isCompany,
             true
         );
@@ -149,7 +150,7 @@ class Session extends AbstractHelper
             ));
         }
 
-        $this->checkoutSession->setData(self::KEY_GOVERNMENT_ID, $id);
+        $this->checkoutSession->setData(self::KEY_GOVERNMENT_ID, $govId);
 
         return $this;
     }
@@ -177,16 +178,16 @@ class Session extends AbstractHelper
      * Stores a customer's contact government ID in the session. Required for
      * company customers, personal SSN of a company reference.
      *
-     * @param string $id - Must be a valid swedish SSN.
+     * @param string $govId - Must be a valid swedish SSN.
      * @return self
      * @throws InvalidDataException - Throws if SSN is invalid.
      * @noinspection PhpUndefinedMethodInspection
      */
     public function setContactGovernmentId(
-        string $id
+        string $govId
     ): self {
         $valid = $this->validateGovId->swedenSsn(
-            $id,
+            $govId,
             true
         );
 
@@ -196,7 +197,7 @@ class Session extends AbstractHelper
             ));
         }
 
-        $this->checkoutSession->setData(self::KEY_CONTACT_GOVERNMENT_ID, $id);
+        $this->checkoutSession->setData(self::KEY_CONTACT_GOVERNMENT_ID, $govId);
 
         return $this;
     }
@@ -374,14 +375,14 @@ class Session extends AbstractHelper
     /**
      * Stores a payment's ID in the session.
      *
-     * @param string $id
+     * @param string $paymentId
      * @return self
      * @noinspection PhpUndefinedMethodInspection
      */
     public function setPaymentId(
-        string $id
+        string $paymentId
     ): self {
-        $this->checkoutSession->setData(self::KEY_PAYMENT_ID, $id);
+        $this->checkoutSession->setData(self::KEY_PAYMENT_ID, $paymentId);
 
         return $this;
     }
@@ -469,17 +470,14 @@ class Session extends AbstractHelper
      * to retrieve the data we need with these parameters in the new browser
      * session.
      *
-     * @param string $orderId
      * @param string $quoteId
      * @return string
      */
     public function getSuccessCallbackUrl(
-        string $orderId,
         string $quoteId
     ): string {
         return $this->url->getUrl(
             'checkout/onepage/success/' .
-            'order_id/' . $orderId . '/' .
             'quote_id/' . $quoteId
         );
     }
@@ -491,17 +489,14 @@ class Session extends AbstractHelper
      * signing process, and the session is lost, we should be able to retrieve
      * the data we need with these parameters in the new browser session.
      *
-     * @param string $orderId
      * @param string $quoteId
      * @return string
      */
     public function getFailureCallbackUrl(
-        string $orderId,
         string $quoteId
     ): string {
         return $this->url->getUrl(
             'checkout/onepage/failure/' .
-            'order_id/' . $orderId . '/' .
             'quote_id/' . $quoteId
         );
     }

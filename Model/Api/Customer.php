@@ -8,8 +8,6 @@ declare(strict_types=1);
 
 namespace Resursbank\Simplified\Model\Api;
 
-use Resursbank\Simplified\Model\Api\Address;
-
 /**
  * Customer information that comes back after creating a payment using the API.
  */
@@ -162,5 +160,13 @@ class Customer
     public function getAddress(): Address
     {
         return $this->address;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCompany(): bool
+    {
+        return $this->type === 'LEGAL';
     }
 }

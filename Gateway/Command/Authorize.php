@@ -14,6 +14,7 @@ use Magento\Payment\Gateway\Command\ResultInterface;
 use Magento\Payment\Gateway\CommandInterface;
 use Magento\Payment\Model\InfoInterface;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Resursbank\Core\Helper\Api;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\RBEcomPHP\RESURS_FLOW_TYPES;
@@ -83,10 +84,11 @@ class Authorize implements CommandInterface
             $payment = $commandSubject['payment']->getPayment();
 
             /** @var OrderInterface $order */
+            /** @noinspection PhpPossiblePolymorphicInvocationInspection */
             $order = $payment->getOrder();
             $orderPayment = $order->getPayment();
 
-            if ($orderPayment !== null) {
+            if ($orderPayment instanceof OrderPaymentInterface) {
                 $quote = $this->session->getQuote();
                 $connection = $this->api->getConnection(
                     $this->credentials->resolveFromConfig()
@@ -103,17 +105,21 @@ class Authorize implements CommandInterface
                     ->setShippingAddress($order, $connection)
                     ->addOrderLines($connection)
                     ->setOrderId($order, $connection)
-                    ->setSigningUrls($connection, $order, $quote)
+                    ->setSigningUrls($connection, $quote)
                     ->setPaymentdata($connection);
 
-                $payment = $this->paymentHelper->createPayment(
+                $paymentSession = $this->paymentHelper->createPaymentSession(
                     $order,
                     $connection
                 );
 
-                $this->paymentHelper->handlePaymentStatus($payment, $order);
-                $this->paymentHelper->prepareSigning($payment);
+                $this->paymentHelper->handlePaymentStatus($paymentSession);
+                $this->paymentHelper->prepareSigning($paymentSession);
                 $this->session->unsetCustomerInfo();
+
+                /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+                $payment->setTransactionId($order->getIncrementId())
+                    ->setIsTransactionClosed(0);
             }
         } catch (Exception $e) {
             $this->log->exception($e);
