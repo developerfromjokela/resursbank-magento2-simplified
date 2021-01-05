@@ -9,43 +9,45 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Controller\Checkout;
 
 use Exception;
-use Resursbank\Simplified\Exception\InvalidDataException;
-use Resursbank\Simplified\Exception\MissingRequestParameterException;
-use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\ResultFactory;
 use Magento\Framework\Controller\ResultInterface;
-use Resursbank\Simplified\Helper\Log;
+use Resursbank\Simplified\Exception\InvalidDataException;
+use Resursbank\Simplified\Exception\MissingRequestParameterException;
 use Resursbank\Simplified\Helper\FetchAddress as FetchAddressHelper;
+use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\ValidateSsn;
+use function is_bool;
+use function is_string;
 
 class FetchAddress implements HttpPostActionInterface
 {
     /**
      * @var Log
      */
-    private Log $log;
+    private $log;
 
     /**
      * @var FetchAddressHelper
      */
-    private FetchAddressHelper $fetchAddressHelper;
+    private $fetchAddressHelper;
 
     /**
      * @var ValidateSsn
      */
-    private ValidateSsn $validateSsn;
+    private $validateSsn;
 
     /**
      * @var ResultFactory
      */
-    protected ResultFactory $resultFactory;
+    protected $resultFactory;
 
     /**
      * @var RequestInterface
      */
-    private RequestInterface $request;
+    private $request;
 
     /**
      * @param Log $log
@@ -92,6 +94,7 @@ class FetchAddress implements HttpPostActionInterface
             throw $e;
         }
 
+        /** @noinspection BadExceptionsProcessingInspection */
         try {
             $idNum = $this->request->getParam('id_num');
             $isCompany = $this->getIsCompany();
@@ -110,7 +113,7 @@ class FetchAddress implements HttpPostActionInterface
 
             if (!$this->validateSsn->sweden($idNum, $isCompany)) {
                 throw new InvalidDataException(
-                    __('Invalid swedish government ID was given.')
+                    __('Invalid Swedish government ID was given.')
                 );
             }
 
@@ -118,7 +121,10 @@ class FetchAddress implements HttpPostActionInterface
                 ->fetch($idNum, $isCompany)
                 ->toArray();
         } catch (Exception $e) {
+            // Log actual error.
             $this->log->exception($e);
+
+            // Display harmless error to end client.
             $data['error']['message'] = __(
                 'Something went wrong when fetching the address. Please ' .
                 'try again.'
@@ -144,7 +150,7 @@ class FetchAddress implements HttpPostActionInterface
 
         if ($isCompany === 'true') {
             $result = true;
-        } else if ($isCompany === 'false') {
+        } elseif ($isCompany === 'false') {
             $result = false;
         }
 

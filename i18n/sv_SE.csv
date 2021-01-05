@@ -1,6 +1,4 @@
 "Active","Aktiverad"
-"Debug enabled","Avlusning aktiverad"
-"Log entries will be stored in var/log/resursbank_simplified.log.","Data från loggen kommer sparas i var/log/resursbank_simplified.log."
 "Company","Företag"
 "Private person", "Privatperson"
 "SSN (YYYYMMDDXXXX)","Personnummer (ÅÅÅÅMMDDXXXX)"
@@ -8,4 +6,7 @@
 "Not you?","Inte du?"
 "Fetch address","Hämta adress"
 "Wrong SSN/Org. number.","Felaktigt personnummer eller organisationsnummer."
-"Something went wrong when fetching the address. Please try again.",Någonting gick fel när adressen försöktes hämtas. Vänligen försök igen.
+"Something went wrong when fetching the address. Please try again.","Något gick fel när adressen hämtades. Vänligen försök igen."
+"Debug enabled","Felsökning aktiverad"
+"Log entries will be stored in var/log/resursbank_simplified.log","Loggdata kommer sparas i var/log/resursbank_simplified.log"
+
