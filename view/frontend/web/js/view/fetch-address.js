@@ -3,6 +3,7 @@
  * See LICENSE for license details.
  */
 
+// phpcs:ignoreFile
 define(
     [
         'jquery',
@@ -67,7 +68,7 @@ define(
 
                 /**
                  * Whether a request has been sent to fetch a shipping address
-                 * for the applied ID-number.
+                 * for the supplied ID-number.
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
@@ -81,7 +82,7 @@ define(
                 me.isAddressApplied = ko.observable(false);
 
                 /**
-                 * Whether an error occurred when fetching the shipping
+                 * Whether an error occurred while fetching the shipping
                  * address.
                  *
                  * @type {Simplified.Observable.String}
@@ -158,7 +159,7 @@ define(
                 });
 
                 /**
-                 * Callback for when the fetch address request was successful.
+                 * Callback used when the fetch address request was successful.
                  *
                  * @param {Simplified.Lib.FetchAddress.Response} response
                  */
@@ -173,7 +174,7 @@ define(
                 }
 
                 /**
-                 * Callback for when the fetch address callback fails.
+                 * Callback used when the fetch address request fails.
                  */
                 function onFetchAddressFail() {
                     me.failedToFetchAddressError($.mage.__(
@@ -183,7 +184,7 @@ define(
                 }
 
                 /**
-                 * Callback for when the fetch address completes.
+                 * Callback used when the fetch address request completes.
                  */
                 function onFetchAddressAlways() {
                     me.isFetchingAddress(false);
@@ -235,7 +236,7 @@ define(
                 /**
                  * Removes the fetched address (if an address has been fetched),
                  * resetting address fields to their initial values. The
-                 * ID-number input will also be emptied.
+                 * ID-number input will also be cleared.
                  */
                 me.removeAddress = function () {
                     Checkout.removeAddress();

@@ -9,21 +9,11 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
-use Magento\Framework\App\Helper\Context;
 
 class ValidateSsn extends AbstractHelper
 {
     /**
-     * @inheritDoc
-     */
-    public function __construct(
-        Context $context
-    ) {
-        parent::__construct($context);
-    }
-
-    /**
-     * Validates a swedish SSN or Org. nr.
+     * Validates a Swedish SSN or Org. nr.
      *
      * @param string $ssn
      * @param bool $isCompany

@@ -16,6 +16,7 @@ use Resursbank\Core\Exception\ApiDataException;
 use Resursbank\Core\Helper\Api as CoreApi;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\Simplified\Model\Api\Address;
+use stdClass;
 
 class FetchAddress extends AbstractHelper
 {
@@ -36,12 +37,12 @@ class FetchAddress extends AbstractHelper
     /**
      * @var Credentials
      */
-    public Credentials $credentials;
+    public $credentials;
 
     /**
      * @var CoreApi
      */
-    public CoreApi $coreApi;
+    public $coreApi;
 
     /**
      * @inheritDoc
@@ -67,22 +68,27 @@ class FetchAddress extends AbstractHelper
      * @throws ValidatorException
      * @throws ApiDataException
      * @throws Exception
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function fetch(
         string $governmentId,
         bool $isCompany
     ): Address {
+        // Setup API connection.
         $connection = $this->coreApi->getConnection(
             $this->credentials->resolveFromConfig()
         );
 
+        // Fetch address data through API.
         $address = $connection->getAddress(
             $governmentId,
             $this->getCustomerType($isCompany)
         );
 
-        if (!is_object($address)) {
-            throw new Exception('Failed to fetch address.');
+        // API lib should return an anonymous object instance containing address
+        // data as anonymous properties.
+        if (!$address instanceof stdClass) {
+            throw new ApiDataException(__('Failed to fetch address from API.'));
         }
 
         return new Address(
@@ -116,8 +122,9 @@ class FetchAddress extends AbstractHelper
      * @param bool $isCompany
      * @return string
      */
-    public function getCustomerType(bool $isCompany): string
-    {
+    public function getCustomerType(
+        bool $isCompany
+    ): string {
         return $isCompany ?
             self::CUSTOMER_TYPE_COMPANY :
             self::CUSTOMER_TYPE_PRIVATE;
