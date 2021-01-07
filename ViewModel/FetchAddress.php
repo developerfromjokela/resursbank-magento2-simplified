@@ -11,7 +11,7 @@ namespace Resursbank\Simplified\ViewModel;
 use Magento\Framework\Data\Form\FormKey;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
-use Resursbank\Simplified\Helper\Api;
+use Resursbank\Simplified\Helper\FetchAddress as FetchAddressHelper;
 
 /**
  * View model for Resurs Bank's widget to fetch a customer's address based on
@@ -50,7 +50,7 @@ class FetchAddress implements ArgumentInterface
      */
     public function getPrivateCustomerType(): string
     {
-        return Api::CUSTOMER_TYPE_PRIVATE;
+        return FetchAddressHelper::CUSTOMER_TYPE_PRIVATE;
     }
 
     /**
@@ -61,6 +61,6 @@ class FetchAddress implements ArgumentInterface
      */
     public function getCompanyCustomerType(): string
     {
-        return Api::CUSTOMER_TYPE_COMPANY;
+        return FetchAddressHelper::CUSTOMER_TYPE_COMPANY;
     }
 }

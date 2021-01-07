@@ -11,17 +11,23 @@
      <!-- ko if: showComponent() -->
         <div class="radio-list">
             <label>
-                <input type="radio"
-                       name="customerType"
-                       value="private_person"
-                       data-bind="checked: selectedCustomerType">
+                <input
+                    type="radio"
+                    name="customerType"
+                    value="private_person"
+                    data-bind="
+                        checked: selectedCustomerType,
+                        disable: disableCustomerTypeSelection">
                 <span data-bind="i18n: 'Private person'"></span>
             </label>
             <label>
-                <input type="radio"
-                       name="customerType"
-                       value="company"
-                       data-bind="checked: selectedCustomerType">
+                <input
+                    type="radio"
+                    name="customerType"
+                    value="company"
+                    data-bind="
+                        checked: selectedCustomerType,
+                        disable: disableCustomerTypeSelection">
                 <span data-bind="i18n: 'Company'"></span>
             </label>
         </div>
@@ -42,14 +48,14 @@
                 class="input-text"
                 data-bind="
                     value: idNumber,
-                    disable: !isFetchingEnabled()">
+                    disable: disableIdInput()">
             <!-- ko if: failedToFetchAddressError() !== '' -->
                 <div class="field-error">
                     <span data-bind="text: failedToFetchAddressError"></span>
                 </div>
             <!-- /ko -->
         </div>
-        <!-- ko if: isFetchingEnabled -->
+        <!-- ko if: !isAddressApplied() -->
             <button
                 type="button"
                 class="action primary"
@@ -59,13 +65,13 @@
                 <span data-bind="i18n: 'Fetch address'"></span>
             </button>
         <!-- /ko -->
-        <!-- ko if: !isFetchingEnabled() -->
+        <!-- ko if: isAddressApplied() -->
             <button
                 type="button"
                 class="action primary"
                 data-bind="
                     click: removeAddress,
-                    disable: isFetchingEnabled">
+                    disable: !isAddressApplied()">
                 <span data-bind="i18n: 'Not you?'"></span>
             </button>
         <!-- /ko -->
