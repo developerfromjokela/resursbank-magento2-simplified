@@ -47,8 +47,6 @@ define(
                     'checkout.steps.shipping-step.shippingAddress' +
                     '.shipping-address-fieldset';
 
-                console.log(uiRegistry.get(path + '.firstname'));
-
                 return {
                     firstname: uiRegistry.get(path + '.firstname'),
                     lastname: uiRegistry.get(path + '.lastname'),
