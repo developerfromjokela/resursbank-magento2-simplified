@@ -39,8 +39,6 @@ define(
          */
         var EXPORT = {
             /**
-             * The selected payment method of the iframe.
-             *
              * @type {Simplified.Model.Checkout.isCompany}
              */
             isCompany: ko.computed({
