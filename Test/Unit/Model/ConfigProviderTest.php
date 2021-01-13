@@ -9,19 +9,18 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Test\Unit\Model;
 
 use JsonException;
-use Magento\Framework\Exception\ValidatorException;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
-use Magento\Payment\Gateway\Data\Order\OrderAdapter as Order;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionObject;
+use Resursbank\Core\Api\Data\PaymentMethodInterface;
 use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Core\Model\PaymentMethod;
 use Resursbank\Simplified\Model\ConfigProvider;
 
 /**
- * Test cases designed for PaymentMethod data model.
+ * Test cases designed for ConfigProvider model.
  */
 class ConfigProviderTest extends TestCase
 {
@@ -29,11 +28,6 @@ class ConfigProviderTest extends TestCase
      * @var ObjectManager
      */
     private $objectManager;
-
-    /**
-     * @var PaymentMethod
-     */
-    private $method;
 
     /**
      * @var ConfigProvider
@@ -46,53 +40,19 @@ class ConfigProviderTest extends TestCase
     private $helper;
 
     /**
-     * Data utilised to mock PaymentMethod model instance.
-     *
-     * NOTE: maxOrderTotal should of course be max_order_total when applying
-     * the data to the instance model. Naming it this way greatly simplifies
-     * the comparison tests though.
-     *
-     * @var array
-     */
-    private $methodMockData = [
-        'code' => 'invoice',
-        'title' => 'Invoice',
-        'maxOrderTotal' => 50000.0
-    ];
-
-    /**
      * @inheritDoc
-     * @throws ValidatorException
      */
     protected function setUp(): void
     {
         $this->objectManager = new ObjectManager($this);
 
-        $this->method = $this->objectManager->getObject(PaymentMethod::class);
-        $this->method->setData($this->methodMockData)
-            ->setMaxOrderTotal($this->methodMockData['maxOrderTotal']);
-
         $this->helper = $this->getMockBuilder(PaymentMethods::class)
             ->disableOriginalConstructor()
-            ->setMethods(['getMethodsByCredentials'])
+            ->onlyMethods(['getMethodsByCredentials'])
             ->getMock();
 
         $this->configProvider = $this->objectManager
             ->getObject(ConfigProvider::class, ['helper' => $this->helper]);
-    }
-
-    /**
-     * Retrieve accessible mapPaymentMethod method mock.
-     *
-     * @return ReflectionMethod
-     */
-    private function getMapPaymentMethodMethod(): ReflectionMethod
-    {
-        $obj = new ReflectionObject($this->configProvider);
-        $method = $obj->getMethod('mapPaymentMethod');
-        $method->setAccessible(true);
-
-        return $method;
     }
 
     /**
@@ -106,14 +66,26 @@ class ConfigProviderTest extends TestCase
     public function testMapPaymentMethodWithRawData(): void
     {
         $raw = ['type' => 'card', 'specificType' => 'visa'];
-        $this->method->setRaw(json_encode($raw, JSON_THROW_ON_ERROR));
+        $expected = [
+            'code' => 'invoice',
+            'title' => 'Faktura',
+            'maxOrderTotal' => 505.12
+        ];
 
-        $data = $this->getMapPaymentMethodMethod()->invoke(
+        /** @var PaymentMethodInterface $method */
+        $method = $this->objectManager->getObject(PaymentMethod::class);
+
+        $method->setCode($expected['code'])
+            ->setTitle($expected['title'])
+            ->setMaxOrderTotal($expected['maxOrderTotal'])
+            ->setRaw(json_encode($raw, JSON_THROW_ON_ERROR));
+
+        $actual = $this->getMapPaymentMethodMethod()->invoke(
             $this->configProvider,
-            $this->method
+            $method
         );
 
-        static::assertSame(array_merge($this->methodMockData, $raw), $data);
+        static::assertSame(array_merge($expected, $raw), $actual);
     }
 
     /**
@@ -125,14 +97,27 @@ class ConfigProviderTest extends TestCase
      */
     public function testMapPaymentMethodWithoutRawData(): void
     {
-        $raw = ['type' => '', 'specificType' => ''];
+        $expected = [
+            'code' => 'partpayment_nisse_1',
+            'title' => 'Great partpayment',
+            'maxOrderTotal' => 34534.00,
+            'type' => '',
+            'specificType' => ''
+        ];
 
-        $data = $this->getMapPaymentMethodMethod()->invoke(
+        /** @var PaymentMethodInterface $method */
+        $method = $this->objectManager->getObject(PaymentMethod::class);
+
+        $method->setCode($expected['code'])
+            ->setTitle($expected['title'])
+            ->setMaxOrderTotal($expected['maxOrderTotal']);
+
+        $actual = $this->getMapPaymentMethodMethod()->invoke(
             $this->configProvider,
-            $this->method
+            $method
         );
 
-        static::assertSame(array_merge($this->methodMockData, $raw), $data);
+        static::assertSame($expected, $actual);
     }
 
     /**
@@ -146,11 +131,25 @@ class ConfigProviderTest extends TestCase
     {
         $this->expectException(JsonException::class);
 
-        $this->method->setRaw('that does not take wooden nickels');
+        $data = [
+            'code' => 'some_method',
+            'title' => 'Some method',
+            'maxOrderTotal' => 4664.00,
+            'type' => '',
+            'specificType' => ''
+        ];
+
+        /** @var PaymentMethodInterface $method */
+        $method = $this->objectManager->getObject(PaymentMethod::class);
+
+        $method->setCode($data['code'])
+            ->setTitle($data['title'])
+            ->setMaxOrderTotal($data['maxOrderTotal'])
+            ->setRaw('that does not take wooden nickels');
 
         $this->getMapPaymentMethodMethod()->invoke(
             $this->configProvider,
-            $this->method
+            $method
         );
     }
 
@@ -206,5 +205,19 @@ class ConfigProviderTest extends TestCase
 
         // Assert the value returned by getConfig matches out expectation.
         static::assertSame($expected, $this->configProvider->getConfig());
+    }
+
+    /**
+     * Retrieve accessible mapPaymentMethod method mock.
+     *
+     * @return ReflectionMethod
+     */
+    private function getMapPaymentMethodMethod(): ReflectionMethod
+    {
+        $obj = new ReflectionObject($this->configProvider);
+        $method = $obj->getMethod('mapPaymentMethod');
+        $method->setAccessible(true);
+
+        return $method;
     }
 }
