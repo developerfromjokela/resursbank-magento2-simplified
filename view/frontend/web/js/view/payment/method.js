@@ -62,7 +62,7 @@ define(
         'use strict';
 
         /**
-         *
+         * Get applied billing address (fallback to shipping address).
          *
          * @returns {object}
          */
@@ -87,8 +87,7 @@ define(
         }
 
         /**
-         * Checks whether a payment method is provided by an external partner
-         * to Resurs Bank.
+         * Checks whether a payment method is provided by Resurs Bank directly.
          *
          * @param {string} code
          * @returns {boolean}
@@ -199,7 +198,7 @@ define(
                 );
 
                 /**
-                 * The id number that the customer has entered.
+                 * The id number that the customer has entered, if any.
                  *
                  * @type {Simplified.Observable.String}
                  */
