@@ -118,12 +118,12 @@ define(
         }
 
         /**
-         * Checks whether a payment method is connected to Visa or Mastercard.
+         * Checks whether a payment method is a credit card.
          *
          * @param {string} code
          * @returns {boolean}
          */
-        function isVisaMcMethod(code) {
+        function isCreditCardMethod(code) {
             return CheckoutConfig.getPaymentMethods().some(
                 function(method) {
                     return method.code === code
@@ -163,12 +163,11 @@ define(
                 me.isSwishMethod = isSwishMethod(this.getCode());
 
                 /**
-                 * Whether this payment method is connected to Visa or
-                 * Mastercard.
+                 * Whether this payment method is a credit card.
                  *
                  * @type {boolean}
                  */
-                me.isVisaMcMethod = isVisaMcMethod(this.getCode());
+                me.isCreditCardMethod = isCreditCardMethod(this.getCode());
 
                 /**
                  * Whether the payment method has an SSN field. Some methods
@@ -180,12 +179,12 @@ define(
                 me.hasSsnField = hasSsnField(me.getCode());
 
                 /**
-                 * Path to the logo of a Visa/Mastercard payment method.
+                 * Path to the logo of a credit card payment method.
                  *
                  * @type {string}
                  */
-                me.visaMcLogo = require.toUrl(
-                    'Resursbank_Simplified/images/visa-mastercard-x2.png'
+                me.creditCardLogo = require.toUrl(
+                    'Resursbank_Simplified/images/credit-card-x2.png'
                 );
 
                 /**
