@@ -10,4 +10,8 @@
     <type name="Magento\Framework\View\Layout\File\Collector\Aggregated">
         <plugin name="resursbank_simplified_layout_file_collector" type="Resursbank\Simplified\Plugin\Layout\File\Collector" />
     </type>
+    <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
+        <!-- Append dynamic information to compiled layout XML. -->
+        <plugin name="resursbank_simplified_layout" type="Resursbank\Simplified\Plugin\Layout\Layout" />
+    </type>
 </config>

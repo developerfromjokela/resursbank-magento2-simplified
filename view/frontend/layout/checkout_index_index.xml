@@ -35,7 +35,7 @@
                                                 <item name="children" xsi:type="array">
                                                     <item name="shippingAddress" xsi:type="array">
                                                         <item name="children" xsi:type="array">
-                                                            <item name="resursbank-simplified" xsi:type="array">
+                                                            <item name="resursbank-simplified-fetch-address" xsi:type="array">
                                                                 <item name="component" xsi:type="string">
                                                                     Resursbank_Simplified/js/view/fetch-address
                                                                 </item>
@@ -54,6 +54,32 @@
                                                                                 <item name="0" xsi:type="string">checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.country_id</item>
                                                                                 <item name="1" xsi:type="string">checkout.steps.shipping-step.shippingAddress.shipping-address-fieldset.telephone</item>
                                                                             </item>
+                                                                        </item>
+                                                                    </item>
+                                                                </item>
+                                                            </item>
+                                                        </item>
+                                                    </item>
+                                                </item>
+                                            </item>
+                                            <item name="billing-step" xsi:type="array">
+                                                <item name="children" xsi:type="array">
+                                                    <item name="payment" xsi:type="array">
+                                                        <item name="children" xsi:type="array">
+                                                            <item name="renders" xsi:type="array">
+                                                                <item name="children" xsi:type="array">
+                                                                    <item name="resursbank-simplified" xsi:type="array">
+                                                                        <item name="component" xsi:type="string">
+                                                                            Resursbank_Simplified/js/view/payment/method-list
+                                                                        </item>
+                                                                        <item name="methods" xsi:type="array">
+                                                                            <!--
+                                                                            We need to define payment methods here so
+                                                                            that our component will render and methods
+                                                                            be added to the checkout page. However, our
+                                                                            methods are dynamic and will be added with
+                                                                            a plugin instead.
+                                                                            -->
                                                                         </item>
                                                                     </item>
                                                                 </item>

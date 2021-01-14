@@ -1,0 +1,108 @@
+<!--
+/**
+ * Copyright © Resurs Bank AB. All rights reserved.
+ * See LICENSE for license details.
+ */
+-->
+
+<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+    <div class="payment-method-title field choice">
+        <input
+            type="radio"
+            name="payment[method]"
+            class="radio"
+            data-bind="attr: {
+            'id': getCode()
+            },
+            value: getCode(),
+            checked: isChecked,
+            click: select,
+            visible: isRadioButtonVisible()">
+        <label data-bind="attr: {'for': getCode()}" class="label">
+            <span data-bind="text: getTitle()"></span>
+        </label>
+    </div>
+    <div class="payment-method-content">
+        <!-- ko if: hasSsnField -->
+        <div
+            class="resursbank-payment-method-ssn resursbank-payment-method-input field required"
+            data-bind="css: {_error: invalidIdNumber }">
+            <label class="label" data-bind="attr: {for: getCode() + '-id-number'}">
+                <!-- ko if: !isCompanyCustomer() -->
+                <span data-bind="i18n: 'SSN (YYYYMMDDXXXX)'"></span>
+                <!-- /ko -->
+                <!-- ko if: isCompanyCustomer() -->
+                <span data-bind="i18n: 'Org. number (XXXXXXXXXX)'"></span>
+                <!-- /ko -->
+            </label>
+            <input
+                type="text"
+                name="payment[ssn]"
+                class="input-text"
+                data-bind="attr: {
+                id: getCode() + '-id-number',
+                disabled: disableIdNumber
+                },
+                value: idNumber,
+                valueUpdate: 'blur'">
+            <!-- ko if: invalidIdNumber() -->
+            <div class="field-error">
+                <span data-bind="i18n: 'Wrong SSN/Org. number.'"></span>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+
+        <!-- ko if: isCompanyCustomer() -->
+        <div
+            class="resursbank-payment-method-contact-ssn resursbank-payment-method-input field required"
+            data-bind="css: {_error: invalidContactId }">
+            <label class="label" data-bind="attr: {for: getCode() + '-contact-id'}">
+                <span data-bind="i18n: 'Contact / Reference SSN'"></span>
+            </label>
+            <input type="text"
+                   class="input-text"
+                   data-bind="value: contactId,
+                   attr: {
+                   id: getCode() + '-contact-id',
+                   disabled: disableContactId
+                   },
+                   valueUpdate: 'blur'">
+            <!-- ko if: invalidContactId() -->
+            <div class="field-error">
+                <span data-bind="i18n: 'Wrong SSN/Org. number.'"></span>
+            </div>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+
+        <!-- ko foreach: getRegion('messages') -->
+        <!-- ko template: getTemplate() --><!-- /ko -->
+        <!--/ko-->
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="checkout-agreements-block">
+            <!-- ko foreach: $parent.getRegion('before-place-order') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
+        <div class="actions-toolbar">
+            <div class="primary">
+                <button
+                    class="action primary checkout"
+                    type="submit"
+                    data-bind="
+                    click: resursBankPlaceOrder,
+                    attr: {
+                        disabled: !canPlaceOrder()
+                    }"
+                >
+                    <span data-bind="i18n: 'Place Order'"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

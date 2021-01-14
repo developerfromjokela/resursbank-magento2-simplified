@@ -13,7 +13,8 @@ define(
         'Resursbank_Simplified/js/lib/checkout-config',
         'Resursbank_Simplified/js/lib/credentials',
         'Resursbank_Simplified/js/lib/fetch-address',
-        'Resursbank_Simplified/js/lib/checkout'
+        'Resursbank_Simplified/js/lib/checkout',
+        'Resursbank_Simplified/js/model/checkout'
     ],
     /**
      * @param $
@@ -23,7 +24,8 @@ define(
      * @param {Simplified.Lib.CheckoutConfig} CheckoutConfig
      * @param {Simplified.Lib.Credentials} Credentials
      * @param {Simplified.Lib.FetchAddress} FetchAddress
-     * @param {Simplified.Lib.Checkout} Checkout
+     * @param {Simplified.Lib.Checkout} CheckoutLib
+     * @param {Simplified.Model.Checkout} CheckoutModel
      * @returns {*}
      */
     function (
@@ -34,7 +36,8 @@ define(
         CheckoutConfig,
         Credentials,
         FetchAddress,
-        Checkout
+        CheckoutLib,
+        CheckoutModel
     ) {
         'use strict';
 
@@ -52,8 +55,8 @@ define(
 
         /**
          * @callback Simplified.Observable.Number
-         * @param {boolean} [value]
-         * @return {boolean}
+         * @param {number} [value]
+         * @return {number}
          */
 
         return Component.extend({
@@ -108,7 +111,7 @@ define(
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
-                me.isFetchingEnabled = ko.computed(function() {
+                me.isFetchingEnabled = ko.computed(function () {
                     return !me.isAddressApplied() && !me.isFetchingAddress()
                 });
 
@@ -117,7 +120,7 @@ define(
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
-                me.disableIdInput = ko.computed(function() {
+                me.disableIdInput = ko.computed(function () {
                     return !me.isFetchingEnabled();
                 });
 
@@ -126,7 +129,7 @@ define(
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
-                me.disableCustomerTypeSelection = ko.computed(function() {
+                me.disableCustomerTypeSelection = ko.computed(function () {
                     return me.isFetchingAddress() || me.isAddressApplied();
                 });
 
@@ -135,8 +138,12 @@ define(
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
-                me.isCompanyCustomer = ko.computed(function() {
-                    return me.selectedCustomerType() === 'company';
+                me.isCompanyCustomer = ko.computed(function () {
+                    var isCompany = me.selectedCustomerType() === 'company';
+
+                    CheckoutModel.isCompany(isCompany);
+
+                    return isCompany;
                 });
 
                 /**
@@ -144,7 +151,7 @@ define(
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
-                me.showComponent = ko.computed(function() {
+                me.showComponent = ko.computed(function () {
                     return CheckoutConfig.getDefaultCountryId() === 'SE';
                 });
 
@@ -154,7 +161,7 @@ define(
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
-                me.hasError = ko.computed(function() {
+                me.hasError = ko.computed(function () {
                     return me.failedToFetchAddressError() !== '';
                 });
 
@@ -163,11 +170,11 @@ define(
                  *
                  * @param {Simplified.Lib.FetchAddress.Response} response
                  */
-                function onFetchAddressDone(response) {
+                function onFetchAddressDone (response) {
                     if (response.error.message !== '') {
                         me.failedToFetchAddressError(response.error.message);
                     } else if (Object.keys(response.address).length > 0) {
-                        Checkout.applyAddress(response.address);
+                        CheckoutLib.applyAddress(response.address);
 
                         me.isAddressApplied(true)
                     }
@@ -176,7 +183,7 @@ define(
                 /**
                  * Callback used when the fetch address request fails.
                  */
-                function onFetchAddressFail() {
+                function onFetchAddressFail () {
                     me.failedToFetchAddressError($.mage.__(
                         'Something went wrong when fetching ' +
                         'the address. Please try again.'
@@ -186,7 +193,7 @@ define(
                 /**
                  * Callback used when the fetch address request completes.
                  */
-                function onFetchAddressAlways() {
+                function onFetchAddressAlways () {
                     me.isFetchingAddress(false);
                 }
 
@@ -196,7 +203,7 @@ define(
                  *
                  * @returns {boolean}
                  */
-                function validateId() {
+                function validateId () {
                     var valid = Credentials.validate(
                         me.idNumber(),
                         'SE',
@@ -239,7 +246,7 @@ define(
                  * ID-number input will also be cleared.
                  */
                 me.removeAddress = function () {
-                    Checkout.removeAddress();
+                    CheckoutLib.removeAddress();
 
                     me.isAddressApplied(false);
                     me.idNumber('');
