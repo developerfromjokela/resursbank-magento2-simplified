@@ -22,7 +22,7 @@ use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\Core\Model\Api\Payment\Converter\QuoteConverter;
 use Resursbank\Core\Model\PaymentMethodRepository;
 use Resursbank\RBEcomPHP\ResursBank;
-use Resursbank\Simplified\Exception\PaymentDataException;
+use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Simplified\Helper\Address as AddressHelper;
 use Resursbank\Simplified\Model\Api\Customer;
 use Resursbank\Simplified\Model\Api\Payment as PaymentModel;

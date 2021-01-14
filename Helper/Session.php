@@ -15,7 +15,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Quote\Model\Quote;
-use Resursbank\Simplified\Exception\InvalidDataException;
+use Resursbank\Core\Exception\InvalidDataException;
 
 /**
  * @SuppressWarnings(PHP.TooManyPublicMethods)
