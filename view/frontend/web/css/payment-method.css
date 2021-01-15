@@ -1,0 +1,13 @@
+/**
+ * Copyright © Resurs Bank AB. All rights reserved.
+ * See LICENSE for license details.
+ */
+
+/*
+    Targets the logo for payment methods.
+*/
+.payment-method > .payment-method-title > img {
+    width: 9%;
+    height: 9%;
+    float: right;
+}

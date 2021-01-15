@@ -21,6 +21,12 @@
         <label data-bind="attr: {'for': getCode()}" class="label">
             <span data-bind="text: getTitle()"></span>
         </label>
+        <!-- ko if: isSwishMethod -->
+        <img data-bind="attr: { src: swishLogo }">
+        <!-- /ko -->
+        <!-- ko if: isCreditCardMethod -->
+        <img data-bind="attr: { src: creditCardLogo }">
+        <!-- /ko -->
     </div>
     <div class="payment-method-content">
         <!-- ko if: hasSsnField -->
