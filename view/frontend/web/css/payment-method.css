@@ -11,3 +11,18 @@
     height: 9%;
     float: right;
 }
+
+/*
+    Targets the input container for SSN, contact ID etc.
+*/
+.payment-method > .payment-method-content > .resursbank-simplified-payment-method-input {
+    margin-bottom: 20px;
+}
+
+/*
+    Targets the label for input containers.
+*/
+.payment-method > .payment-method-content > .resursbank-simplified-payment-method-input > label {
+    margin-bottom: 10px;
+    display: block;
+}

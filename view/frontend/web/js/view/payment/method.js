@@ -31,12 +31,12 @@ define(
      * @param ko
      * @param uiRegistry
      * @param translate
-     * @param quote
+     * @param Quote
      * @param Component
      * @param redirectOnSuccessAction
      * @param url
      * @param totals
-     * @param checkoutData
+     * @param CheckoutData
      * @param validator
      * @param CheckoutConfig {Simplified.Lib.CheckoutConfig}
      * @param Credentials {Simplified.Lib.Credentials}
@@ -48,12 +48,12 @@ define(
         ko,
         uiRegistry,
         translate,
-        quote,
+        Quote,
         Component,
         redirectOnSuccessAction,
         url,
         totals,
-        checkoutData,
+        CheckoutData,
         validator,
         CheckoutConfig,
         Credentials,
@@ -62,14 +62,26 @@ define(
         'use strict';
 
         /**
+         * @typedef {object} Simplified.Method.CardOption
+         * @property {(string|number)} value
+         * @property {(string|number)} text
+         */
+
+        /**
+         * @callback Simplified.Method.CardOptions
+         * @param {Array<Simplified.Method.CardOption>} [value]
+         * @return {Array<Simplified.Method.CardOption>}
+         */
+
+        /**
          * Get applied billing address (fallback to shipping address).
          *
          * @returns {object}
          */
         function getRelevantQuoteAddress() {
-            return quote.billingAddress() !== null ?
-                quote.billingAddress() :
-                quote.shippingAddress();
+            return Quote.billingAddress() !== null ?
+                Quote.billingAddress() :
+                Quote.shippingAddress();
         }
 
         /**
@@ -136,6 +148,71 @@ define(
             );
         }
 
+        /**
+         * Checks whether a payment method has card amount options.
+         *
+         * @param {string} code
+         * @returns {boolean}
+         */
+        function hasCardAmount(code) {
+            var method = CheckoutConfig.getPaymentMethod(code);
+            var maxOrderTotal = parseFloat(String(method.maxOrderTotal));
+
+            return method.type === 'REVOLVING_CREDIT' &&
+                method.specificType === 'REVOLVING_CREDIT' &&
+                !isNaN(maxOrderTotal) && maxOrderTotal > 0;
+        }
+
+        /**
+         * Takes the code of a payment method and returns an array of credit
+         * limit intervals for the corresponding payment method.
+         *
+         * @param {string} code
+         * @returns {Array<Simplified.Method.CardOption>}
+         */
+        function getCardAmountOptions(code) {
+            var i;
+            var grandTotal;
+            var interval;
+            var result = [];
+            var method = CheckoutConfig.getPaymentMethod(code);
+            var maxOrderTotal = parseFloat(
+                String(method.maxOrderTotal)
+            );
+
+            if (!isNaN(maxOrderTotal)) {
+                grandTotal = Math.ceil(Quote.totals().base_grand_total);
+                interval = CheckoutModel.cardAmountInterval;
+                i = grandTotal + interval - grandTotal % interval;
+
+                result.push(createCardAmountOption(grandTotal, grandTotal));
+
+                for (i; i <= maxOrderTotal; i += interval) {
+                    result.push(createCardAmountOption(i, i));
+                }
+            }
+
+            return result;
+        }
+
+        /**
+         * Creates and returns an object that represents a card amount option
+         * in a <select> element.
+         *
+         * @param {string|number} value
+         * @param {string|number} text
+         * @returns {Simplified.Method.CardOption}
+         */
+        function createCardAmountOption(
+            value,
+            text
+        ) {
+            return {
+                value: value,
+                text: text
+            }
+        }
+
         return Component.extend({
             defaults: {
                 redirectAfterPlaceOrder: true,
@@ -163,20 +240,20 @@ define(
                 me.isSwishMethod = isSwishMethod(this.getCode());
 
                 /**
-                 * Whether this payment method is a credit card.
+                 * Path to the logo of a Swish payment method.
                  *
-                 * @type {boolean}
+                 * @type {string}
                  */
-                me.isCreditCardMethod = isCreditCardMethod(this.getCode());
+                me.swishLogo = require.toUrl(
+                    'Resursbank_Simplified/images/swish.png'
+                );
 
                 /**
-                 * Whether the payment method has an SSN field. Some methods
-                 * require the customer to specify their SSN before checking
-                 * out.
+                 * Whether this payment method is a credit card.
                  *
-                 * @type {boolean}
+                 * @type {string}
                  */
-                me.hasSsnField = hasSsnField(me.getCode());
+                me.isCreditCardMethod = isCreditCardMethod(this.getCode());
 
                 /**
                  * Path to the logo of a credit card payment method.
@@ -188,13 +265,13 @@ define(
                 );
 
                 /**
-                 * Path to the logo of a Swish payment method.
+                 * Whether the payment method has an SSN field. Some methods
+                 * require the customer to specify their SSN before checking
+                 * out.
                  *
-                 * @type {string}
+                 * @type {boolean}
                  */
-                me.swishLogo = require.toUrl(
-                    'Resursbank_Simplified/images/swish.png'
-                );
+                me.hasSsnField = hasSsnField(me.getCode());
 
                 /**
                  * The id number that the customer has entered, if any.
@@ -271,6 +348,28 @@ define(
                 });
 
                 /**
+                 * Whether this payment method has a field for selecting the
+                 * card amount.
+                 *
+                 * @type {boolean}
+                 */
+                me.hasCardAmount = hasCardAmount(me.getCode());
+
+                /**
+                 * The amount the card should be worth.
+                 *
+                 * @type {Simplified.Observable.Number}
+                 */
+                me.cardAmount = ko.observable(0);
+
+                /**
+                 * List of available amount options for the card.
+                 *
+                 * @type {Simplified.Method.CardOptions}
+                 */
+                me.cardAmountOptions = ko.observable([]);
+
+                /**
                  * Selects the payment method.
                  *
                  * @returns {boolean}
@@ -330,6 +429,28 @@ define(
                 ) {
                     console.log('Placing order');
                 };
+
+                if (me.hasCardAmount) {
+                    me.cardAmount(Quote.totals().base_grand_total);
+                    me.cardAmountOptions(getCardAmountOptions(this.getCode()));
+
+                    // If totals change we want to update the card amount
+                    // options for this payment method.
+                    Quote.totals.subscribe(function (value) {
+                        var paymentMethod =
+                            CheckoutData.getSelectedPaymentMethod();
+
+                        if (paymentMethod === me.getCode()) {
+                            me.cardAmountOptions(
+                                getCardAmountOptions(me.getCode())
+                            );
+                            me.cardAmount(value.base_grand_total);
+                        } else if (me.cardAmount() !== 0) {
+                            me.cardAmount(0);
+                            me.cardAmountOptions([]);
+                        }
+                    });
+                }
             }
         });
     }
