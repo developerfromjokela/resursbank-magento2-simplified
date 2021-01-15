@@ -62,7 +62,6 @@ define(
         'use strict';
 
         /**
-<<<<<<< HEAD
          * @typedef {object} Simplified.Method.CardOption
          * @property {(string|number)} value
          * @property {(string|number)} text
@@ -75,10 +74,7 @@ define(
          */
 
         /**
-         *
-=======
          * Get applied billing address (fallback to shipping address).
->>>>>>> dev/sprint-1
          *
          * @returns {object}
          */
@@ -168,8 +164,8 @@ define(
         }
 
         /**
-         * Takes the name of a payment method and returns an array of credit
-         * limit intervals for that payment method.
+         * Takes the code of a payment method and returns an array of credit
+         * limit intervals for the corresponding payment method.
          *
          * @param {string} code
          * @returns {Array<Simplified.Method.CardOption>}
@@ -258,14 +254,6 @@ define(
                  * @type {string}
                  */
                 me.isCreditCardMethod = isCreditCardMethod(this.getCode());
-
-                /**
-                 * Whether this payment method is connected to Visa or
-                 * Mastercard.
-                 *
-                 * @type {boolean}
-                 */
-                me.isVisaMcMethod = isVisaMcMethod(this.getCode());
 
                 /**
                  * Path to the logo of a credit card payment method.
@@ -375,7 +363,7 @@ define(
                 me.cardAmount = ko.observable(0);
 
                 /**
-                 * List of card available card options for the method.
+                 * List of available amount options for the card.
                  *
                  * @type {Simplified.Method.CardOptions}
                  */
