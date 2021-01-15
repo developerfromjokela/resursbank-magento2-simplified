@@ -14,15 +14,15 @@ use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Resursbank\Simplified\Helper\Address as FetchAddressHelper;
 
 /**
- * View model for Resurs Bank's widget to fetch a customer's address based on a
- * given SSN or organisation number.
+ * View model for Resurs Bank's widget to fetch a customer's address based on
+ * provided SSN or organisation number.
  */
 class FetchAddress implements ArgumentInterface
 {
     /**
      * @var FormKey
      */
-    private FormKey $formKey;
+    private $formKey;
 
     /**
      * @param FormKey $formKey
