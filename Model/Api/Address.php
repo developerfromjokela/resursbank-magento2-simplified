@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Model\Api;
 
 use Resursbank\Core\Exception\ApiDataException;
+use function strlen;
 
 /**
  * This class is used to structure address information fetched through ECom.
@@ -20,42 +21,42 @@ class Address
     /**
      * @var string
      */
-    public string $firstName;
+    public $firstName;
 
     /**
      * @var string
      */
-    public string $lastName;
+    public $lastName;
 
     /**
      * @var string
      */
-    public string $city;
+    public $city;
 
     /**
      * @var string
      */
-    private string $postcode;
+    private $postcode;
 
     /**
      * @var string
      */
-    private string $country;
+    private $country;
 
     /**
      * @var string
      */
-    public string $street0;
+    public $street0;
 
     /**
      * @var string
      */
-    public string $street1;
+    public $street1;
 
     /**
      * @var string
      */
-    public string $company;
+    public $company;
 
     /**
      * @param string $firstName
@@ -93,8 +94,9 @@ class Address
      * @param string $val
      * @return $this
      */
-    public function setPostcode(string $val): self
-    {
+    public function setPostcode(
+        string $val
+    ): self {
         // Magento expects postcodes to be formatted as "123 45".
         if (strlen($val) > 3) {
             $this->postcode = substr($val, 0, 3) . ' ' . substr($val, 3);
@@ -108,7 +110,7 @@ class Address
     /**
      * @return string
      */
-    public function getPostcode()
+    public function getPostcode(): string
     {
         return $this->postcode;
     }
@@ -118,8 +120,9 @@ class Address
      * @return $this
      * @throws ApiDataException
      */
-    public function setCountry(string $val): self
-    {
+    public function setCountry(
+        string $val
+    ): self {
         if ($val !== 'SE') {
             throw new ApiDataException(
                 __('%1 is not a valid country.', $val)
@@ -134,7 +137,7 @@ class Address
     /**
      * @return string
      */
-    public function getCountry()
+    public function getCountry(): string
     {
         return $this->country;
     }
@@ -144,7 +147,7 @@ class Address
      *
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         return [
             'firstname' => $this->firstName,

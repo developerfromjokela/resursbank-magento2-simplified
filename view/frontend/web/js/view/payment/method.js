@@ -62,6 +62,7 @@ define(
         'use strict';
 
         /**
+<<<<<<< HEAD
          * @typedef {object} Simplified.Method.CardOption
          * @property {(string|number)} value
          * @property {(string|number)} text
@@ -75,6 +76,9 @@ define(
 
         /**
          *
+=======
+         * Get applied billing address (fallback to shipping address).
+>>>>>>> dev/sprint-1
          *
          * @returns {object}
          */
@@ -99,8 +103,7 @@ define(
         }
 
         /**
-         * Checks whether a payment method is provided by an external partner
-         * to Resurs Bank.
+         * Checks whether a payment method is provided by Resurs Bank directly.
          *
          * @param {string} code
          * @returns {boolean}
@@ -131,12 +134,12 @@ define(
         }
 
         /**
-         * Checks whether a payment method is connected to Visa or Mastercard.
+         * Checks whether a payment method is a credit card.
          *
          * @param {string} code
          * @returns {boolean}
          */
-        function isVisaMcMethod(code) {
+        function isCreditCardMethod(code) {
             return CheckoutConfig.getPaymentMethods().some(
                 function(method) {
                     return method.code === code
@@ -250,6 +253,13 @@ define(
                 );
 
                 /**
+                 * Whether this payment method is a credit card.
+                 *
+                 * @type {string}
+                 */
+                me.isCreditCardMethod = isCreditCardMethod(this.getCode());
+
+                /**
                  * Whether this payment method is connected to Visa or
                  * Mastercard.
                  *
@@ -258,12 +268,12 @@ define(
                 me.isVisaMcMethod = isVisaMcMethod(this.getCode());
 
                 /**
-                 * Path to the logo of a Visa/Mastercard payment method.
+                 * Path to the logo of a credit card payment method.
                  *
                  * @type {string}
                  */
-                me.visaMcLogo = require.toUrl(
-                    'Resursbank_Simplified/images/visa-mastercard-x2.png'
+                me.creditCardLogo = require.toUrl(
+                    'Resursbank_Simplified/images/credit-card-x2.png'
                 );
 
                 /**
@@ -276,7 +286,7 @@ define(
                 me.hasSsnField = hasSsnField(me.getCode());
 
                 /**
-                 * The id number that the customer has entered.
+                 * The id number that the customer has entered, if any.
                  *
                  * @type {Simplified.Observable.String}
                  */
