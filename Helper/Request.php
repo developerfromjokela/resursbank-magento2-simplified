@@ -9,16 +9,16 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Helper;
 
 use Exception;
+use function is_bool;
+use function is_string;
 use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\ResultFactory;
 use Resursbank\Simplified\Exception\InvalidDataException;
 use Resursbank\Simplified\Exception\MissingRequestParameterException;
-use Magento\Framework\App\RequestInterface;
-use function is_bool;
-use function is_string;
 
 class Request extends AbstractHelper
 {
@@ -41,10 +41,16 @@ class Request extends AbstractHelper
      * @var RequestInterface
      */
     private $request;
+
     /**
      * @var ValidateGovernmentId
      */
     private $validateGovernmentId;
+
+    /**
+     * @var ValidateCard
+     */
+    private $validateCard;
 
     /**
      * @param Context $context
@@ -53,6 +59,7 @@ class Request extends AbstractHelper
      * @param Log $log
      * @param RequestInterface $request
      * @param ValidateGovernmentId $validateGovernmentId
+     * @param ValidateCard $validateCard
      */
     public function __construct(
         Context $context,
@@ -60,13 +67,15 @@ class Request extends AbstractHelper
         ResultFactory $resultFactory,
         Log $log,
         RequestInterface $request,
-        ValidateGovernmentId $validateGovernmentId
+        ValidateGovernmentId $validateGovernmentId,
+        ValidateCard $validateCard
     ) {
         $this->checkoutSession = $sessionManager;
         $this->resultFactory = $resultFactory;
         $this->log = $log;
         $this->request = $request;
         $this->validateGovernmentId = $validateGovernmentId;
+        $this->validateCard = $validateCard;
 
         parent::__construct($context);
     }
@@ -157,24 +166,44 @@ class Request extends AbstractHelper
      * NOTE: this value will only be present if the client is a company.
      *
      * @return string
+     * @throws InvalidDataException
+     * @throws MissingRequestParameterException
      */
-    private function getContactGovernmentId(): string
+    public function getContactGovernmentId(): string
     {
-        $value = $this->request->getParam('contact_gov_id');
+        $result = $this->request->getParam('contact_gov_id');
 
         if (!is_string($result)) {
-            throw new MissingRequestParameterException(
-                __('Parameter [gov_id] was not set or isn\'t a string.')
-            );
+            throw new MissingRequestParameterException(__(
+                'Parameter [contact_gov_id] was not set (or isn\'t a string) ' .
+                'and is required when the customer is a company.'
+            ));
         }
 
-        if (!$this->validateGovernmentId->sweden($result, $isCompany)) {
-            throw new InvalidDataException(
-                __('Invalid Swedish government ID.')
-            );
+        if (!$this->validateGovernmentId->swedenSsn($result)) {
+            throw new InvalidDataException(__(
+                'Invalid Swedish government ID.'
+            ));
         }
-        
-        return $value;
+
+        return $result;
+    }
+
+    /**
+     * Validates and returns "card_number" request parameter, if any.
+     *
+     * @return string|null - Null if the request parameter wasn't set.
+     * @throws InvalidDataException
+     */
+    public function getCardNumber(): ?string
+    {
+        $result = $this->request->getParam('card_number');
+
+        if (is_string($result) && !$this->validateCard->validate($result)) {
+            throw new InvalidDataException(__('Invalid card number.'));
+        }
+
+        return is_string($result) ? $result : null;
     }
 
     /**
@@ -184,30 +213,10 @@ class Request extends AbstractHelper
      * @return float|null - Null if the parameter can't be converted, or if it
      * wasn't set.
      */
-    private function getCardAmount(): ?float
+    public function getCardAmount(): ?float
     {
-        $result = null;
+        $value = $this->request->getParam('card_amount');
 
-        try {
-            $value = $this->request->getParam('card_amount');
-            $result = $value === null ? null : (float) $value;
-        } catch (Exception $e) {
-            $result = null;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Converts and returns the "card_number" request parameter as a string, if
-     * possible.
-     *
-     * @return string|null - Null if the parameter wasn't set.
-     */
-    private function getCardNumber(): ?string
-    {
-        $value = $this->request->getParam('card_number');
-
-        return is_string($value) ? $value : null;
+        return $value === null ? null : (float) $value;
     }
 }
