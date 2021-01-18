@@ -13,7 +13,7 @@ use Magento\Framework\App\Helper\AbstractHelper;
 class ValidateGovernmentId extends AbstractHelper
 {
     /**
-     * Validates a swedish government ID (SSN or Org. nr.)
+     * Validates a Swedish government ID (SSN or Org. nr.)
      *
      * @param string $govId
      * @param bool $isCompany

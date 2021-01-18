@@ -127,7 +127,7 @@ class Session extends AbstractHelper
     /**
      * Stores a customer's SSN/Org nr. in the session.
      *
-     * @param string $id - Must be a valid swedish SSN/Org. number.
+     * @param string $id - Must be a valid Swedish SSN/Org. number.
      * @param bool $isCompany
      * @return self
      * @throws InvalidDataException
@@ -145,7 +145,7 @@ class Session extends AbstractHelper
 
         if (!$valid) {
             throw new InvalidDataException(__(
-                'Invalid swedish government ID was given.'
+                'Invalid Swedish government ID.'
             ));
         }
 
@@ -177,7 +177,7 @@ class Session extends AbstractHelper
      * Stores a customer's contact government ID in the session. Required for
      * company customers, personal SSN of a company reference.
      *
-     * @param string $id - Must be a valid swedish SSN.
+     * @param string $id - Must be a valid Swedish SSN.
      * @return self
      * @throws InvalidDataException - Throws if SSN is invalid.
      * @noinspection PhpUndefinedMethodInspection
@@ -192,7 +192,7 @@ class Session extends AbstractHelper
 
         if (!$valid) {
             throw new InvalidDataException(__(
-                'Invalid swedish government ID was given.'
+                'Invalid Swedish government ID.'
             ));
         }
 
@@ -271,9 +271,7 @@ class Session extends AbstractHelper
         );
 
         if (!$valid) {
-            throw new InvalidDataException(__(
-                'Invalid card number was given.'
-            ));
+            throw new InvalidDataException(__('Invalid card number.'));
         }
 
         $this->checkoutSession->setData(self::KEY_CARD_NUMBER, $cardNum);

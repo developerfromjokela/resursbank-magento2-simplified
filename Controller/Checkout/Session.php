@@ -20,6 +20,7 @@ use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\ValidateGovernmentId;
 use Resursbank\Simplified\Helper\ValidateCard;
 use Resursbank\Simplified\Helper\Session as CheckoutSession;
+use Resursbank\Simplified\Helper\Request;
 
 class Session implements HttpPostActionInterface
 {
@@ -54,12 +55,18 @@ class Session implements HttpPostActionInterface
     private $request;
 
     /**
+     * @var Request
+     */
+    private $requestHelper;
+
+    /**
      * @param Log $log
      * @param ResultFactory $resultFactory
      * @param RequestInterface $request
      * @param ValidateGovernmentId $validateGovId
      * @param ValidateCard $validateCard
      * @param CheckoutSession $session
+     * @param Request $requestHelper
      */
     public function __construct(
         Log $log,
@@ -67,7 +74,8 @@ class Session implements HttpPostActionInterface
         RequestInterface $request,
         ValidateGovernmentId $validateGovId,
         ValidateCard $validateCard,
-        CheckoutSession $session
+        CheckoutSession $session,
+        Request $requestHelper
     ) {
         $this->log = $log;
         $this->resultFactory = $resultFactory;
@@ -75,11 +83,13 @@ class Session implements HttpPostActionInterface
         $this->validateGovId = $validateGovId;
         $this->validateCard = $validateCard;
         $this->session = $session;
+        $this->requestHelper = $requestHelper;
     }
 
     /**
      * @throws Exception
      * @return ResultInterface
+     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function execute(): ResultInterface
     {
@@ -101,11 +111,40 @@ class Session implements HttpPostActionInterface
         }
 
         try {
-            $govId = $this->getGovernmentId();
-            $contactId = $this->getContactGovernmentId();
-            $cardAmount = $this->getCardAmount();
-            $cardNumber = $this->getCardNumber();
-            $isCompany = $this->getIsCompany();
+            $govId = $this->getGovernmentId(); // @todo Required.
+            $contactId = $this->getContactGovernmentId(); // @todo REquired, if isCompany = true.
+            $cardAmount = $this->getCardAmount(); // @todo Optional beroende på metod. Float|null
+            $cardNumber = $this->getCardNumber(); // @todo Optional beroende på metod. Float|null
+
+            $isCompany = $this->requestHelper->isCompany();
+
+            // Store government id and whether client is a company in session.
+            $this->session
+                ->setGovernmentId(
+                    $this->requestHelper->getGovId($isCompany),
+                    $isCompany
+                )
+                ->setIsCompany($isCompany);
+
+            if ($contactId !== null) {
+                $this->session->setContactGovernmentId($contactId);
+            }
+
+            if ($cardNumber !== null) {
+                $this->session->setCardNumber($cardNumber);
+            }
+
+            if ($cardAmount !== null) {
+                $this->session->setCardAmount($cardAmount);
+            }
+
+
+
+
+
+
+
+
 
             if (!is_bool($isCompany)) {
                 throw new MissingRequestParameterException(__(
@@ -128,7 +167,7 @@ class Session implements HttpPostActionInterface
 
             if (!$this->validateGovId->sweden($govId, $isCompany)) {
                 throw new InvalidDataException(__(
-                    'Invalid swedish government ID was given.'
+                    'Invalid Swedish government ID.'
                 ));
             }
 
@@ -136,33 +175,21 @@ class Session implements HttpPostActionInterface
                 !$this->validateGovId->swedenSsn($contactId)
             ) {
                 throw new InvalidDataException(__(
-                    'Invalid swedish government ID was given.'
+                    'Invalid Swedish government ID.'
                 ));
             }
 
             if ($cardNumber !== null &&
                 !$this->validateCard->validate($cardNumber)
             ) {
-                throw new InvalidDataException(__(
-                    'Invalid card number was given.'
-                ));
+                throw new InvalidDataException(__('Invalid card number.'));
             }
 
-            $this->session
-                ->setGovernmentId($govId, $isCompany)
-                ->setIsCompany($isCompany);
 
-            if ($contactId !== null) {
-                $this->session->setContactGovernmentId($contactId);
-            }
 
-            if ($cardNumber !== null) {
-                $this->session->setCardNumber($cardNumber);
-            }
 
-            if ($cardAmount !== null) {
-                $this->session->setCardAmount($cardAmount);
-            }
+
+
         } catch (Exception $e) {
             $this->log->exception($e);
             $data['error']['message'] = __(
@@ -175,6 +202,33 @@ class Session implements HttpPostActionInterface
         $response->setData($data);
 
         return $response;
+    }
+
+    /**
+     * Retrieve JSON response object.
+     *
+     * @param array $data
+     * @return Json
+     * @throws Exception
+     */
+    private function getResponse(
+        array $data
+    ): Json {
+        try {
+            /** @var Json $result */
+            $result = $this->resultFactory->create(
+                ResultFactory::TYPE_JSON
+            );
+
+            $result->setData($data);
+        } catch (Exception $e) {
+            $this->log->exception($e);
+
+            // Kill process.
+            throw $e;
+        }
+
+        return $result;
     }
 
     /**
