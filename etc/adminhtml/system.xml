@@ -23,6 +23,27 @@
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>resursbank/simplified/debug</config_path>
                         </field>
+                        <field id="wait_for_fraud_control" translate="comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Wait For Fraud Control</label>
+                            <comment>Defines wheter the plugin should wait for the fraud control when booking payments, or not.</comment>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>resursbank/simplified/wait_for_fraud_control</config_path>
+                        </field>
+                        <field id="annul_if_frozen" translate="comment" type="select" sortOrder="6" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Annul If Frozen</label>
+                            <comment>Defines if a payment should be annulled immediately if Resurs Bank returns a FROZEN state. This setting requires waitForFraudControl to be active.</comment>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <depends>
+                                <field id="resursbank/simplified/wait_for_fraud_control">1</field>
+                            </depends>
+                            <config_path>resursbank/simplified/annul_if_frozen</config_path>
+                        </field>
+                        <field id="finalize_if_booked" translate="comment" type="select" sortOrder="7" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Finalize If Booked</label>
+                            <comment>Defines if a payment should be debited immediately on a booked payment.</comment>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>resursbank/simplified/finalize_if_booked</config_path>
+                        </field>
                     </group>
                 </group>
             </group>

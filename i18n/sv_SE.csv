@@ -11,3 +11,6 @@
 "Something went wrong when fetching the address. Please try again.",Någonting gick fel när adressen försöktes hämtas. Vänligen försök igen.
 "Please provide a valid phone number for your chosen country.","Vänligen ange ett giltigt telefonnummer för erat valda land."
 "Something went wrong when trying to place the order. Please try again, or select another payment method. You could also try refreshing the page.","Någonting gick fel när vi försökte placera ordern. Vänligen försök igen, eller välj en annan betalmetod. Ni kan också prova med att ladda om sidan."
+"Defines whether the plugin should wait for the fraud control when booking payments, or not","Definierar om pluginet ska vänta på bedrägerikontroll när man bokar en betalning"
+"Defines if a payment should be annulled immediately if Resurs Bank returns a FROZEN state. This setting requires waitForFraudControl to be active.","Definierar om en betalning direkt ska bli annullerad om Resurs Bank returnerar en FROZEN status. Denna inställning kräver att waitForFraudControl är aktiv."
+"Defines if a payment should be debited immediately on a booked payment.","Definierar om en betalning skall debiteras direkt efter en betalning bokats."
