@@ -16,9 +16,11 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Quote\Model\Quote;
 use Resursbank\Simplified\Exception\InvalidDataException;
-use Resursbank\Simplified\Helper\ValidateCard;
-use Resursbank\Simplified\Helper\ValidateGovernmentId;
 
+/**
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
+ */
 class Session extends AbstractHelper
 {
     /**

@@ -76,7 +76,7 @@ class Session implements HttpPostActionInterface
             // If client is a company, store private reference SSN in session.
             if ($isCompany) {
                 $this->session->setContactGovernmentId(
-                    $this->requestHelper->getContactGovernmentId()
+                    $this->requestHelper->getContactGovId()
                 );
             }
 

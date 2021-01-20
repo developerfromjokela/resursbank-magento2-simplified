@@ -11,7 +11,6 @@ namespace Resursbank\Simplified\Helper;
 use Exception;
 use function is_bool;
 use function is_string;
-use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\RequestInterface;
@@ -20,13 +19,11 @@ use Magento\Framework\Controller\ResultFactory;
 use Resursbank\Simplified\Exception\InvalidDataException;
 use Resursbank\Simplified\Exception\MissingRequestParameterException;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Request extends AbstractHelper
 {
-    /**
-     * @var CheckoutSession
-     */
-    private $checkoutSession;
-
     /**
      * @var ResultFactory
      */
@@ -54,7 +51,6 @@ class Request extends AbstractHelper
 
     /**
      * @param Context $context
-     * @param CheckoutSession $sessionManager
      * @param ResultFactory $resultFactory
      * @param Log $log
      * @param RequestInterface $request
@@ -63,14 +59,12 @@ class Request extends AbstractHelper
      */
     public function __construct(
         Context $context,
-        CheckoutSession $sessionManager,
         ResultFactory $resultFactory,
         Log $log,
         RequestInterface $request,
         ValidateGovernmentId $validateGovernmentId,
         ValidateCard $validateCard
     ) {
-        $this->checkoutSession = $sessionManager;
         $this->resultFactory = $resultFactory;
         $this->log = $log;
         $this->request = $request;
@@ -169,7 +163,7 @@ class Request extends AbstractHelper
      * @throws InvalidDataException
      * @throws MissingRequestParameterException
      */
-    public function getContactGovernmentId(): string
+    public function getContactGovId(): string
     {
         $result = $this->request->getParam('contact_gov_id');
 
@@ -212,11 +206,16 @@ class Request extends AbstractHelper
      *
      * @return float|null - Null if the parameter can't be converted, or if it
      * wasn't set.
+     * @throws InvalidDataException
      */
     public function getCardAmount(): ?float
     {
-        $value = $this->request->getParam('card_amount');
+        $result = $this->request->getParam('card_amount');
 
-        return $value === null ? null : (float) $value;
+        if ($result !== null && !is_numeric($result)) {
+            throw new InvalidDataException(__('Invalid card amount.'));
+        }
+
+        return $result !== null ? (float) $result : null;
     }
 }
