@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Model;
 
 use Resursbank\Core\Exception\ApiDataException;
+use function strlen;
 
 /**
  * This class is meant to represent a valid address object on the checkout page.
@@ -46,11 +47,7 @@ class CheckoutAddress
     private $postcode;
 
     /**
-     * Only valid countries are allowed:
-     *
-     * "SE"
-     *
-     * This list might change.
+     * Only valid countries are allowed.
      *
      * @var string
      */
@@ -72,9 +69,6 @@ class CheckoutAddress
     public $company;
 
     /**
-     * Postcode must be formatted like: "123 45".
-     *
-     * @see CheckoutAddress::$postcode
      * @param string $firstName
      * @param string $lastName
      * @param string $city
@@ -107,11 +101,13 @@ class CheckoutAddress
     }
 
     /**
+     * @see CheckoutAddress::$postcode
      * @param string $val
      * @return $this
      */
-    public function setPostcode(string $val): self
-    {
+    public function setPostcode(
+        string $val
+    ): self {
         // Magento expects postcodes to be formatted as "123 45".
         if (strlen($val) > 3) {
             $this->postcode =
@@ -135,12 +131,14 @@ class CheckoutAddress
     }
 
     /**
+     * @see CheckoutAddress::$country
      * @param string $val
      * @return $this
      * @throws ApiDataException
      */
-    public function setCountry(string $val): self
-    {
+    public function setCountry(
+        string $val
+    ): self {
         if ($val !== 'SE') {
             throw new ApiDataException(
                 __('%1 is not a valid country.', $val)
@@ -153,6 +151,7 @@ class CheckoutAddress
     }
 
     /**
+     * @see CheckoutAddress::$country
      * @return string
      */
     public function getCountry(): string

@@ -15,6 +15,10 @@ use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Request;
 use Resursbank\Simplified\Helper\Session as CheckoutSession;
 
+/**
+ * Store data supplied through inputs in the checkout process in the PHP session
+ * for later usage.
+ */
 class Session implements HttpPostActionInterface
 {
     /**
@@ -60,6 +64,7 @@ class Session implements HttpPostActionInterface
             ]
         ];
 
+        /** @noinspection BadExceptionsProcessingInspection */
         try {
             $isCompany = $this->requestHelper->isCompany();
             $cardAmount = $this->requestHelper->getCardAmount();

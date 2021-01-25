@@ -13,3 +13,5 @@
 "Place Order","Beställ"
 "Contact / Reference SSN","Personnummer tillhörande referens"
 "Something went wrong when trying to place the order. Please try again, or select another payment method. You could also try refreshing the page.","Något gick fel när beställningen skapades. Vänligen försök igen, eller välj en annan betalmetod. Ni kan också prova att ladda om sidan."
+"Card Number","Kortnummer"
+"Wrong card number","Felaktigt kortnummer"

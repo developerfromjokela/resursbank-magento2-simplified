@@ -9,11 +9,9 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Model\Api;
 
 /**
- * Represents customer address information that was fetched from the server.
- * This information is incompatible with Magento's address standard and has to
- * be converted before use, because fields do not have the same names as their
- * Magento counterpart, or some fields that exists in Magento are absent in the
- * API data.
+ * Represents customer address data fetched through the API. This data is
+ * incompatible with the Magento address standard and has to be converted before
+ * being used.
  */
 class Address
 {
@@ -32,8 +30,8 @@ class Address
 
     /**
      * What the full name represents depends on the customer type. If the
-     * customer is a person, it is the full name of the customer. If the
-     * customer is a company, it is the name of the company.
+     * customer is a person (NATURAL) it's firstname + lastname name. If the
+     * customer is a company (LEGAL) it's the name of the company.
      *
      * @var string
      */
@@ -60,7 +58,7 @@ class Address
     private $addressRow2;
 
     /**
-     * This would be the city of a customer.
+     * City.
      *
      * @var string
      */
@@ -98,15 +96,15 @@ class Address
         string $postalCode = '',
         string $country = ''
     ) {
-        $this->isCompany = $isCompany;
-        $this->fullName = $fullName;
-        $this->firstName = $firstName;
-        $this->lastName = $lastName;
-        $this->addressRow1 = $addressRow1;
-        $this->addressRow2 = $addressRow2;
-        $this->postalArea = $postalArea;
-        $this->postalCode = $postalCode;
-        $this->country = $country;
+        $this->setIsCompany($isCompany)
+            ->setFullName($fullName)
+            ->setFirstName($firstName)
+            ->setLastName($lastName)
+            ->setAddressRow1($addressRow1)
+            ->setAddressRow2($addressRow2)
+            ->setPostalArea($postalArea)
+            ->setPostalCode($postalCode)
+            ->setCountry($country);
     }
 
     /**
@@ -124,11 +122,11 @@ class Address
 
     /**
      * @see Address::$isCompany
-     * @return string
+     * @return bool
      */
-    public function getIsCompany(): string
+    public function getIsCompany(): bool
     {
-        return $this->fullName;
+        return $this->isCompany;
     }
 
     /**

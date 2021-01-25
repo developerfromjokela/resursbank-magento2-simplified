@@ -19,6 +19,11 @@ use Resursbank\Simplified\Helper\Address as AddressHelper;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Request;
 
+/**
+ * Fetch customer address from API using supplied SSN and customer type.
+ * 
+ * @noinspection PhpUnused
+ */
 class FetchAddress implements HttpPostActionInterface
 {
     /**
@@ -81,8 +86,6 @@ class FetchAddress implements HttpPostActionInterface
     }
 
     /**
-     * Retrieve customer address based on request data.
-     *
      * @return array
      * @throws ApiDataException
      * @throws ValidatorException

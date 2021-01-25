@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
+use function preg_match;
 
 class ValidateGovernmentId extends AbstractHelper
 {

@@ -19,9 +19,6 @@ use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Core\Model\PaymentMethod;
 use Resursbank\Simplified\Model\ConfigProvider;
 
-/**
- * Test cases designed for ConfigProvider model.
- */
 class ConfigProviderTest extends TestCase
 {
     /**
@@ -154,6 +151,9 @@ class ConfigProviderTest extends TestCase
     }
 
     /**
+     * Test that the getConfig method converted PaymentMethod model instances
+     * to an anonymous array.
+     *
      * @throws JsonException
      */
     public function testGetConfigResult(): void

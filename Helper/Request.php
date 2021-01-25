@@ -93,8 +93,6 @@ class Request extends AbstractHelper
             $result->setData($data);
         } catch (Exception $e) {
             $this->log->exception($e);
-
-            // Kill process.
             throw $e;
         }
 

@@ -17,13 +17,12 @@ use Resursbank\Simplified\Helper\Request;
 use Resursbank\Simplified\Helper\ValidateCard;
 use Resursbank\Simplified\Helper\ValidateGovernmentId;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ */
 class RequestTest extends TestCase
 {
-    /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
     /**
      * @var RequestInterface
      */
@@ -39,19 +38,19 @@ class RequestTest extends TestCase
      */
     protected function setUp(): void
     {
-        $this->objectManager = new ObjectManager($this);
+        $objectManager = new ObjectManager($this);
 
         $this->request = $this->createMock(RequestInterface::class);
 
-        $this->requestHelper = $this->objectManager
+        $this->requestHelper = $objectManager
             ->getObject(
                 Request::class,
                 [
                     'request' => $this->request,
-                    'validateGovernmentId' => $this->objectManager->getObject(
+                    'validateGovernmentId' => $objectManager->getObject(
                         ValidateGovernmentId::class
                     ),
-                    'validateCard' => $this->objectManager->getObject(
+                    'validateCard' => $objectManager->getObject(
                         ValidateCard::class
                     )
                 ]
@@ -59,12 +58,12 @@ class RequestTest extends TestCase
     }
 
     /**
-     * Test that the isCompany method resolves 'true' from the HTTP request as
-     * a bool (true).
+     * Test that the isCompany method resolves HTTP parameter 'is_company' with
+     * value 'true' (string) as true (bool).
      *
      * @throws MissingRequestParameterException
      */
-    public function testIsCompanyResolvesTrue(): void
+    public function testIsCompanyResolvesStringTrueAsBool(): void
     {
         $this->request->expects(static::once())
             ->method('getParam')
@@ -75,12 +74,12 @@ class RequestTest extends TestCase
     }
 
     /**
-     * Test that the isCompany method resolves 'false' from the HTTP request as
-     * a bool (false).
+     * Test that the isCompany method resolves HTTP parameter 'is_company' with
+     * value 'false' (string) as false (bool).
      *
      * @throws MissingRequestParameterException
      */
-    public function testIsCompanyResolvesFalse(): void
+    public function testIsCompanyResolvesStringFalseAsBool(): void
     {
         $this->request->expects(static::once())
             ->method('getParam')
@@ -92,8 +91,8 @@ class RequestTest extends TestCase
 
     /**
      * Test that the isCompany method throws an instance of
-     * MissingRequestParameterException if the 'is_company' parameter is absent
-     * from the HTTP request.
+     * MissingRequestParameterException if HTTP parameter 'is_company' is absent
+     * from the request.
      */
     public function testIsCompanyThrowsWithoutRequestParam(): void
     {
@@ -104,9 +103,9 @@ class RequestTest extends TestCase
     /**
      * Test that the isCompany method throws an instance of
      * MissingRequestParameterException if the 'is_company' parameter is set but
-     * has a value other than 'true' or 'false'.
+     * has a value other than 'true', 'false', true or false.
      */
-    public function testIsCompanyThrowsWithFaultyRequestParamData(): void
+    public function testIsCompanyThrowsWithFaultyRequestParameterValue(): void
     {
         $this->expectException(MissingRequestParameterException::class);
 
@@ -119,8 +118,9 @@ class RequestTest extends TestCase
     }
 
     /**
-     * Test that the isCompany method returns boolean with value true directly
-     * from the HTTP request.
+     * Test that the isCompany method resolve value true (bool) directly from
+     * HTTP request parameter 'is_company'.
+     *
      * @throws MissingRequestParameterException
      */
     public function testIsCompanyReturnsTrue(): void
@@ -134,8 +134,8 @@ class RequestTest extends TestCase
     }
 
     /**
-     * Test that the isCompany method returns boolean with value false directly
-     * from the HTTP request.
+     * Test that the isCompany method resolve value false (bool) directly from
+     * HTTP request parameter 'is_company'.
      *
      * @throws MissingRequestParameterException
      */
@@ -169,25 +169,6 @@ class RequestTest extends TestCase
     }
 
     /**
-     * Test that getGovId method throws an instance of InvalidDataException when
-     * requesting pretending to be a private citizen (natural) but providing a
-     * company (legal) SSN.
-     *
-     * @throws MissingRequestParameterException
-     */
-    public function testGetGovIdRejectsLegal(): void
-    {
-        $this->expectException(InvalidDataException::class);
-
-        $this->request->expects(static::once())
-            ->method('getParam')
-            ->with('contact_gov_id')
-            ->willReturn('166997368573');
-
-        $this->requestHelper->getContactGovId();
-    }
-
-    /**
      * Test that getGovId method returns valid company (legal) value.
      *
      * @throws MissingRequestParameterException
@@ -207,8 +188,8 @@ class RequestTest extends TestCase
     }
 
     /**
-     * Test that getGovId method validates a private citizen (natural) value for
-     * a company (legal). A company SSN may be constructed as a private citizen
+     * Test that getGovId method validates a private citizen (NATURAL) value for
+     * a company (LEGAL). A company SSN may be constructed as a private citizen
      * SSN in Sweden.
      *
      * @throws MissingRequestParameterException
@@ -261,7 +242,7 @@ class RequestTest extends TestCase
     /**
      * Test that getGovId method throws an instance of
      * InvalidDataException if the 'gov_id' parameter contains an inaccurate
-     * SSN for private citizen (natural).
+     * SSN for private citizen (NATURAL).
      *
      * @throws MissingRequestParameterException
      */
@@ -280,7 +261,7 @@ class RequestTest extends TestCase
     /**
      * Test that getGovId method throws an instance of
      * InvalidDataException if the 'gov_id' parameter contains an inaccurate
-     * SSN for company (legal).
+     * SSN for company (LEGAL).
      *
      * @throws MissingRequestParameterException
      */
@@ -297,13 +278,13 @@ class RequestTest extends TestCase
     }
 
     /**
-     * Test that getContactGovId method returns valid private citizen (natural)
+     * Test that getContactGovId method returns valid private citizen (NATURAL)
      * value.
      *
      * @throws MissingRequestParameterException
      * @throws InvalidDataException
      */
-    public function testGetContactGovIdReturnsValid(): void
+    public function testGetContactGovIdReturnsValidValue(): void
     {
         $this->request->expects(static::once())
             ->method('getParam')
@@ -318,8 +299,7 @@ class RequestTest extends TestCase
 
     /**
      * Test that getContactGovId method throws an instance of
-     * InvalidDataException when requesting pretending to be a private citizen
-     * (natural) but providing a company (legal) SSN.
+     * InvalidDataException when supplied a company (LEGAL) SSN.
      *
      * @throws MissingRequestParameterException
      */
@@ -370,7 +350,7 @@ class RequestTest extends TestCase
     /**
      * Test that getContactGovId method throws an instance of
      * InvalidDataException if the 'contact_gov_id' parameter contains an
-     * inaccurate SSN for private citizen (natural).
+     * inaccurate SSN for private citizen (NATURAL).
      *
      * @throws MissingRequestParameterException
      */
@@ -458,7 +438,7 @@ class RequestTest extends TestCase
         $this->request->expects(static::once())
             ->method('getParam')
             ->with('card_number')
-            ->willReturn('asd asd asdas dasd asd asasdas a');
+            ->willReturn('that does not take wooden nickels');
 
         $this->requestHelper->getCardNumber();
     }
@@ -475,10 +455,7 @@ class RequestTest extends TestCase
             ->with('card_amount')
             ->willReturn(155.76);
 
-        static::assertSame(
-            155.76,
-            $this->requestHelper->getCardAmount()
-        );
+        static::assertSame(155.76, $this->requestHelper->getCardAmount());
     }
 
     /**
@@ -494,10 +471,7 @@ class RequestTest extends TestCase
             ->with('card_amount')
             ->willReturn('88');
 
-        static::assertSame(
-            88.0,
-            $this->requestHelper->getCardAmount()
-        );
+        static::assertSame(88.0, $this->requestHelper->getCardAmount());
     }
 
     /**
@@ -505,7 +479,7 @@ class RequestTest extends TestCase
      * InvalidDataException when the 'card_amount' parameter is assigned a none
      * numeric value.
      */
-    public function testGetCardAmountThrowsOnNoneNumericValue(): void
+    public function testGetCardAmountThrowsWithNoneNumericValue(): void
     {
         $this->expectException(InvalidDataException::class);
 
@@ -519,7 +493,7 @@ class RequestTest extends TestCase
 
     /**
      * Test that getCardAmount method throws and instance of
-     * InvalidDataException the request parameter 'card_amount' is set to a
+     * InvalidDataException when the request parameter 'card_amount' is set to a
      * value other than a string or number.
      */
     public function testGetCardAmountReturnsNullWithWrongType(): void
