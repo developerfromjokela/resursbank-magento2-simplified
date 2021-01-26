@@ -9,14 +9,11 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Model;
 
 use Exception;
+use JsonException;
 use Magento\Checkout\Model\ConfigProviderInterface;
-use Magento\Framework\Api\SearchCriteriaBuilder;
-use Magento\Framework\Exception\ValidatorException;
-use Resursbank\Core\Api\Data\PaymentMethodInterface;
-use Resursbank\Core\Api\PaymentMethodRepositoryInterface;
-use Resursbank\Core\Helper\Api\Credentials;
-use Resursbank\Core\Helper\Log;
+use Resursbank\Simplified\Helper\Log;
 use Resursbank\Core\Model\PaymentMethod;
+use Resursbank\Core\Helper\PaymentMethods;
 
 /**
  * Gather all of our payment methods and put them in their own section of the
@@ -25,67 +22,47 @@ use Resursbank\Core\Model\PaymentMethod;
 class ConfigProvider implements ConfigProviderInterface
 {
     /**
-     * @var Credentials
-     */
-    private $credentials;
-
-    /**
      * @var Log
      */
     private $log;
 
     /**
-     * @var PaymentMethodRepositoryInterface
+     * @var PaymentMethods
      */
-    private $paymentMethodRepo;
+    private $helper;
 
     /**
-     * @var SearchCriteriaBuilder
-     */
-    private $searchBuilder;
-
-    /**
-     * @param Credentials $credentials
      * @param Log $log
-     * @param PaymentMethodRepositoryInterface $paymentMethodRepo
-     * @param SearchCriteriaBuilder $searchBuilder
+     * @param PaymentMethods $helper
      */
     public function __construct(
-        Credentials $credentials,
         Log $log,
-        PaymentMethodRepositoryInterface $paymentMethodRepo,
-        SearchCriteriaBuilder $searchBuilder
+        PaymentMethods $helper
     ) {
-        $this->credentials = $credentials;
         $this->log = $log;
-        $this->paymentMethodRepo = $paymentMethodRepo;
-        $this->searchBuilder = $searchBuilder;
+        $this->helper = $helper;
     }
 
     /**
      * Builds this module's section in the config provider.
      *
      * @return array
-     * @throws Exception
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getConfig(): array
     {
-        $methods = [];
         $result = [
             'payment' => [
-                'resursbank_simplified' => []
+                'resursbank_simplified' => [
+                    'methods' => []
+                ]
             ]
         ];
 
         try {
-            $collection = $this->getPaymentMethods();
-
-            foreach ($collection as $method) {
-                $methods[] = $this->mapPaymentMethod($method);
+            foreach ($this->helper->getMethodsByCredentials() as $method) {
+                $result['payment']['resursbank_simplified']['methods'][] =
+                    $this->mapPaymentMethod($method);
             }
-
-            $result['payment']['resursbank_simplified']['methods'] = $methods;
         } catch (Exception $e) {
             $this->log->exception($e);
         }
@@ -94,52 +71,26 @@ class ConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * Get the payment methods for the current user.
-     *
-     * @return PaymentMethod[]
-     * @throws ValidatorException
-     */
-    private function getPaymentMethods(): array
-    {
-        $credentials = $this->credentials->resolveFromConfig();
-
-        $searchCriteria = $this->searchBuilder->addFilter(
-            PaymentMethodInterface::CODE,
-            "%{$this->credentials->getMethodSuffix($credentials)}",
-            'like'
-        )->create();
-
-        return $this->paymentMethodRepo->getList($searchCriteria)->getItems();
-    }
-
-    /**
      * Maps a payment method for the config provider. Note that not all data
      * from the payment method will be mapped in this process.
      *
      * @param PaymentMethod $method
      * @return array
-     * @noinspection PhpComposerExtensionStubsInspection
+     * @throws JsonException
      */
     private function mapPaymentMethod(
         PaymentMethod $method
     ): array {
-        $raw = $method->getRaw('');
-        $rawData = null;
-        $type = '';
-        $specificType = '';
-
-        if ($raw) {
-            $rawData = json_decode($raw, false);
-            $type = $rawData->type;
-            $specificType = $rawData->specificType;
-        }
+        $raw = $method->getRaw('') !== '' ?
+            json_decode($method->getRaw(''), true, 512, JSON_THROW_ON_ERROR) :
+            [];
 
         return [
             'code' => $method->getCode(),
             'title' => $method->getTitle(),
-            'type' => $type,
             'maxOrderTotal' => $method->getMaxOrderTotal(),
-            'specificType' => $specificType,
+            'type' => $raw['type'] ?? '',
+            'specificType' => $raw['specificType'] ?? ''
         ];
     }
 }

@@ -11,7 +11,7 @@ namespace Resursbank\Simplified\Exception;
 use Magento\Framework\Exception\LocalizedException;
 
 /**
- * Indicates a problem with supplied data to a function, server call etc.
+ * Indicates a general data problem.
  */
 class InvalidDataException extends LocalizedException
 {

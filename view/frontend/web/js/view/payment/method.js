@@ -77,7 +77,7 @@ define(
          */
 
         /**
-         *
+         * Get applied billing address (fallback to shipping address).
          *
          * @returns {object}
          */
@@ -102,8 +102,7 @@ define(
         }
 
         /**
-         * Checks whether a payment method is provided by an external partner
-         * to Resurs Bank.
+         * Checks whether a payment method is provided by Resurs Bank directly.
          *
          * @param {string} code
          * @returns {boolean}
@@ -134,12 +133,12 @@ define(
         }
 
         /**
-         * Checks whether a payment method is connected to Visa or Mastercard.
+         * Checks whether a payment method is a credit card.
          *
          * @param {string} code
          * @returns {boolean}
          */
-        function isVisaMcMethod(code) {
+        function isCreditCardMethod(code) {
             return CheckoutConfigLib.getPaymentMethods().some(
                 function(method) {
                     return method.code === code
@@ -169,8 +168,8 @@ define(
         }
 
         /**
-         * Takes the name of a payment method and returns an array of credit
-         * limit intervals for that payment method.
+         * Takes the code of a payment method and returns an array of credit
+         * limit intervals for the corresponding payment method.
          *
          * @param {string} code
          * @returns {Array<Simplified.Method.CardOption>}
@@ -270,20 +269,19 @@ define(
                 );
 
                 /**
-                 * Whether this payment method is connected to Visa or
-                 * Mastercard.
-                 *
-                 * @type {boolean}
-                 */
-                me.isVisaMcMethod = isVisaMcMethod(this.getCode());
-
-                /**
-                 * Path to the logo of a Visa/Mastercard payment method.
+                 * Whether this payment method is a credit card.
                  *
                  * @type {string}
                  */
-                me.visaMcLogo = require.toUrl(
-                    'Resursbank_Simplified/images/visa-mastercard-x2.png'
+                me.isCreditCardMethod = isCreditCardMethod(this.getCode());
+
+                /**
+                 * Path to the logo of a credit card payment method.
+                 *
+                 * @type {string}
+                 */
+                me.creditCardLogo = require.toUrl(
+                    'Resursbank_Simplified/images/credit-card-x2.png'
                 );
 
                 /**
@@ -296,7 +294,7 @@ define(
                 me.hasSsnField = hasSsnField(me.getCode());
 
                 /**
-                 * The id number that the customer has entered.
+                 * The id number that the customer has entered, if any.
                  *
                  * @type {Simplified.Observable.String}
                  */
@@ -409,7 +407,7 @@ define(
                 me.cardAmount = ko.observable(0);
 
                 /**
-                 * List of card available card options for the method.
+                 * List of available amount options for the card.
                  *
                  * @type {Simplified.Method.CardOptions}
                  */
