@@ -210,39 +210,8 @@ define(
                 });
 
                 /**
-<<<<<<< HEAD
-                 * Fetches the address of the given SSN/Org. nr. If the number
-                 * is invalid, the address cannot be fetched and an error
-                 * message will be displayed underneath the ID-number input.
+                 * Invoke action to apply selected customer type.
                  */
-                me.fetchAddress = function () {
-                    if (!me.isFetchingAddress() && validateId()) {
-                        me.failedToFetchAddressError('');
-                        me.isFetchingAddress(true);
-
-                        FetchAddress
-                            .fetchAddress(
-                                me.idNumber(),
-                                me.isCompanyCustomer()
-                            )
-                            .done(onFetchAddressDone)
-                            .fail(onFetchAddressFail)
-                            .always(onFetchAddressAlways)
-                    }
-                };
-
-                /**
-                 * Removes the fetched address (if an address has been fetched),
-                 * resetting address fields to their initial values. The
-                 * ID-number input will also be emptied.
-                 */
-                me.removeAddress = function () {
-                    CheckoutLib.removeAddress();
-
-                    me.isAddressApplied(false);
-                    me.idNumber('');
-                };
-
                 me.onCustomerTypeChange = function () {
                     CheckoutAction.setIsCompany(me.isCompanyCustomer());
                 };
