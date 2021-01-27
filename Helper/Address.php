@@ -18,6 +18,7 @@ use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\Simplified\Model\Api\Address as ApiAddress;
 use Resursbank\Simplified\Model\CheckoutAddress;
 use stdClass;
+use function is_object;
 
 class Address extends AbstractHelper
 {
@@ -60,7 +61,7 @@ class Address extends AbstractHelper
     }
 
     /**
-     * Fetches a customer address using a valid government ID from Resurs Bank's
+     * Fetches a customer address using a valid government ID from Resurs Banks
      * API.
      *
      * @param string $governmentId
@@ -169,8 +170,9 @@ class Address extends AbstractHelper
      * @param bool $isCompany
      * @return string
      */
-    public function getCustomerType(bool $isCompany): string
-    {
+    public function getCustomerType(
+        bool $isCompany
+    ): string {
         return $isCompany ?
             self::CUSTOMER_TYPE_COMPANY :
             self::CUSTOMER_TYPE_PRIVATE;

@@ -9,19 +9,28 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Gateway\Command;
 
 use Exception;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\PaymentException;
-use Magento\Payment\Gateway\Command\ResultInterface;
+use Magento\Framework\Exception\ValidatorException;
 use Magento\Payment\Gateway\CommandInterface;
-use Magento\Payment\Model\InfoInterface;
+use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Resursbank\Core\Helper\Api;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\RBEcomPHP\RESURS_FLOW_TYPES;
+use Resursbank\RBEcomPHP\ResursBank;
+use Resursbank\Simplified\Exception\InvalidDataException;
+use Resursbank\Simplified\Exception\PaymentDataException;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Payment as PaymentHelper;
 use Resursbank\Simplified\Helper\Session as CheckoutSession;
 
+/**
+ * Create payment session at Resurs Bank and prepare redirecting client to the
+ * gateway for payment processing.
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Authorize implements CommandInterface
 {
     /**
@@ -55,7 +64,6 @@ class Authorize implements CommandInterface
      * @param Credentials $credentials
      * @param CheckoutSession $session
      * @param PaymentHelper $paymentHelper
-     *
      */
     public function __construct(
         Log $log,
@@ -73,48 +81,30 @@ class Authorize implements CommandInterface
 
     /**
      * @param array $commandSubject
-     * @return ResultInterface|void|null
+     * @return void
      * @throws Exception
      */
     public function execute(
         array $commandSubject
-    ) {
+    ): void {
         try {
-            /** @var InfoInterface $payment */
-            $payment = $commandSubject['payment']->getPayment();
+            $payment = $this->getPaymentFromSubject($commandSubject);
 
             /** @var OrderInterface $order */
             /** @noinspection PhpPossiblePolymorphicInvocationInspection */
             $order = $payment->getOrder();
-            $orderPayment = $order->getPayment();
 
-            if ($orderPayment instanceof OrderPaymentInterface) {
-                $quote = $this->session->getQuote();
-                $connection = $this->api->getConnection(
-                    $this->credentials->resolveFromConfig()
-                );
+            if ($payment->getOrder()->getPayment() !== null) {
+                // Establish API connection.
+                $connection = $this->getConnection();
 
-                $connection->setPreferredPaymentFlowService(
-                    RESURS_FLOW_TYPES::SIMPLIFIED_FLOW
-                );
+                // Apply payload data.
+                $this->setPayloadData($order, $connection);
 
-                $this->paymentHelper
-                    ->setCustomer($order, $connection)
-                    ->setCardData($connection)
-                    ->setBillingAddress($order, $connection)
-                    ->setShippingAddress($order, $connection)
-                    ->addOrderLines($connection)
-                    ->setOrderId($order, $connection)
-                    ->setSigningUrls($connection, $quote)
-                    ->setPaymentdata($connection);
+                // Create payment session at Resurs Bank and prepare signing.
+                $this->createPayment($order, $connection);
 
-                $paymentSession = $this->paymentHelper->createPaymentSession(
-                    $order,
-                    $connection
-                );
-
-                $this->paymentHelper->handlePaymentStatus($paymentSession);
-                $this->paymentHelper->prepareSigning($paymentSession);
+                // Clear Resurs Bank related data from session.
                 $this->session->unsetCustomerInfo();
 
                 /** @noinspection PhpPossiblePolymorphicInvocationInspection */
@@ -130,7 +120,121 @@ class Authorize implements CommandInterface
                 'could also try refreshing the page.'
             ));
         }
+    }
 
-        return null;
+    /**
+     * Resolve payment data from subject array.
+     *
+     * @param array $commandSubject
+     * @return Payment
+     * @throws InvalidDataException
+     */
+    private function getPaymentFromSubject(
+        array $commandSubject
+    ): Payment {
+        $info = SubjectReader::readPayment($commandSubject);
+
+        $payment = $info->getPayment();
+
+        if (!($payment instanceof Payment)) {
+            throw new InvalidDataException(
+                __('Payment info not instance of ' . Payment::class)
+            );
+        }
+
+        return $info->getPayment();
+    }
+
+    /**
+     * Resolve API connection.
+     *
+     * @return ResursBank
+     * @throws ValidatorException
+     * @throws Exception
+     */
+    private function getConnection(): ResursBank
+    {
+        try {
+            $connection = $this->api->getConnection(
+                $this->credentials->resolveFromConfig()
+            );
+
+            $connection->setPreferredPaymentFlowService(
+                RESURS_FLOW_TYPES::SIMPLIFIED_FLOW
+            );
+        } catch (Exception $e) {
+            // NOTE: Actual Exception is logged upstream.
+            $this->log->error('Failed to establish a connection to the API');
+
+            throw $e;
+        }
+
+        return $connection;
+    }
+
+    /**
+     * Apply data to API payload in preparation of payment session creation.
+     *
+     * @param OrderInterface $order
+     * @param ResursBank $connection
+     * @throws PaymentDataException
+     * @throws Exception
+     */
+    private function setPayloadData(
+        OrderInterface $order,
+        ResursBank $connection
+    ): void {
+        try {
+            $this->paymentHelper
+                ->setCustomer($order, $connection)
+                ->setCardData($connection)
+                ->setBillingAddress($order, $connection)
+                ->setShippingAddress($order, $connection)
+                ->addOrderLines($connection)
+                ->setOrderId($order, $connection)
+                ->setSigningUrls($connection, $this->session->getQuote())
+                ->setPaymentData($connection);
+        } catch (Exception $e) {
+            // NOTE: Actual Exception is logged upstream.
+            $this->log->error('Failed to apply API payload data.');
+
+            throw $e;
+        }
+    }
+
+    /**
+     * Create payment session at Resurs Bank.
+     *
+     * NOTE: This basically creates a pending payment. The payment will be
+     * registered (activated) when we reach the success page.
+     *
+     * @param OrderInterface $order
+     * @param ResursBank $connection
+     * @throws NoSuchEntityException
+     * @throws PaymentDataException
+     */
+    private function createPayment(
+        OrderInterface $order,
+        ResursBank $connection
+    ): void {
+        try {
+            // Create payment session at Resurs Bank.
+            $payment = $this->paymentHelper->createPaymentSession(
+                $order,
+                $connection
+            );
+
+            // Reject denied payment.
+            if ($payment->getBookPaymentStatus() === 'DENIED') {
+                throw new PaymentDataException(__('Payment denied.'));
+            }
+
+            // Prepare redirecting client to gateway.
+            $this->paymentHelper->prepareRedirect($payment);
+        } catch (Exception $e) {
+            $this->log->error('Failed to create payment');
+
+            throw $e;
+        }
     }
 }

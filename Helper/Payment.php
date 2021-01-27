@@ -11,12 +11,13 @@ namespace Resursbank\Simplified\Helper;
 use Exception;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\ValidatorException;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
+use function property_exists;
 use Resursbank\Core\Helper\Api as CoreApi;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\Core\Model\Api\Payment\Converter\QuoteConverter;
@@ -31,6 +32,7 @@ use stdClass;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @noinspection EfferentObjectCouplingInspection
  */
 class Payment extends AbstractHelper
 {
@@ -93,7 +95,7 @@ class Payment extends AbstractHelper
     }
 
     /**
-     * Set customer information with the order.
+     * Append customer information to API payload.
      *
      * @param OrderInterface $order
      * @param ResursBank $connection
@@ -126,6 +128,8 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Append card data to API payload.
+     *
      * @param ResursBank $connection
      * @return self
      */
@@ -141,6 +145,8 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Append billing address information to API payload.
+     *
      * @param OrderInterface $order
      * @param ResursBank $connection
      * @return self
@@ -173,6 +179,8 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Append delivery (shipping) address information to API payload.
+     *
      * @param OrderInterface $order
      * @param ResursBank $connection
      * @return self
@@ -186,7 +194,7 @@ class Payment extends AbstractHelper
 
         if (!($address instanceof OrderAddressInterface)) {
             throw new PaymentDataException(__(
-                'The order does not have a billing address'
+                'The order does not have a shipping or billing address'
             ));
         }
 
@@ -205,6 +213,8 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Append items (cart/order) to API payload.
+     *
      * @param ResursBank $connection
      * @return self
      * @throws Exception
@@ -230,6 +240,10 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Apply desired payment reference in API payload (ie. this is the reference
+     * the payment will be created with at Resurs Bank, instead of a unique,
+     * random, value which would otherwise be utilised).
+     *
      * @param OrderInterface $order
      * @param ResursBank $connection
      * @return self
@@ -244,6 +258,9 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Apply URL:s to be utilised when signing succeeds / fails (ie. these URL:s
+     * will be triggered by the gateway after the client performs the payment).
+     *
      * @param ResursBank $connection
      * @param Quote $quote
      * @return self
@@ -266,20 +283,33 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Apply payment handling flags.
+     *
      * @param ResursBank $connection
      * @return self
      */
     public function setPaymentData(
         ResursBank $connection
     ): self {
+        // Wait for fraud controls to be performed.
         $connection->setWaitForFraudControl();
+
+        // Automatically annul payment if it becomes [FROZEN].
         $connection->setAnnulIfFrozen();
+
+        // Automatically finalize payment if it becomes [BOOKED].
         $connection->setFinalizeIfBooked();
 
         return $this;
     }
 
     /**
+     * Create payment session at Resurs Bank.
+     *
+     * NOTE: This basically creates a pending payment. The payment will be
+     * registered (activated) when we reach the success page (see
+     * setSigningUrls method in this class).
+     *
      * @param OrderInterface $order
      * @param ResursBank $connection
      * @return PaymentModel
@@ -334,44 +364,20 @@ class Payment extends AbstractHelper
     }
 
     /**
-     * @param PaymentModel $payment
-     * @param array|string[] $reject
-     * @return self
-     * @throws PaymentDataException
-     */
-    public function handlePaymentStatus(
-        PaymentModel $payment,
-        array $reject = ['DENIED']
-    ): self {
-        // Handle reject statuses.
-        if (in_array($payment->getBookPaymentStatus(), $reject, true)) {
-            throw new PaymentDataException(__(
-                'Your payment has been rejected, please select a ' .
-                'different payment method and try again. If the problem ' .
-                'persists please contact us for assistance.'
-            ));
-        }
-
-        return $this;
-    }
-
-    /**
+     * Prepare redirecting client to gateway to perform payment. When creating
+     * a payment session at Resurs Bank we attain some values we will need to
+     * store in our PHP session for later use (see
+     * Controller/Simplified/Redirect.php) when redirecting the client.
+     *
      * @param PaymentModel $payment
      * @return $this
      */
-    public function prepareSigning(PaymentModel $payment): self
-    {
+    public function prepareRedirect(
+        PaymentModel $payment
+    ): self {
         if ($payment->getSigningUrl() !== '') {
-            // Store signing URL in session for later use to redirect client.
-            // See Controller/Simplified/Redirect.php
-            $this->session->setPaymentSigningUrl(
-                $payment->getSigningUrl()
-            );
-
-            // Keep the resulting paymentId from creating the payment in mind.
-            $this->session->setPaymentId(
-                $payment->getPaymentId()
-            );
+            $this->session->setPaymentSigningUrl($payment->getSigningUrl());
+            $this->session->setPaymentId($payment->getPaymentId());
         }
 
         return $this;
@@ -408,7 +414,7 @@ class Payment extends AbstractHelper
                 (string) $payment->bookPaymentStatus :
                 '',
             property_exists($payment, 'approvedAmount') ?
-                (string) $payment->approvedAmount :
+                (float) $payment->approvedAmount :
                 '',
             property_exists($payment, 'signingUrl') ?
                 (string) $payment->signingUrl :
@@ -475,23 +481,14 @@ class Payment extends AbstractHelper
 
         $result = $this->toPayment($payment);
 
-        // Handle payment status (like "DENIED" etc.).
-        $this->handlePaymentStatus(
-            $result,
-            ['DENIED', 'SIGNING']
-        );
+        // Reject denied / failed payment.
+        switch ($payment->getBookPaymentStatus()) {
+            case 'DENIED':
+                throw new PaymentDataException(__('Payment denied.'));
+            case 'SIGNING':
+                throw new PaymentDataException(__('Payment failed.'));
+        }
 
         return $result;
-    }
-
-    /**
-     * @return ResursBank
-     * @throws ValidatorException|Exception
-     */
-    public function getConnection(): ResursBank
-    {
-        return $this->coreApi->getConnection(
-            $this->credentials->resolveFromConfig()
-        );
     }
 }
