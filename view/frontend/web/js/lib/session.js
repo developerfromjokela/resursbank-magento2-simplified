@@ -68,9 +68,6 @@ define(
              * Sends a request to the server that sets the given information
              * in the session for later use.
              *
-             * @note The session data will be emptied at some later point in
-             * the checkout process (most likely when authorizing the order).
-             *
              * @param {Simplified.Lib.Session.RequestData} data
              * @return {jQuery}
              */
@@ -79,8 +76,8 @@ define(
             },
 
             /**
-             * Produces a call object to make a request to set data in the
-             * session.
+             * Produces a call object which can make a request to apply data in
+             * the PHP session.
              *
              * @param {Simplified.Lib.Session.RequestData} data
              * @returns {Simplified.Lib.Session.Call}
@@ -117,8 +114,7 @@ define(
             /**
              * Builds a URL to connect to a controller in the Simplified module.
              *
-             * @param {string} path - Path to a controller action. Should not
-             * start with a "/".
+             * @param {string} path - Controller path. Do not start with "/".
              * @returns {string} URL to a controller in the Simplified module.
              */
             buildUrl: function (path) {

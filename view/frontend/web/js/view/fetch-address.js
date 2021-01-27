@@ -115,7 +115,7 @@ define(
 
                 /**
                  * Whether a request has been sent to fetch a shipping address
-                 * for the applied ID-number.
+                 * for the supplied ID-number.
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
@@ -129,7 +129,7 @@ define(
                 me.isAddressApplied = ko.observable(false);
 
                 /**
-                 * Whether an error occurred when fetching the shipping
+                 * Whether an error occurred while fetching the shipping
                  * address.
                  *
                  * @type {Simplified.Observable.String}
@@ -210,44 +210,14 @@ define(
                 });
 
                 /**
-                 * Fetches the address of the given SSN/Org. nr. If the number
-                 * is invalid, the address cannot be fetched and an error
-                 * message will be displayed underneath the ID-number input.
+                 * Invoke action to apply selected customer type.
                  */
-                me.fetchAddress = function () {
-                    if (!me.isFetchingAddress() && validateId()) {
-                        me.failedToFetchAddressError('');
-                        me.isFetchingAddress(true);
-
-                        FetchAddress
-                            .fetchAddress(
-                                me.idNumber(),
-                                me.isCompanyCustomer()
-                            )
-                            .done(onFetchAddressDone)
-                            .fail(onFetchAddressFail)
-                            .always(onFetchAddressAlways)
-                    }
-                };
-
-                /**
-                 * Removes the fetched address (if an address has been fetched),
-                 * resetting address fields to their initial values. The
-                 * ID-number input will also be emptied.
-                 */
-                me.removeAddress = function () {
-                    CheckoutLib.removeAddress();
-
-                    me.isAddressApplied(false);
-                    me.idNumber('');
-                };
-
                 me.onCustomerTypeChange = function () {
                     CheckoutAction.setIsCompany(me.isCompanyCustomer());
                 };
 
                 /**
-                 * Callback for when the fetch address request was successful.
+                 * Callback used when the fetch address request was successful.
                  *
                  * @param {Simplified.Lib.FetchAddress.Response} response
                  */
@@ -262,7 +232,7 @@ define(
                 }
 
                 /**
-                 * Callback for when the fetch address callback fails.
+                 * Callback used when the fetch address request fails.
                  */
                 function onFetchAddressFail() {
                     me.failedToFetchAddressError($.mage.__(
@@ -272,7 +242,7 @@ define(
                 }
 
                 /**
-                 * Callback for when the fetch address completes.
+                 * Callback used when the fetch address request completes.
                  */
                 function onFetchAddressAlways() {
                     me.isFetchingAddress(false);
@@ -298,6 +268,39 @@ define(
                     }
 
                     return valid;
+                }
+
+                /**
+                 * Fetches the address of the given SSN/Org. nr. If the number
+                 * is invalid, the address cannot be fetched and an error
+                 * message will be displayed underneath the ID-number input.
+                 */
+                me.fetchAddress = function () {
+                    if (!me.isFetchingAddress() && validateId()) {
+                        me.failedToFetchAddressError('');
+                        me.isFetchingAddress(true);
+
+                        FetchAddress
+                            .fetchAddress(
+                                me.idNumber(),
+                                me.isCompanyCustomer()
+                            )
+                            .done(onFetchAddressDone)
+                            .fail(onFetchAddressFail)
+                            .always(onFetchAddressAlways)
+                    }
+                };
+
+                /**
+                 * Removes the fetched address (if an address has been fetched),
+                 * resetting address fields to their initial values. The
+                 * ID-number input will also be cleared.
+                 */
+                me.removeAddress = function () {
+                    CheckoutLib.removeAddress();
+
+                    me.isAddressApplied(false);
+                    me.idNumber('');
                 }
             }
         });

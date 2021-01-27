@@ -8,7 +8,7 @@ define(
     [
         'jquery',
         'Resursbank_Simplified/js/storage/resursbank-simplified',
-        'jquery/jquery-storageapi',
+        'jquery/jquery-storageapi'
     ],
 
     /**

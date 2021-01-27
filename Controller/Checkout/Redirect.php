@@ -76,17 +76,18 @@ class Redirect extends Action
         $redirect = $this->redirectFactory->create();
 
         try {
+            /* @noinspection PhpUndefinedMethodInspection */
             $url = (string) $this->session->getPaymentSigningUrl();
 
             if ($url !== '') {
                 // Redirect to Resurs Bank signing page.
                 $redirect->setUrl($url);
             } else {
-                // Redirect to Magento's success page.
+                // Redirect to success page.
                 $redirect->setPath('checkout/onepage/success');
             }
         } catch (Exception $e) {
-            $this->log->error($e);
+            $this->log->exception($e);
 
             throw $e;
         }

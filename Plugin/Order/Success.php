@@ -14,8 +14,8 @@ use Magento\Checkout\Model\Session;
 use Magento\Checkout\Model\Session\SuccessValidator;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order\AddressRepository;
@@ -30,8 +30,8 @@ use Resursbank\Simplified\Model\Api\Payment as PaymentModel;
  * When utilising Simplified Flow the following actions will transpire at
  * order placement:
  *
- * 1. Order is submitted.
- * 2. Payment session is created (bookPayment) at Resurs Bank.
+ * 1. Order is created in Magento.
+ * 2. Payment session is created (through bookPayment) at Resurs Bank.
  * 3. Client is redirected to Resurs Bank to sign their payment (normally
  * by using Bank ID).
  * 4. Client is redirected back to the success URL (we register the success
@@ -41,21 +41,21 @@ use Resursbank\Simplified\Model\Api\Payment as PaymentModel;
  * 6. The order is completed in Magento.
  *
  * Step 5 / 6 requires some data to be available in the client session, in
- * order to locate the quote and order corresponding with their purchase.
+ * order to locate the quote and order corresponding to their purchase.
  *
- * This information will always be in the client session, unless they have
+ * This information will always be in the PHP session, unless they have
  * utilised a cell phone to perform their purchase. Consider a scenario
  * where the client opens their custom web browser (Chrome for example)
  * to assemble a shopping cart and place their order. Upon being asked to
  * sign for their purchase "Using Bank ID on this device" the client clicks
- * the popup to open their Bank ID application. After signing the Bank ID
+ * the popup to open their Bank ID application. After signing, the Bank ID
  * app will open a link to the success page. This link will be opened in the
- * default browser (for example Safari). This means your session data is not
- * available since you performed your purchase using Chrome, and thus step 5 and
- * 6 fail.
+ * default browser (for example Safari). Using this example, this means your
+ * session data is not available since you performed your purchase using Chrome,
+ * and thus step 5 and 6 fail.
  *
- * To circumvent this eventuality we have include the clients quote_id in
- * the success / failure URLs registered in the payment session (see
+ * To circumvent this eventuality we include the clients quote_id in the
+ * success / failure URLs registered in the payment session (see
  * Resursbank_Checkout_Model_Api :: getFailureCallbackUrl() /
  * getSuccessCallbackUrl()). We then add the information back to the
  * client session at pre-dispatch of the success / failure controller
@@ -98,7 +98,7 @@ class Success
     /**
      * @var SearchCriteriaBuilder
      */
-    private $searchCritBuilder;
+    private $searchBuilder;
 
     /**
      * @var SuccessValidator
@@ -111,7 +111,7 @@ class Success
     private $session;
 
     /**
-     * @param SearchCriteriaBuilder $searchCritBuilder
+     * @param SearchCriteriaBuilder $searchBuilder
      * @param Log $log
      * @param RequestInterface $request
      * @param OrderRepository $orderRepository
@@ -123,7 +123,7 @@ class Success
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
-        SearchCriteriaBuilder $searchCritBuilder,
+        SearchCriteriaBuilder $searchBuilder,
         Log $log,
         RequestInterface $request,
         OrderRepository $orderRepository,
@@ -133,7 +133,7 @@ class Success
         AddressRepository $addressRepository,
         SuccessValidator $successValidator
     ) {
-        $this->searchCritBuilder = $searchCritBuilder;
+        $this->searchBuilder = $searchBuilder;
         $this->log = $log;
         $this->request = $request;
         $this->orderRepository = $orderRepository;
@@ -171,14 +171,12 @@ class Success
         OnepageSuccess $subject,
         ResultInterface $result
     ): ResultInterface {
+        /** @noinspection BadExceptionsProcessingInspection */
         try {
-            $quoteId = $this->getQuoteIdFromRequest();
-            $order = $this->getOrderByQuoteId($quoteId);
-            $paymentId = $order->getIncrementId();
+            $order = $this->getOrderByQuoteId($this->getQuoteIdFromRequest());
 
-            $this->payment->bookPaymentSession($paymentId);
+            $this->payment->bookPaymentSession($order->getIncrementId());
             $this->updateBillingAddress($order);
-
             $this->sessionHelper->unsetAll();
         } catch (Exception $e) {
             $this->log->exception($e);
@@ -206,11 +204,7 @@ class Success
             $payment = $this->payment->getPayment($order->getIncrementId());
 
             if ($payment instanceof PaymentModel) {
-                // Override billing address with information from Resurs Bank.
-                $this->overrideBillingAddress(
-                    $payment,
-                    $order
-                );
+                $this->overrideBillingAddress($payment, $order);
             }
         } catch (Exception $e) {
             $this->log->info(
@@ -277,12 +271,8 @@ class Success
         int $quoteId
     ): OrderInterface {
         $orderList = $this->orderRepository->getList(
-            $this->searchCritBuilder
-                ->addFilter(
-                    'quote_id',
-                    $quoteId,
-                    'eq'
-                )
+            $this->searchBuilder
+                ->addFilter('quote_id', $quoteId, 'eq')
                 ->create()
         )->getItems();
 
@@ -298,8 +288,7 @@ class Success
 
         if ((int) $order->getEntityId() === 0) {
             throw new InvalidDataException(__(
-                'The order does not have a valid entity ID: ' .
-                (int) $order->getEntityId()
+                'The order does not have a valid entity ID.'
             ));
         }
 
@@ -308,28 +297,26 @@ class Success
 
     /**
      * Restores the checkout session based on relevant values gathered from a
-     * quote and its order.
+     * quote and its corresponding order.
      *
      * If the session has been lost during the signing process (likely due to
-     * switching browsers), we need to restore certain values so that Magento
-     * sends the customer to the order success page.
+     * switching browsers), we need to restore specific session values to
+     * ensure Magento handles the success / failure procedure correctly.
      *
      * @param int $quoteId
-     * @return bool - Whether session values could be restored.
+     * @return void
      * @throws InvalidDataException
      * @noinspection PhpUndefinedMethodInspection
      */
     private function restoreSession(
         int $quoteId
-    ): bool {
+    ): void {
         $order = $this->getOrderByQuoteId($quoteId);
 
         $this->session->setLastQuoteId($quoteId);
         $this->session->setLastSuccessQuoteId($quoteId);
         $this->session->setLastOrderId($order->getEntityId());
         $this->session->setLastRealOrderId($order->getIncrementId());
-
-        return true;
     }
 
     /**
