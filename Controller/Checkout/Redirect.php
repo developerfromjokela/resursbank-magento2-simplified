@@ -1,25 +1,16 @@
 <?php
 /**
- * Copyright 2016 Resurs Bank AB
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright © Resurs Bank AB. All rights reserved.
+ * See LICENSE for license details.
  */
+
+declare(strict_types=1);
 
 namespace Resursbank\Simplified\Controller\Checkout;
 
 use Exception;
 use Magento\Framework\App\Action\Action;
-use \Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Action\Context;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\Result\Redirect as RedirectResult;
 use Magento\Framework\Controller\Result\RedirectFactory;
@@ -70,7 +61,7 @@ class Redirect extends Action implements HttpPostActionInterface
         $this->redirectFactory = $redirectFactory;
         $this->session = $session;
         $this->log = $log;
-        
+
         parent::__construct($context);
     }
 
@@ -81,7 +72,7 @@ class Redirect extends Action implements HttpPostActionInterface
      * @return RedirectResult
      * @throws Exception
      */
-    public function execute()
+    public function execute(): RedirectResult
     {
         $redirect = $this->redirectFactory->create();
 
@@ -92,11 +83,11 @@ class Redirect extends Action implements HttpPostActionInterface
                 // Redirect to Resurs Bank signing page.
                 $redirect->setUrl($url);
             } else {
-                // Redirect to Magento's success page.
+                // Redirect to success page.
                 $redirect->setPath('checkout/onepage/success');
             }
         } catch (Exception $e) {
-            $this->log->error($e);
+            $this->log->exception($e);
 
             throw $e;
         }

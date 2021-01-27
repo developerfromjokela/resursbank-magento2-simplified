@@ -21,8 +21,6 @@ use Resursbank\Simplified\Helper\Request;
 
 /**
  * Fetch customer address from API using supplied SSN and customer type.
- * 
- * @noinspection PhpUnused
  */
 class FetchAddress implements HttpPostActionInterface
 {
