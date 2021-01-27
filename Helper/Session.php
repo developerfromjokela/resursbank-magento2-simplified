@@ -16,9 +16,11 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Quote\Model\Quote;
 use Resursbank\Simplified\Exception\InvalidDataException;
-use Resursbank\Simplified\Helper\ValidateCard;
-use Resursbank\Simplified\Helper\ValidateGovernmentId;
 
+/**
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
+ */
 class Session extends AbstractHelper
 {
     /**
@@ -45,38 +47,40 @@ class Session extends AbstractHelper
         self::KEY_PREFIX . 'government_id';
 
     /**
-     * Key to store and retrieve which type the customer (company or private
-     * person).
+     * Key to store and retrieve customer type (NATURAL | LEGAL).
      *
      * @var string
      */
     public const KEY_IS_COMPANY = self::KEY_PREFIX . 'is_company';
 
     /**
-     * Key to store and retrieve the customer's selected card amount.
+     * Key to store and retrieve the selected Resurs Bank card amount.
      *
      * @var string
      */
     public const KEY_CARD_AMOUNT = self::KEY_PREFIX . 'card_amount';
 
     /**
-     * Key to store and retrieve the customer's card number.
+     * Key to store and retrieve the Resurs Bank card number (not to be confused
+     * with CC number).
      *
      * @var string
      */
     public const KEY_CARD_NUMBER = self::KEY_PREFIX . 'card_number';
 
     /**
-     * Key to store and retrieve the payment's signing URL. The URL can be used
-     * to redirect the user to the payment gateway. The URL is obtained
-     * after a payment in Resurs Bank's API has been created.
+     * Key to store and retrieve the payment's signing URL. The URL is utilised
+     * to redirect the customer to the payment gateway. The URL is obtained
+     * after a payment session has been created at Resurs Bank through the API.
      *
      * @var string
      */
     public const KEY_PAYMENT_SIGNING_URL = self::KEY_PREFIX . 'signing_url';
 
     /**
-     * Key to store and retrieve the payment's ID.
+     * Key to store and retrieve the payment / payment session ID (the ID at
+     * Resurs Bank, not to be confused with the ID of a payment entity in
+     * Magento).
      *
      * @var string
      */
@@ -125,9 +129,9 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Stores a customer's SSN/Org nr. in the session.
+     * Store a customer's SSN/Org nr. in the session.
      *
-     * @param string $id - Must be a valid swedish SSN/Org. number.
+     * @param string $id - Must be a valid Swedish SSN/Org. number.
      * @param bool $isCompany
      * @return self
      * @throws InvalidDataException
@@ -137,16 +141,8 @@ class Session extends AbstractHelper
         string $id,
         bool $isCompany
     ): self {
-        $valid = $this->validateGovId->sweden(
-            $id,
-            $isCompany,
-            true
-        );
-
-        if (!$valid) {
-            throw new InvalidDataException(__(
-                'Invalid swedish government ID was given.'
-            ));
+        if (!$this->validateGovId->sweden($id, $isCompany, true)) {
+            throw new InvalidDataException(__('Invalid SE government ID.'));
         }
 
         $this->checkoutSession->setData(self::KEY_GOVERNMENT_ID, $id);
@@ -177,7 +173,7 @@ class Session extends AbstractHelper
      * Stores a customer's contact government ID in the session. Required for
      * company customers, personal SSN of a company reference.
      *
-     * @param string $id - Must be a valid swedish SSN.
+     * @param string $id - Must be a valid Swedish SSN.
      * @return self
      * @throws InvalidDataException - Throws if SSN is invalid.
      * @noinspection PhpUndefinedMethodInspection
@@ -185,15 +181,8 @@ class Session extends AbstractHelper
     public function setContactGovernmentId(
         string $id
     ): self {
-        $valid = $this->validateGovId->swedenSsn(
-            $id,
-            true
-        );
-
-        if (!$valid) {
-            throw new InvalidDataException(__(
-                'Invalid swedish government ID was given.'
-            ));
+        if (!$this->validateGovId->swedenSsn($id, true)) {
+            throw new InvalidDataException(__('Invalid SE government ID.'));
         }
 
         $this->checkoutSession->setData(self::KEY_CONTACT_GOVERNMENT_ID, $id);
@@ -221,7 +210,7 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Stores a customer's type in the session.
+     * Stores customer type in the session.
      *
      * @param bool $isCompany
      * @return self
@@ -255,7 +244,7 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Stores a customer's given Resurs Bank card number in the session.
+     * Stores Resurs Bank card number in the session.
      *
      * @param string $cardNum - Must be a valid card number.
      * @return self
@@ -265,15 +254,8 @@ class Session extends AbstractHelper
     public function setCardNumber(
         string $cardNum
     ): self {
-        $valid = $this->validateCard->validate(
-            $cardNum,
-            true
-        );
-
-        if (!$valid) {
-            throw new InvalidDataException(__(
-                'Invalid card number was given.'
-            ));
+        if (!$this->validateCard->validate($cardNum, true)) {
+            throw new InvalidDataException(__('Invalid card number.'));
         }
 
         $this->checkoutSession->setData(self::KEY_CARD_NUMBER, $cardNum);
@@ -301,8 +283,7 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Stores a customer's selected amount that will be available on their
-     * Resurs Bank card.
+     * Stores selected Resurs Bank card amount in session.
      *
      * @param float $cardAmount
      * @return self
@@ -336,9 +317,8 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Stores the signing URL that can be used to redirect the customer to the
-     * payment gateway of the chosen payment method. The URL is obtained
-     * after a payment in Resurs Bank's API has been created.
+     * Stores payment signing (gateway) URL in session. Redirect URL at order
+     * placement to perform payment.
      *
      * @param string $url
      * @return self
@@ -354,6 +334,8 @@ class Session extends AbstractHelper
 
     /**
      * @return string|null - Null if a value cannot be found.
+     *
+     * @noinspection PhpUnused
      */
     public function getPaymentSigningUrl(): ?string
     {
@@ -362,25 +344,25 @@ class Session extends AbstractHelper
 
     /**
      * @return self
-     * @noinspection PhpUndefinedMethodInspection
      */
     public function unsetPaymentSigningUrl(): self
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->checkoutSession->unsetData(self::KEY_PAYMENT_SIGNING_URL);
 
         return $this;
     }
 
     /**
-     * Stores a payment's ID in the session.
+     * Stores payment session ID in PHP session.
      *
      * @param string $id
      * @return self
-     * @noinspection PhpUndefinedMethodInspection
      */
     public function setPaymentId(
         string $id
     ): self {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->checkoutSession->setData(self::KEY_PAYMENT_ID, $id);
 
         return $this;
@@ -396,10 +378,10 @@ class Session extends AbstractHelper
 
     /**
      * @return self
-     * @noinspection PhpUndefinedMethodInspection
      */
     public function unsetPaymentId(): self
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->checkoutSession->unsetData(self::KEY_PAYMENT_ID);
 
         return $this;
@@ -439,7 +421,7 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Unsets every key in the session of this class.
+     * Unsets every key in the session applied through this class.
      *
      * @return self
      */
@@ -462,12 +444,16 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Produces a URL to redirect the customer to when a purchase has been
-     * successful which contains the order ID and quote ID of said purchase as
-     * parameters. In the event that the customer switched to another browser
-     * during the signing process, and the session is lost, we should be able
-     * to retrieve the data we need with these parameters in the new browser
-     * session.
+     * URL client is redirect back to after successfully completing their
+     * payment at the gateway.
+     *
+     * NOTE: We include quote id and order increment id to support intermediate
+     * browser change during the signing procedure. For example, if the client
+     * signs their payment at the gateway using BankID on a smart phone the
+     * redirect URL may be opened in the OS default browser instead of the
+     * browser utilised by the customer to perform the purchase. This means the
+     * session data is lost and the order will thus fail. By including these
+     * parameters we can load the data back into the session if it's missing.
      *
      * @param string $orderId
      * @param string $quoteId
@@ -485,11 +471,11 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Produces a URL to redirect the customer to when a purchase has failed
-     * which contains the order ID and quote ID of said purchase as parameters.
-     * In the event that the customer switched to another browser during the
-     * signing process, and the session is lost, we should be able to retrieve
-     * the data we need with these parameters in the new browser session.
+     * URL client is redirect back to after failing to completing their payment
+     * at the gateway.
+     *
+     * NOTE: For information regarding the included quote and order parameters
+     * please refer to the getSuccessCallbackUrl() docblock above.
      *
      * @param string $orderId
      * @param string $quoteId

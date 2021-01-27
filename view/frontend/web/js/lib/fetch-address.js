@@ -45,7 +45,7 @@ define(
          * @property {string} type
          * @property {string} url
          * @property {object} data
-         * @property {string} data.id_num
+         * @property {string} data.gov_id
          * @property {boolean} data.is_company
          * @property {string} data.form_key
          */
@@ -89,7 +89,7 @@ define(
                     type: 'POST',
                     url: EXPORT.buildUrl('checkout/fetchAddress'),
                     data: {
-                        id_num: idNum,
+                        gov_id: idNum,
                         is_company: isCompany,
                         form_key: CheckoutConfig.getFormKey()
                     }
