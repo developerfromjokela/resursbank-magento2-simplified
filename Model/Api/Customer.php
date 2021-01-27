@@ -9,7 +9,8 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Model\Api;
 
 /**
- * Customer information that comes back after creating a payment using the API.
+ * Represents customer data fetched through the API. This data is incompatible
+ * with the Magento customer standard and has to be converted before being used.
  */
 class Customer
 {
@@ -29,7 +30,7 @@ class Customer
     private $email;
 
     /**
-     * Customer type (company/private person).
+     * Customer type (NATURAL (private) | LEGAL (company)).
      *
      * @var string
      */
@@ -54,14 +55,15 @@ class Customer
         string $type = '',
         Address $address = null
     ) {
-        $this->governmentId = $governmentId;
-        $this->phone = $phone;
-        $this->email = $email;
-        $this->type = $type;
-        $this->address = $address ?? new Address();
+        $this->setGovernmentId($governmentId)
+            ->setPhone($phone)
+            ->setEmail($email)
+            ->setType($type)
+            ->setAddress($address ?? new Address());
     }
 
     /**
+     * @see Customer::$governmentId
      * @param string $value
      * @return self
      */
@@ -74,7 +76,9 @@ class Customer
     }
 
     /**
+     * @see Customer::$governmentId
      * @return string
+     * @noinspection PhpUnused
      */
     public function getGovernmentId(): string
     {
@@ -82,6 +86,7 @@ class Customer
     }
 
     /**
+     * @see Customer::$phone
      * @param string $value
      * @return self
      */
@@ -94,6 +99,7 @@ class Customer
     }
 
     /**
+     * @see Customer::$phone
      * @return string
      */
     public function getPhone(): string
@@ -102,6 +108,7 @@ class Customer
     }
 
     /**
+     * @see Customer::$email
      * @param string $value
      * @return self
      */
@@ -114,6 +121,7 @@ class Customer
     }
 
     /**
+     * @see Customer::$email
      * @return string
      */
     public function getEmail(): string

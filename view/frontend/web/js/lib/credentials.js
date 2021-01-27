@@ -3,6 +3,7 @@
  * See LICENSE for license details.
  */
 
+// phpcs:ignoreFile
 define(
     [],
     function () {

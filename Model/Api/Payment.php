@@ -8,7 +8,7 @@ declare(strict_types=1);
 
 namespace Resursbank\Simplified\Model\Api;
 
-use Resursbank\Simplified\Model\Api\Customer;
+use function strtoupper;
 
 class Payment
 {
@@ -26,13 +26,12 @@ class Payment
     private $bookPaymentStatus;
 
     /**
-     * @var string
+     * @var float
      */
     private $approvedAmount;
 
     /**
-     * The URL the customer will be redirected to to authorize the payment, the
-     * payment gateway, in other words.
+     * Gateway URL for payment client will be redirected to when placing order.
      *
      * @var string
      */
@@ -46,22 +45,22 @@ class Payment
     /**
      * @param string $paymentId
      * @param string $bookPaymentStatus
-     * @param string $approvedAmount
+     * @param float $approvedAmount
      * @param string $signingUrl
      * @param Customer|null $customer
      */
     public function __construct(
         string $paymentId = '',
         string $bookPaymentStatus = '',
-        string $approvedAmount = '',
+        float $approvedAmount = 0.0,
         string $signingUrl = '',
         Customer $customer = null
     ) {
-        $this->paymentId = $paymentId;
-        $this->bookPaymentStatus = $bookPaymentStatus;
-        $this->approvedAmount = $approvedAmount;
-        $this->signingUrl = $signingUrl;
-        $this->customer = $customer ?? new Customer();
+        $this->setPaymentId($paymentId)
+            ->setBookPaymentStatus($bookPaymentStatus)
+            ->setApprovedAmount($approvedAmount)
+            ->setSigningUrl($signingUrl)
+            ->setCustomer($customer ?? new Customer());
     }
 
     /**
@@ -78,6 +77,7 @@ class Payment
     }
 
     /**
+     * @see Payment::$paymentId
      * @return string
      */
     public function getPaymentId(): string
@@ -86,18 +86,20 @@ class Payment
     }
 
     /**
+     * @see Payment::$bookPaymentStatus
      * @param string $value
      * @return self
      */
     public function setBookPaymentStatus(
         string $value
     ): self {
-        $this->bookPaymentStatus = $value;
+        $this->bookPaymentStatus = strtoupper($value);
 
         return $this;
     }
 
     /**
+     * @see Payment::$bookPaymentStatus
      * @return string
      */
     public function getBookPaymentStatus(): string
@@ -106,11 +108,12 @@ class Payment
     }
 
     /**
-     * @param string $value
+     * @see Payment::$approvedAmount
+     * @param float $value
      * @return self
      */
     public function setApprovedAmount(
-        string $value
+        float $value
     ): self {
         $this->approvedAmount = $value;
 
@@ -118,9 +121,11 @@ class Payment
     }
 
     /**
-     * @return string
+     * @see Payment::$approvedAmount
+     * @return float
+     * @noinspection PhpUnused
      */
-    public function getApprovedAmount(): string
+    public function getApprovedAmount(): float
     {
         return $this->approvedAmount;
     }
@@ -139,6 +144,7 @@ class Payment
     }
 
     /**
+     * @see Payment::$signingUrl
      * @return string
      */
     public function getSigningUrl(): string
@@ -147,6 +153,7 @@ class Payment
     }
 
     /**
+     * @see Payment::$customer
      * @param Customer $value
      * @return self
      */
@@ -159,6 +166,7 @@ class Payment
     }
 
     /**
+     * @see Payment::$customer
      * @return Customer
      */
     public function getCustomer(): Customer

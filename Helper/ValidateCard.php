@@ -9,11 +9,12 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
+use function preg_match;
 
 class ValidateCard extends AbstractHelper
 {
     /**
-     * Validates a card.
+     * Validates Resurs Bank card number.
      *
      * @param string $num
      * @param bool $allowEmptyId

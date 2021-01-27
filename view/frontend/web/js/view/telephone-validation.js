@@ -71,8 +71,6 @@ define(
         var initialized = false;
 
         /**
-         * Validation function for phone numbers.
-         *
          * @param {string} value
          * @return {boolean}
          */
