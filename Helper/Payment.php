@@ -9,17 +9,18 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Helper;
 
 use Exception;
+use function in_array;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
-use Magento\Framework\Exception\ValidatorException;
 use Magento\Framework\Exception\NoSuchEntityException;
+use Magento\Framework\Exception\ValidatorException;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
+use function property_exists;
 use Resursbank\Core\Helper\Api as CoreApi;
 use Resursbank\Core\Helper\Api\Credentials;
-use function property_exists;
 use Resursbank\Core\Model\Api\Payment\Converter\QuoteConverter;
 use Resursbank\Core\Model\PaymentMethodRepository;
 use Resursbank\RBEcomPHP\ResursBank;
@@ -32,6 +33,7 @@ use stdClass;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @noinspection EfferentObjectCouplingInspection
  */
 class Payment extends AbstractHelper
 {
