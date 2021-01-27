@@ -9,7 +9,6 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Helper;
 
 use Exception;
-use function in_array;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -365,28 +364,6 @@ class Payment extends AbstractHelper
     }
 
     /**
-     * @param PaymentModel $payment
-     * @param array|string[] $reject
-     * @return self
-     * @throws PaymentDataException
-     */
-    public function handlePaymentStatus(
-        PaymentModel $payment,
-        array $reject = ['DENIED']
-    ): self {
-        // Handle reject statuses.
-        if (in_array($payment->getBookPaymentStatus(), $reject, true)) {
-            throw new PaymentDataException(__(
-                'Your payment has been rejected, please select a ' .
-                'different payment method and try again. If the problem ' .
-                'persists please contact us for assistance.'
-            ));
-        }
-
-        return $this;
-    }
-
-    /**
      * Prepare redirecting client to gateway to perform payment. When creating
      * a payment session at Resurs Bank we attain some values we will need to
      * store in our PHP session for later use (see
@@ -504,23 +481,14 @@ class Payment extends AbstractHelper
 
         $result = $this->toPayment($payment);
 
-        // Handle payment status (like "DENIED" etc.).
-        $this->handlePaymentStatus(
-            $result,
-            ['DENIED', 'SIGNING']
-        );
+        // Reject denied / failed payment.
+        switch ($payment->getBookPaymentStatus()) {
+            case 'DENIED':
+                throw new PaymentDataException(__('Payment denied.'));
+            case 'SIGNING':
+                throw new PaymentDataException(__('Payment failed.'));
+        }
 
         return $result;
-    }
-
-    /**
-     * @return ResursBank
-     * @throws ValidatorException|Exception
-     */
-    public function getConnection(): ResursBank
-    {
-        return $this->coreApi->getConnection(
-            $this->credentials->resolveFromConfig()
-        );
     }
 }
