@@ -307,9 +307,8 @@ class Payment extends AbstractHelper
 
         // Automatically annul payment if it becomes [FROZEN].
         $connection->setAnnulIfFrozen(
-            $this->configHelper->isWaitingForFraudControl() ?
-                $this->configHelper->isAnnulIfFrozen() :
-                false
+            $this->configHelper->isWaitingForFraudControl() &&
+            $this->configHelper->isAnnulIfFrozen()
         );
 
         // Automatically finalize payment if it becomes [BOOKED].
