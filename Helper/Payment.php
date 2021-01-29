@@ -49,26 +49,26 @@ class Payment extends AbstractHelper
     /**
      * @var PaymentMethodRepository
      */
-    private $paymentMethodRepository;
+    private $paymentMethodRepo;
 
     /**
      * @param Context $context
      * @param Session $session
      * @param AddressHelper $addressHelper
      * @param QuoteConverter $quoteConverter
-     * @param PaymentMethodRepository $paymentMethodRepository
+     * @param PaymentMethodRepository $paymentMethodRepo
      */
     public function __construct(
         Context $context,
         Session $session,
         AddressHelper $addressHelper,
         QuoteConverter $quoteConverter,
-        PaymentMethodRepository $paymentMethodRepository
+        PaymentMethodRepository $paymentMethodRepo
     ) {
         $this->session = $session;
         $this->addressHelper = $addressHelper;
         $this->quoteConverter = $quoteConverter;
-        $this->paymentMethodRepository = $paymentMethodRepository;
+        $this->paymentMethodRepo = $paymentMethodRepo;
 
         parent::__construct($context);
     }
@@ -313,7 +313,7 @@ class Payment extends AbstractHelper
             ));
         }
 
-        $paymentMethod = $this->paymentMethodRepository->getByCode(
+        $paymentMethod = $this->paymentMethodRepo->getByCode(
             $orderPayment->getMethod()
         );
 
@@ -333,7 +333,7 @@ class Payment extends AbstractHelper
      * Controller/Simplified/Redirect.php) when redirecting the client.
      *
      * @param PaymentModel $payment
-     * @return $this
+     * @return self
      */
     public function prepareRedirect(
         PaymentModel $payment
