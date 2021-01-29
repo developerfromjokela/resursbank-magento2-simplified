@@ -11,7 +11,7 @@ namespace Resursbank\Simplified\Controller\Checkout;
 use Exception;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
-use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\Redirect as RedirectResult;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Resursbank\Simplified\Helper\Log;
@@ -29,7 +29,7 @@ use Resursbank\Simplified\Helper\Session;
  * so by replacing the URL in the browser. This will (as of Magento 2.4.1)
  * make it impossible to reach a controller that only implements an interface.
  */
-class Redirect extends Action implements HttpPostActionInterface
+class Redirect extends Action implements HttpGetActionInterface
 {
     /**
      * @var RedirectFactory
