@@ -8,10 +8,37 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <!-- Avoid loading custom checkout layout when module is inactive. -->
     <type name="Magento\Framework\View\Layout\File\Collector\Aggregated">
-        <plugin name="resursbank_simplified_layout_file_collector" type="Resursbank\Simplified\Plugin\Layout\File\Collector" />
+        <plugin
+            name="resursbank_simplified_layout_file_collector"
+            type="Resursbank\Simplified\Plugin\Layout\File\Collector" />
     </type>
+
+    <!-- Append dynamic information to compiled layout XML. -->
     <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
-        <!-- Append dynamic information to compiled layout XML. -->
-        <plugin name="resursbank_simplified_layout" type="Resursbank\Simplified\Plugin\Layout\Layout" />
+        <plugin
+            name="resursbank_simplified_layout"
+            type="Resursbank\Simplified\Plugin\Layout\Layout" />
     </type>
+
+    <!-- Payment method configuration. -->
+    <type name="Resursbank\Core\Model\Payment\Resursbank">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">
+                ResursbankGatewayCommandPool
+            </argument>
+        </arguments>
+    </type>
+
+    <!-- Gateway command pool configuration. -->
+    <virtualType
+        name="ResursbankGatewayCommandPool"
+        type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="authorize" xsi:type="string">
+                    Resursbank\Simplified\Gateway\Command\Authorize
+                </item>
+            </argument>
+        </arguments>
+    </virtualType>
 </config>

@@ -11,9 +11,9 @@ namespace Resursbank\Simplified\Exception;
 use Magento\Framework\Exception\LocalizedException;
 
 /**
- * Indicates a problem with a missing parameter.
+ * Indicates a problem with the data being supplied or taken from a payment.
  */
-class MissingRequestParameterException extends LocalizedException
+class PaymentDataException extends LocalizedException
 {
 
 }

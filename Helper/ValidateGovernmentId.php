@@ -9,25 +9,26 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Helper;
 
 use Magento\Framework\App\Helper\AbstractHelper;
+use function preg_match;
 
-class ValidateSsn extends AbstractHelper
+class ValidateGovernmentId extends AbstractHelper
 {
     /**
-     * Validates a Swedish SSN or Org. nr.
+     * Validates a Swedish government ID (SSN or Org. nr.)
      *
-     * @param string $ssn
+     * @param string $govId
      * @param bool $isCompany
      * @param bool $allowEmptyId
      * @return bool
      */
     public function sweden(
-        string $ssn,
+        string $govId,
         bool $isCompany,
         bool $allowEmptyId = false
     ): bool {
         return $isCompany ?
-            $this->swedenOrg($ssn, $allowEmptyId) :
-            $this->swedenSsn($ssn, $allowEmptyId);
+            $this->swedenOrg($govId, $allowEmptyId) :
+            $this->swedenSsn($govId, $allowEmptyId);
     }
 
     /**
@@ -43,7 +44,7 @@ class ValidateSsn extends AbstractHelper
     ): bool {
         return $allowEmptyId && $num === '' ?
             true :
-            (boolean) preg_match(
+            (bool) preg_match(
                 '/^(18\d{2}|19\d{2}|20\d{2}|\d{2})' .
                 '(0[1-9]|1[0-2])' .
                 '([0][1-9]|[1-2][0-9]|3[0-1])' .
@@ -65,7 +66,7 @@ class ValidateSsn extends AbstractHelper
     ): bool {
         return $allowEmptyId && $num === '' ?
             true :
-            (boolean) preg_match(
+            (bool) preg_match(
                 '/^(16\d{2}|18\d{2}|19\d{2}|20\d{2}|\d{2})' .
                 '(\d{2})(\d{2})(\-|\+)?([\d]{4})$/',
                 $num
