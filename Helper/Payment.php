@@ -33,7 +33,6 @@ use stdClass;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
- * @noinspection EfferentObjectCouplingInspection
  */
 class Payment extends AbstractHelper
 {
@@ -386,7 +385,7 @@ class Payment extends AbstractHelper
      * Controller/Simplified/Redirect.php) when redirecting the client.
      *
      * @param PaymentModel $payment
-     * @return $this
+     * @return self
      */
     public function prepareRedirect(
         PaymentModel $payment
@@ -431,7 +430,7 @@ class Payment extends AbstractHelper
                 '',
             property_exists($payment, 'approvedAmount') ?
                 (float) $payment->approvedAmount :
-                '',
+                0.0,
             property_exists($payment, 'signingUrl') ?
                 (string) $payment->signingUrl :
                 '',
@@ -498,7 +497,7 @@ class Payment extends AbstractHelper
         $result = $this->toPayment($payment);
 
         // Reject denied / failed payment.
-        switch ($payment->getBookPaymentStatus()) {
+        switch ($result->getBookPaymentStatus()) {
             case 'DENIED':
                 throw new PaymentDataException(__('Payment denied.'));
             case 'SIGNING':
