@@ -15,11 +15,11 @@ use Magento\Framework\Exception\ValidatorException;
 use Magento\Payment\Gateway\CommandInterface;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Sales\Api\Data\OrderInterface;
+use Magento\Sales\Model\Order\Payment;
 use Resursbank\Core\Helper\Api;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\RBEcomPHP\RESURS_FLOW_TYPES;
 use Resursbank\RBEcomPHP\ResursBank;
-use Resursbank\Simplified\Exception\InvalidDataException;
 use Resursbank\Simplified\Exception\PaymentDataException;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Payment as PaymentHelper;
@@ -80,21 +80,19 @@ class Authorize implements CommandInterface
     }
 
     /**
-     * @param array $commandSubject
+     * @param array $subject
      * @return void
      * @throws Exception
      */
     public function execute(
-        array $commandSubject
+        array $subject
     ): void {
         try {
-            $payment = $this->getPaymentFromSubject($commandSubject);
+            $payment = SubjectReader::readPayment($subject)->getPayment();
 
-            /** @var OrderInterface $order */
-            /** @noinspection PhpPossiblePolymorphicInvocationInspection */
-            $order = $payment->getOrder();
+            if ($payment instanceof Payment) {
+                $order = $payment->getOrder();
 
-            if ($payment->getOrder()->getPayment() !== null) {
                 // Establish API connection.
                 $connection = $this->getConnection();
 
@@ -106,10 +104,6 @@ class Authorize implements CommandInterface
 
                 // Clear Resurs Bank related data from session.
                 $this->session->unsetCustomerInfo();
-
-                /** @noinspection PhpPossiblePolymorphicInvocationInspection */
-                $payment->setTransactionId($order->getIncrementId())
-                    ->setIsTransactionClosed(0);
             }
         } catch (Exception $e) {
             $this->log->exception($e);
@@ -120,29 +114,6 @@ class Authorize implements CommandInterface
                 'could also try refreshing the page.'
             ));
         }
-    }
-
-    /**
-     * Resolve payment data from subject array.
-     *
-     * @param array $commandSubject
-     * @return Payment
-     * @throws InvalidDataException
-     */
-    private function getPaymentFromSubject(
-        array $commandSubject
-    ): Payment {
-        $info = SubjectReader::readPayment($commandSubject);
-
-        $payment = $info->getPayment();
-
-        if (!($payment instanceof Payment)) {
-            throw new InvalidDataException(
-                __('Payment info not instance of ' . Payment::class)
-            );
-        }
-
-        return $info->getPayment();
     }
 
     /**
@@ -195,7 +166,6 @@ class Authorize implements CommandInterface
                 ->setSigningUrls($connection, $this->session->getQuote())
                 ->setPaymentData($connection);
         } catch (Exception $e) {
-            // NOTE: Actual Exception is logged upstream.
             $this->log->error('Failed to apply API payload data.');
 
             throw $e;

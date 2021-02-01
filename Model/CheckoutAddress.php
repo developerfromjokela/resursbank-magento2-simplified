@@ -103,7 +103,7 @@ class CheckoutAddress
     /**
      * @see CheckoutAddress::$postcode
      * @param string $val
-     * @return $this
+     * @return self
      */
     public function setPostcode(
         string $val
@@ -133,7 +133,7 @@ class CheckoutAddress
     /**
      * @see CheckoutAddress::$country
      * @param string $val
-     * @return $this
+     * @return self
      * @throws ApiDataException
      */
     public function setCountry(
