@@ -271,7 +271,7 @@ define(
                 /**
                  * Whether this payment method is a credit card.
                  *
-                 * @type {string}
+                 * @type {boolean}
                  */
                 me.isCreditCardMethod = isCreditCardMethod(this.getCode());
 
