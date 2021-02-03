@@ -36,7 +36,7 @@ define(
             /**
              * @type {Simplified.Model.Checkout.isCompany}
              */
-            isCompany: ko.observable(false),
+            isCompany: ko.observable(false)
         });
 
         /**

@@ -228,7 +228,7 @@ define(
          */
         function doesRequireCardNumber(code) {
             var method = CheckoutConfigLib.getPaymentMethod(code);
-            
+
             return typeof method !== 'undefined' &&
                 method.type === 'CARD'
         }
@@ -505,6 +505,15 @@ define(
                             onSetSessionDataDone(response, data, event);
                         });
                     }
+                };
+
+                /**
+                 * Action taken after order has successfully been created.
+                 */
+                me.afterPlaceOrder = function () {
+                    redirectOnSuccessAction.redirectUrl = url.build(
+                        'resursbank_simplified/checkout/redirect'
+                    );
                 };
 
                 /**

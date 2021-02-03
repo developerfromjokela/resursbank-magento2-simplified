@@ -14,8 +14,11 @@
                 <input
                     type="radio"
                     name="customerType"
-                    value="private_person"
                     data-bind="
+                        event: {
+                            change: onCustomerTypeChange
+                        },
+                        value: customerTypePerson,
                         checked: selectedCustomerType,
                         disable: disableCustomerTypeSelection">
                 <span data-bind="i18n: 'Private person'"></span>
@@ -24,8 +27,11 @@
                 <input
                     type="radio"
                     name="customerType"
-                    value="company"
                     data-bind="
+                        event: {
+                            change: onCustomerTypeChange
+                        },
+                        value: customerTypeCompany,
                         checked: selectedCustomerType,
                         disable: disableCustomerTypeSelection">
                 <span data-bind="i18n: 'Company'"></span>
