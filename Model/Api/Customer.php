@@ -169,4 +169,12 @@ class Customer
     {
         return $this->address;
     }
+
+    /**
+     * @return bool
+     */
+    public function isCompany(): bool
+    {
+        return $this->type === 'LEGAL';
+    }
 }

@@ -20,6 +20,13 @@
             type="Resursbank\Simplified\Plugin\Layout\Layout" />
     </type>
 
+    <!-- Checkout success page. -->
+    <type name="Magento\Checkout\Controller\Onepage\Success">
+        <plugin
+            name="resursbank_simplified_order_success"
+            type="Resursbank\Simplified\Plugin\Order\Success" />
+    </type>
+
     <!-- Payment method configuration. -->
     <type name="Resursbank\Core\Model\Payment\Resursbank">
         <arguments>

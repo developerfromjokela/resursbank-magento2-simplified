@@ -13,7 +13,6 @@ use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\PaymentException;
 use Magento\Framework\Exception\ValidatorException;
 use Magento\Payment\Gateway\CommandInterface;
-use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order\Payment;
@@ -164,12 +163,8 @@ class Authorize implements CommandInterface
                 ->setShippingAddress($order, $connection)
                 ->addOrderLines($connection)
                 ->setOrderId($order, $connection)
-                ->setSigningUrls(
-                    $connection,
-                    $order,
-                    $this->session->getQuote()
-                )
-                ->setPaymentdata($connection);
+                ->setSigningUrls($connection, $this->session->getQuote())
+                ->setPaymentData($connection);
         } catch (Exception $e) {
             $this->log->error('Failed to apply API payload data.');
 
@@ -194,7 +189,10 @@ class Authorize implements CommandInterface
     ): void {
         try {
             // Create payment session at Resurs Bank.
-            $payment = $this->paymentHelper->createPayment($order, $connection);
+            $payment = $this->paymentHelper->createPaymentSession(
+                $order,
+                $connection
+            );
 
             // Reject denied payment.
             if ($payment->getBookPaymentStatus() === 'DENIED') {

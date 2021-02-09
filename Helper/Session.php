@@ -131,21 +131,21 @@ class Session extends AbstractHelper
     /**
      * Store a customer's SSN/Org nr. in the session.
      *
-     * @param string $id - Must be a valid Swedish SSN/Org. number.
+     * @param string $govId - Must be a valid swedish SSN/Org. number.
      * @param bool $isCompany
      * @return self
      * @throws InvalidDataException
      * @noinspection PhpUndefinedMethodInspection
      */
     public function setGovernmentId(
-        string $id,
+        string $govId,
         bool $isCompany
     ): self {
-        if (!$this->validateGovId->sweden($id, $isCompany, true)) {
+        if (!$this->validateGovId->sweden($govId, $isCompany, true)) {
             throw new InvalidDataException(__('Invalid SE government ID.'));
         }
 
-        $this->checkoutSession->setData(self::KEY_GOVERNMENT_ID, $id);
+        $this->checkoutSession->setData(self::KEY_GOVERNMENT_ID, $govId);
 
         return $this;
     }
@@ -173,19 +173,22 @@ class Session extends AbstractHelper
      * Stores a customer's contact government ID in the session. Required for
      * company customers, personal SSN of a company reference.
      *
-     * @param string $id - Must be a valid Swedish SSN.
+     * @param string $govId - Must be a valid swedish SSN.
      * @return self
      * @throws InvalidDataException - Throws if SSN is invalid.
      * @noinspection PhpUndefinedMethodInspection
      */
     public function setContactGovernmentId(
-        string $id
+        string $govId
     ): self {
-        if (!$this->validateGovId->swedenSsn($id, true)) {
+        if (!$this->validateGovId->swedenSsn($govId, true)) {
             throw new InvalidDataException(__('Invalid SE government ID.'));
         }
 
-        $this->checkoutSession->setData(self::KEY_CONTACT_GOVERNMENT_ID, $id);
+        $this->checkoutSession->setData(
+            self::KEY_CONTACT_GOVERNMENT_ID,
+            $govId
+        );
 
         return $this;
     }
@@ -356,14 +359,14 @@ class Session extends AbstractHelper
     /**
      * Stores payment session ID in PHP session.
      *
-     * @param string $id
+     * @param string $paymentId
      * @return self
      */
     public function setPaymentId(
-        string $id
+        string $paymentId
     ): self {
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->checkoutSession->setData(self::KEY_PAYMENT_ID, $id);
+        $this->checkoutSession->setData(self::KEY_PAYMENT_ID, $paymentId);
 
         return $this;
     }
@@ -455,17 +458,14 @@ class Session extends AbstractHelper
      * session data is lost and the order will thus fail. By including these
      * parameters we can load the data back into the session if it's missing.
      *
-     * @param string $orderId
      * @param string $quoteId
      * @return string
      */
     public function getSuccessCallbackUrl(
-        string $orderId,
         string $quoteId
     ): string {
         return $this->url->getUrl(
             'checkout/onepage/success/' .
-            'order_id/' . $orderId . '/' .
             'quote_id/' . $quoteId
         );
     }
@@ -477,17 +477,14 @@ class Session extends AbstractHelper
      * NOTE: For information regarding the included quote and order parameters
      * please refer to the getSuccessCallbackUrl() docblock above.
      *
-     * @param string $orderId
      * @param string $quoteId
      * @return string
      */
     public function getFailureCallbackUrl(
-        string $orderId,
         string $quoteId
     ): string {
         return $this->url->getUrl(
             'checkout/onepage/failure/' .
-            'order_id/' . $orderId . '/' .
             'quote_id/' . $quoteId
         );
     }

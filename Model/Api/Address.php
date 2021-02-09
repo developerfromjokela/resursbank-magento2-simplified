@@ -123,6 +123,7 @@ class Address
     /**
      * @see Address::$isCompany
      * @return bool
+     * @SuppressWarnings(PHPMD.BooleanGetMethodName)
      */
     public function getIsCompany(): bool
     {
