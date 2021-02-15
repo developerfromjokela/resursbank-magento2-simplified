@@ -13,8 +13,6 @@ use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\ValidatorException;
 use Resursbank\Core\Exception\ApiDataException;
-use Resursbank\Simplified\Exception\InvalidDataException;
-use Resursbank\Simplified\Exception\MissingRequestParameterException;
 use Resursbank\Simplified\Helper\Address as AddressHelper;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Request;
@@ -89,8 +87,6 @@ class FetchAddress implements HttpPostActionInterface
      * @return array
      * @throws ApiDataException
      * @throws ValidatorException
-     * @throws InvalidDataException
-     * @throws MissingRequestParameterException
      */
     private function getAddress(): array
     {

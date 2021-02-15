@@ -20,7 +20,7 @@ use Resursbank\Core\Helper\Api;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\RBEcomPHP\RESURS_FLOW_TYPES;
 use Resursbank\RBEcomPHP\ResursBank;
-use Resursbank\Simplified\Exception\PaymentDataException;
+use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Payment as PaymentHelper;
 use Resursbank\Simplified\Helper\Session as CheckoutSession;
@@ -166,6 +166,7 @@ class Authorize implements CommandInterface
                 ->setSigningUrls($connection, $this->session->getQuote())
                 ->setPaymentData($connection);
         } catch (Exception $e) {
+            // NOTE: Actual Exception is logged upstream.
             $this->log->error('Failed to apply API payload data.');
 
             throw $e;

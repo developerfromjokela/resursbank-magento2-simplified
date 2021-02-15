@@ -20,7 +20,7 @@ use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order\AddressRepository;
 use Magento\Sales\Model\OrderRepository;
-use Resursbank\Simplified\Exception\InvalidDataException;
+use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Payment;
 use Resursbank\Simplified\Helper\Session as SessionHelper;

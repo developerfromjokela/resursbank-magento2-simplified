@@ -16,8 +16,8 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\ResultFactory;
-use Resursbank\Simplified\Exception\InvalidDataException;
-use Resursbank\Simplified\Exception\MissingRequestParameterException;
+use Resursbank\Core\Exception\InvalidDataException;
+use Resursbank\Core\Exception\MissingRequestParameterException;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
