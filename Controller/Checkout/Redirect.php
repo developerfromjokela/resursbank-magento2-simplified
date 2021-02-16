@@ -9,8 +9,7 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Controller\Checkout;
 
 use Exception;
-use Magento\Framework\App\Action\Action;
-use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\Redirect as RedirectResult;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Resursbank\Simplified\Helper\Log;
@@ -18,17 +17,8 @@ use Resursbank\Simplified\Helper\Session;
 
 /**
  * Redirect to signing page at Resurs Bank.
- *
- * NOTE: Controllers should not extend Magento\Framework\App\Action\Action
- * anymore, but should instead embrace composition by implementing an interface,
- * such as Magento\Framework\App\Action\HttpPostActionInterface.
- *
- * We are, however, forced to extend the Action class here. When Magento
- * redirects the customer from the checkout page to the success page, they do
- * so by replacing the URL in the browser. This will (as of Magento 2.4.1)
- * make it impossible to reach a controller that only implements an interface.
  */
-class Redirect extends Action
+class Redirect implements HttpGetActionInterface
 {
     /**
      * @var RedirectFactory
@@ -46,13 +36,11 @@ class Redirect extends Action
     private $log;
 
     /**
-     * @param Context $context
      * @param RedirectFactory $redirectFactory
      * @param Session $session
      * @param Log $log
      */
     public function __construct(
-        Context $context,
         RedirectFactory $redirectFactory,
         Session $session,
         Log $log
@@ -60,8 +48,6 @@ class Redirect extends Action
         $this->redirectFactory = $redirectFactory;
         $this->session = $session;
         $this->log = $log;
-
-        parent::__construct($context);
     }
 
     /**
@@ -76,7 +62,6 @@ class Redirect extends Action
         $redirect = $this->redirectFactory->create();
 
         try {
-            /* @noinspection PhpUndefinedMethodInspection */
             $url = (string) $this->session->getPaymentSigningUrl();
 
             if ($url !== '') {
