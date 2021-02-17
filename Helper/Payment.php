@@ -17,14 +17,15 @@ use Magento\Quote\Model\Quote;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
+use Resursbank\Core\Exception\PaymentDataException;
 use function property_exists;
 use Resursbank\Core\Helper\Api as CoreApi;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\Core\Model\Api\Payment\Converter\QuoteConverter;
 use Resursbank\Core\Model\PaymentMethodRepository;
 use Resursbank\RBEcomPHP\ResursBank;
-use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Simplified\Helper\Address as AddressHelper;
+use Resursbank\Simplified\Helper\Config as ConfigHelper;
 use Resursbank\Simplified\Model\Api\Customer;
 use Resursbank\Simplified\Model\Api\Payment as PaymentModel;
 use ResursException;
@@ -39,6 +40,11 @@ class Payment extends AbstractHelper
      * @var Session
      */
     private $session;
+
+    /**
+     * @var ConfigHelper
+     */
+    private $configHelper;
 
     /**
      * @var AddressHelper
@@ -73,6 +79,7 @@ class Payment extends AbstractHelper
      * @param QuoteConverter $quoteConverter
      * @param PaymentMethodRepository $paymentMethodRepo
      * @param CoreApi $coreApi
+     * @param Config $configHelper
      */
     public function __construct(
         Credentials $credentials,
@@ -81,7 +88,8 @@ class Payment extends AbstractHelper
         AddressHelper $addressHelper,
         QuoteConverter $quoteConverter,
         PaymentMethodRepository $paymentMethodRepo,
-        CoreApi $coreApi
+        CoreApi $coreApi,
+        ConfigHelper $configHelper
     ) {
         $this->session = $session;
         $this->addressHelper = $addressHelper;
@@ -89,6 +97,7 @@ class Payment extends AbstractHelper
         $this->paymentMethodRepo = $paymentMethodRepo;
         $this->coreApi = $coreApi;
         $this->credentials = $credentials;
+        $this->configHelper = $configHelper;
 
         parent::__construct($context);
     }
@@ -291,13 +300,20 @@ class Payment extends AbstractHelper
         ResursBank $connection
     ): self {
         // Wait for fraud controls to be performed.
-        $connection->setWaitForFraudControl();
+        $connection->setWaitForFraudControl(
+            $this->configHelper->isWaitingForFraudControl()
+        );
 
         // Automatically annul payment if it becomes [FROZEN].
-        $connection->setAnnulIfFrozen();
+        $connection->setAnnulIfFrozen(
+            $this->configHelper->isWaitingForFraudControl() &&
+            $this->configHelper->isAnnulIfFrozen()
+        );
 
         // Automatically finalize payment if it becomes [BOOKED].
-        $connection->setFinalizeIfBooked();
+        $connection->setFinalizeIfBooked(
+            $this->configHelper->isFinalizeIfBooked()
+        );
 
         return $this;
     }

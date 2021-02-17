@@ -51,4 +51,55 @@ class Config extends AbstractConfig
             $scopeType
         );
     }
+
+    /**
+     * @param string|null $scopeCode
+     * @param string $scopeType
+     * @return bool
+     */
+    public function isWaitingForFraudControl(
+        ?string $scopeCode = null,
+        string $scopeType = ScopeInterface::SCOPE_STORE
+    ): bool {
+        return $this->isEnabled(
+            self::GROUP,
+            'wait_for_fraud_control',
+            $scopeCode,
+            $scopeType
+        );
+    }
+
+    /**
+     * @param string|null $scopeCode
+     * @param string $scopeType
+     * @return bool
+     */
+    public function isAnnulIfFrozen(
+        ?string $scopeCode = null,
+        string $scopeType = ScopeInterface::SCOPE_STORE
+    ): bool {
+        return $this->isEnabled(
+            self::GROUP,
+            'annul_if_frozen',
+            $scopeCode,
+            $scopeType
+        );
+    }
+
+    /**
+     * @param null|string $scopeCode
+     * @param string $scopeType
+     * @return bool
+     */
+    public function isFinalizeIfBooked(
+        ?string $scopeCode = null,
+        string $scopeType = ScopeInterface::SCOPE_STORE
+    ): bool {
+        return $this->isEnabled(
+            self::GROUP,
+            'finalize_if_booked',
+            $scopeCode,
+            $scopeType
+        );
+    }
 }
