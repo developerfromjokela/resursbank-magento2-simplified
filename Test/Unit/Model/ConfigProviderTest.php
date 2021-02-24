@@ -9,7 +9,9 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Test\Unit\Model;
 
 use JsonException;
+use Magento\Framework\Exception\ValidatorException;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use ReflectionMethod;
@@ -32,7 +34,7 @@ class ConfigProviderTest extends TestCase
     private $configProvider;
 
     /**
-     * @var PaymentMethods
+     * @var MockObject
      */
     private $helper;
 
@@ -48,6 +50,7 @@ class ConfigProviderTest extends TestCase
             ->onlyMethods(['getMethodsByCredentials'])
             ->getMock();
 
+        /** @phpstan-ignore-next-line */
         $this->configProvider = $this->objectManager
             ->getObject(ConfigProvider::class, ['helper' => $this->helper]);
     }
@@ -155,6 +158,7 @@ class ConfigProviderTest extends TestCase
      * to an anonymous array.
      *
      * @throws JsonException
+     * @throws ValidatorException
      */
     public function testGetConfigResult(): void
     {
@@ -185,10 +189,12 @@ class ConfigProviderTest extends TestCase
         ];
 
         // Create mocked PaymentMethod model instances, utilising $data.
+        /** @var PaymentMethod $method1 */
         $method1 = $this->objectManager->getObject(PaymentMethod::class);
         $method1->setData($data[0])
             ->setMaxOrderTotal($data[0]['maxOrderTotal']);
 
+        /** @var PaymentMethod $method2 */
         $method2 = $this->objectManager->getObject(PaymentMethod::class);
         $method2->setData($data[1])
             ->setMaxOrderTotal($data[1]['maxOrderTotal'])

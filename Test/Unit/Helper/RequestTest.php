@@ -10,6 +10,7 @@ namespace Resursbank\Simplified\Test\Unit\Helper;
 
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Exception\MissingRequestParameterException;
@@ -24,7 +25,7 @@ use Resursbank\Simplified\Helper\ValidateGovernmentId;
 class RequestTest extends TestCase
 {
     /**
-     * @var RequestInterface
+     * @var MockObject
      */
     private $request;
 
@@ -42,6 +43,7 @@ class RequestTest extends TestCase
 
         $this->request = $this->createMock(RequestInterface::class);
 
+        /** @phpstan-ignore-next-line */
         $this->requestHelper = $objectManager
             ->getObject(
                 Request::class,
