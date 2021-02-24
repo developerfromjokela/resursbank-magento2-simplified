@@ -46,7 +46,7 @@ class Layout
     /**
      * @param Interceptor $subject
      * @param array<string, mixed> $result
-     * @return array<array<string, mixed>>
+     * @return array<array<string, mixed>
      * @throws Exception
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection
