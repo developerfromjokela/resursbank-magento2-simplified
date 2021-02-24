@@ -12,15 +12,16 @@ use Exception;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\PaymentException;
 use Magento\Framework\Exception\ValidatorException;
+use Magento\Payment\Gateway\Command\ResultInterface;
 use Magento\Payment\Gateway\CommandInterface;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order\Payment;
+use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Core\Helper\Api;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\RBEcomPHP\RESURS_FLOW_TYPES;
 use Resursbank\RBEcomPHP\ResursBank;
-use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Payment as PaymentHelper;
 use Resursbank\Simplified\Helper\Session as CheckoutSession;
@@ -80,13 +81,13 @@ class Authorize implements CommandInterface
     }
 
     /**
-     * @param array $subject
-     * @return void
+     * @param array<string, mixed> $subject
+     * @return ResultInterface|null
      * @throws Exception
      */
     public function execute(
         array $subject
-    ): void {
+    ): ?ResultInterface {
         try {
             $payment = SubjectReader::readPayment($subject)->getPayment();
 
@@ -114,6 +115,8 @@ class Authorize implements CommandInterface
                 'could also try refreshing the page.'
             ));
         }
+
+        return null;
     }
 
     /**

@@ -17,7 +17,6 @@ use Resursbank\Core\Helper\Api as CoreApi;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\Simplified\Model\Api\Address as ApiAddress;
 use Resursbank\Simplified\Model\CheckoutAddress;
-use stdClass;
 use function is_object;
 
 class Address extends AbstractHelper
@@ -120,23 +119,21 @@ class Address extends AbstractHelper
      * default values.
      *
      * @param bool|null $isCompany
-     * @param stdClass $address
+     * @param object $address
      * @return ApiAddress
      * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function toAddress(
-        stdClass $address,
+        object $address,
         bool $isCompany = null
     ): ApiAddress {
-        $hasFullName = property_exists($address, 'fullName');
-
         return new ApiAddress(
             (
                 $isCompany === null &&
-                $hasFullName &&
+                property_exists($address, 'fullName') &&
                 (string) $address->fullName !== ''
             ) || $isCompany,
-            $hasFullName ?
+            property_exists($address, 'fullName') ?
                 (string) $address->fullName :
                 '',
             property_exists($address, 'firstName') ?

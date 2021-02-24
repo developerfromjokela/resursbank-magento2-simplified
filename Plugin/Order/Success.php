@@ -174,8 +174,15 @@ class Success
         /** @noinspection BadExceptionsProcessingInspection */
         try {
             $order = $this->getOrderByQuoteId($this->getQuoteIdFromRequest());
+            $incId = $order->getIncrementId();
 
-            $this->payment->bookPaymentSession($order->getIncrementId());
+            if (!is_string($incId)) {
+                throw new InvalidDataException(__(
+                    'Order does not have an increment ID.'
+                ));
+            }
+
+            $this->payment->bookPaymentSession($incId);
             $this->updateBillingAddress($order);
             $this->sessionHelper->unsetAll();
         } catch (Exception $e) {
@@ -201,7 +208,15 @@ class Success
         OrderInterface $order
     ): void {
         try {
-            $payment = $this->payment->getPayment($order->getIncrementId());
+            $incId = $order->getIncrementId();
+
+            if (!is_string($incId)) {
+                throw new InvalidDataException(__(
+                    'Order does not have an increment ID.'
+                ));
+            }
+
+            $payment = $this->payment->getPayment($incId);
 
             if ($payment instanceof PaymentModel) {
                 $this->overrideBillingAddress($payment, $order);

@@ -8,8 +8,9 @@ namespace Resursbank\Simplified\Plugin\Layout;
 
 use Exception;
 use Magento\Checkout\Block\Checkout\LayoutProcessor\Interceptor;
-use Resursbank\Simplified\Helper\Log;
+use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Helper\PaymentMethods;
+use Resursbank\Simplified\Helper\Log;
 
 /**
  * Injects 'isBillingAddressRequired' property for all our payment methods in
@@ -26,7 +27,7 @@ class Layout
     private $log;
 
     /**
-     * @var Log
+     * @var PaymentMethods
      */
     private $helper;
 
@@ -44,8 +45,8 @@ class Layout
 
     /**
      * @param Interceptor $subject
-     * @param array $result
-     * @return array
+     * @param array<string, mixed> $result
+     * @return array<array<string, mixed>
      * @throws Exception
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection
@@ -55,15 +56,26 @@ class Layout
         array $result
     ): array {
         try {
+            /** @var string|null $code */
+            $code = null;
+
             if (isset($result['components']['checkout']['children']['steps']
                 ['children']['billing-step']['children']
                 ['payment']['children'])
             ) {
                 foreach ($this->helper->getMethodsByCredentials() as $method) {
+                    $code = $method->getCode();
+
+                    if (!is_string($code)) {
+                        new InvalidDataException(__(
+                            'Payment method does not have a code.'
+                        ));
+                    }
+
                     $result['components']['checkout']['children']['steps']
                     ['children']['billing-step']['children']['payment']
                     ['children']['renders']['children']['resursbank-simplified']
-                    ['methods'][$method['code']]
+                    ['methods'][$code]
                     ['isBillingAddressRequired'] = true;
                 }
             }

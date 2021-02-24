@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Helper;
 
 use Exception;
+use InvalidArgumentException;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -17,8 +18,10 @@ use Magento\Quote\Model\Quote;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
-use Resursbank\Core\Exception\PaymentDataException;
+use Magento\Sales\Model\Order;
+use Resursbank\Core\Exception\InvalidDataException;
 use function property_exists;
+use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Core\Helper\Api as CoreApi;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\Core\Model\Api\Payment\Converter\QuoteConverter;
@@ -144,6 +147,8 @@ class Payment extends AbstractHelper
     public function setCardData(
         ResursBank $connection
     ): self {
+        // Ecom wrongfully types both params as null.
+        /** @phpstan-ignore-next-line */
         $connection->setCardData(
             (string) $this->session->getCardNumber(),
             (float) $this->session->getCardAmount()
@@ -172,12 +177,14 @@ class Payment extends AbstractHelper
             ));
         }
 
+        $street = $address->getStreet();
+
         $connection->setBillingAddress(
             ($address->getFirstname() . ' ' . $address->getLastname()),
             $address->getFirstname(),
             $address->getLastname(),
-            $address->getStreetLine(1),
-            $address->getStreetLine(2),
+            $street[0] ?? '',
+            $street[1] ?? '',
             $address->getCity(),
             $address->getPostcode(),
             $address->getCountryId()
@@ -198,6 +205,12 @@ class Payment extends AbstractHelper
         OrderInterface $order,
         ResursBank $connection
     ): self {
+        if (!($order instanceof Order)) {
+            throw new InvalidArgumentException(
+                'Sales/Model/Order instance required.'
+            );
+        }
+
         $address = $order->getShippingAddress() ?? $order->getBillingAddress();
 
         if (!($address instanceof OrderAddressInterface)) {
@@ -206,12 +219,14 @@ class Payment extends AbstractHelper
             ));
         }
 
+        $street = $address->getStreet();
+
         $connection->setDeliveryAddress(
             ($address->getFirstname() . ' ' . $address->getLastname()),
             $address->getFirstname(),
             $address->getLastname(),
-            $address->getStreetLine(1),
-            $address->getStreetLine(2),
+            $street[0] ?? '',
+            $street[1] ?? '',
             $address->getCity(),
             $address->getPostcode(),
             $address->getCountryId()
@@ -233,6 +248,7 @@ class Payment extends AbstractHelper
         $items = $this->quoteConverter->convert($this->session->getQuote());
 
         foreach ($items as $item) {
+            /** @phpstan-ignore-next-line */
             $connection->addOrderLine(
                 $item->getArtNo(),
                 $item->getDescription(),
@@ -349,10 +365,16 @@ class Payment extends AbstractHelper
             $orderPayment->getMethod()
         );
 
+        $identifier = $paymentMethod->getIdentifier();
+
+        if (!is_string($identifier)) {
+            throw new InvalidDataException(__(
+                'Payment method does not have an identifier.'
+            ));
+        }
+
         /** @var stdClass $payment */
-        $payment = $connection->createPayment(
-            $paymentMethod->getIdentifier()
-        );
+        $payment = $connection->createPayment($identifier);
 
         return $this->toPayment($payment, $isCompany);
     }

@@ -40,8 +40,8 @@ class Collector
      * from the collection of XML files assembled by Magento.
      *
      * @param Aggregated $subject
-     * @param array $result
-     * @return File[]
+     * @param array<string, mixed> $result
+     * @return array<string, File>
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection
      */

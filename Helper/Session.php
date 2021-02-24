@@ -145,6 +145,7 @@ class Session extends AbstractHelper
             throw new InvalidDataException(__('Invalid SE government ID.'));
         }
 
+        /** @phpstan-ignore-next-line */
         $this->checkoutSession->setData(self::KEY_GOVERNMENT_ID, $govId);
 
         return $this;
@@ -164,6 +165,7 @@ class Session extends AbstractHelper
      */
     public function unsetGovernmentId(): self
     {
+        /** @phpstan-ignore-next-line */
         $this->checkoutSession->unsetData(self::KEY_GOVERNMENT_ID);
 
         return $this;
@@ -185,6 +187,7 @@ class Session extends AbstractHelper
             throw new InvalidDataException(__('Invalid SE government ID.'));
         }
 
+        /** @phpstan-ignore-next-line */
         $this->checkoutSession->setData(
             self::KEY_CONTACT_GOVERNMENT_ID,
             $govId
@@ -207,6 +210,7 @@ class Session extends AbstractHelper
      */
     public function unsetContactGovernmentId(): self
     {
+        /** @phpstan-ignore-next-line */
         $this->checkoutSession->unsetData(self::KEY_CONTACT_GOVERNMENT_ID);
 
         return $this;
@@ -222,6 +226,7 @@ class Session extends AbstractHelper
     public function setIsCompany(
         bool $isCompany
     ): self {
+        /** @phpstan-ignore-next-line */
         $this->checkoutSession->setData(self::KEY_IS_COMPANY, $isCompany);
 
         return $this;
@@ -241,6 +246,7 @@ class Session extends AbstractHelper
      */
     public function unsetIsCompany(): self
     {
+        /** @phpstan-ignore-next-line */
         $this->checkoutSession->unsetData(self::KEY_IS_COMPANY);
 
         return $this;
@@ -261,6 +267,7 @@ class Session extends AbstractHelper
             throw new InvalidDataException(__('Invalid card number.'));
         }
 
+        /** @phpstan-ignore-next-line */
         $this->checkoutSession->setData(self::KEY_CARD_NUMBER, $cardNum);
 
         return $this;
@@ -280,6 +287,7 @@ class Session extends AbstractHelper
      */
     public function unsetCardNumber(): self
     {
+        /** @phpstan-ignore-next-line */
         $this->checkoutSession->unsetData(self::KEY_CARD_NUMBER);
 
         return $this;
@@ -295,6 +303,7 @@ class Session extends AbstractHelper
     public function setCardAmount(
         float $cardAmount
     ): self {
+        /** @phpstan-ignore-next-line */
         $this->checkoutSession->setData(self::KEY_CARD_AMOUNT, $cardAmount);
 
         return $this;
@@ -314,6 +323,7 @@ class Session extends AbstractHelper
      */
     public function unsetCardAmount(): self
     {
+        /** @phpstan-ignore-next-line */
         $this->checkoutSession->unsetData(self::KEY_CARD_AMOUNT);
 
         return $this;
@@ -330,6 +340,7 @@ class Session extends AbstractHelper
     public function setPaymentSigningUrl(
         string $url
     ): self {
+        /** @phpstan-ignore-next-line */
         $this->checkoutSession->setData(self::KEY_PAYMENT_SIGNING_URL, $url);
 
         return $this;
@@ -350,7 +361,10 @@ class Session extends AbstractHelper
      */
     public function unsetPaymentSigningUrl(): self
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @phpstan-ignore-next-line
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->checkoutSession->unsetData(self::KEY_PAYMENT_SIGNING_URL);
 
         return $this;
@@ -365,7 +379,10 @@ class Session extends AbstractHelper
     public function setPaymentId(
         string $paymentId
     ): self {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @phpstan-ignore-next-line
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->checkoutSession->setData(self::KEY_PAYMENT_ID, $paymentId);
 
         return $this;
@@ -384,7 +401,10 @@ class Session extends AbstractHelper
      */
     public function unsetPaymentId(): self
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         * @phpstan-ignore-next-line
+         */
         $this->checkoutSession->unsetData(self::KEY_PAYMENT_ID);
 
         return $this;

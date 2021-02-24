@@ -11,6 +11,7 @@ namespace Resursbank\Simplified\Model;
 use Exception;
 use JsonException;
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Resursbank\Core\Api\Data\PaymentMethodInterface;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Core\Model\PaymentMethod;
 use Resursbank\Core\Helper\PaymentMethods;
@@ -46,7 +47,7 @@ class ConfigProvider implements ConfigProviderInterface
     /**
      * Builds this module's section in the config provider.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function getConfig(): array
     {
@@ -74,23 +75,29 @@ class ConfigProvider implements ConfigProviderInterface
      * Maps a payment method for the config provider. Note that not all data
      * from the payment method will be mapped in this process.
      *
-     * @param PaymentMethod $method
-     * @return array
+     * @param PaymentMethodInterface $method
+     * @return array<string, mixed>
      * @throws JsonException
      */
     private function mapPaymentMethod(
-        PaymentMethod $method
+        PaymentMethodInterface $method
     ): array {
-        $raw = $method->getRaw('') !== '' ?
-            json_decode($method->getRaw(''), true, 512, JSON_THROW_ON_ERROR) :
+        $rawValue = $method->getRaw('');
+        $decoded = $rawValue !== '' && $rawValue !== null ?
+            json_decode(
+                $rawValue,
+                true,
+                512,
+                JSON_THROW_ON_ERROR
+            ) :
             [];
 
         return [
             'code' => $method->getCode(),
             'title' => $method->getTitle(),
             'maxOrderTotal' => $method->getMaxOrderTotal(),
-            'type' => $raw['type'] ?? '',
-            'specificType' => $raw['specificType'] ?? ''
+            'type' => $decoded['type'] ?? '',
+            'specificType' => $decoded['specificType'] ?? ''
         ];
     }
 }

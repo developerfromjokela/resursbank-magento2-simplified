@@ -77,7 +77,7 @@ class Request extends AbstractHelper
     /**
      * Retrieve JSON response object.
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @return Json
      * @throws Exception
      */
