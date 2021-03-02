@@ -81,7 +81,7 @@ class Authorize
 
     /**
      * @param Subject $subject
-     * @param array $data
+     * @param array<mixed> $data
      * @return void
      * @throws PaymentException
      * @noinspection PhpUnusedParameterInspection
