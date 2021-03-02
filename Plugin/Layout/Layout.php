@@ -11,6 +11,7 @@ use Magento\Checkout\Block\Checkout\LayoutProcessor\Interceptor;
 use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Simplified\Helper\Log;
+use function is_string;
 
 /**
  * Injects 'isBillingAddressRequired' property for all our payment methods in
@@ -45,8 +46,8 @@ class Layout
 
     /**
      * @param Interceptor $subject
-     * @param array<string, mixed> $result
-     * @return array<array<string, mixed>
+     * @param array<mixed> $result
+     * @return array<string, mixed>
      * @throws Exception
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection
