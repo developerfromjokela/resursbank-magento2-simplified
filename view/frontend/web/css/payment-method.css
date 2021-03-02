@@ -4,6 +4,13 @@
  */
 
 /*
+    Targets the payment method.
+*/
+.payment-method.hide {
+    display: none;
+}
+
+/*
     Targets the logo for payment methods.
 */
 .payment-method > .payment-method-title > img {

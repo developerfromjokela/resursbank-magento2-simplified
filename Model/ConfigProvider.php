@@ -13,7 +13,6 @@ use JsonException;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Resursbank\Core\Api\Data\PaymentMethodInterface;
 use Resursbank\Simplified\Helper\Log;
-use Resursbank\Core\Model\PaymentMethod;
 use Resursbank\Core\Helper\PaymentMethods;
 
 /**
@@ -97,7 +96,8 @@ class ConfigProvider implements ConfigProviderInterface
             'title' => $method->getTitle(),
             'maxOrderTotal' => $method->getMaxOrderTotal(),
             'type' => $decoded['type'] ?? '',
-            'specificType' => $decoded['specificType'] ?? ''
+            'specificType' => $decoded['specificType'] ?? '',
+            'customerType' => $decoded['customerType'] ?? ''
         ];
     }
 }

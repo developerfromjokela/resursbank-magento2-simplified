@@ -19,6 +19,7 @@ define(
          * @property {string} title
          * @property {number} maxOrderTotal
          * @property {string} specificType
+         * @property {"NATURAL"|"LEGAL"} customerType
          */
 
         /**

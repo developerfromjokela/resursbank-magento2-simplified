@@ -216,4 +216,22 @@ class Request extends AbstractHelper
 
         return $result !== null ? (float) $result : null;
     }
+
+    /**
+     * Converts and returns the "method_code" request parameter as a string, if
+     * possible.
+     *
+     * @return string|null - Null if the parameter wasn't set.
+     * @throws InvalidDataException
+     */
+    public function getMethodCode(): ?string
+    {
+        $result = $this->request->getParam('method_code');
+
+        if ($result !== null && !is_string($result)) {
+            throw new InvalidDataException(__('Invalid method code.'));
+        }
+
+        return $result !== null ? (string) $result : null;
+    }
 }

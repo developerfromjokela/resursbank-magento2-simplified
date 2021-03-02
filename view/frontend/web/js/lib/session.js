@@ -27,6 +27,7 @@ define(
          * @typedef {object} Simplified.Lib.Session.RequestData
          * @property {string} gov_id
          * @property {boolean} is_company
+         * @property {string} method_code
          * @property {(string|null)} contact_gov_id
          * @property {(string|null)} card_number
          * @property {(number|null)} card_amount
@@ -37,6 +38,7 @@ define(
          * @property {string} gov_id
          * @property {boolean} is_company
          * @property {string} form_key
+         * @property {string} method_code
          * @property {string} [contact_gov_id]
          * @property {string} [card_number]
          * @property {number} [card_amount]
@@ -89,7 +91,8 @@ define(
                 var requestData = {
                     gov_id: data.gov_id,
                     is_company: data.is_company,
-                    form_key: CheckoutConfig.getFormKey()
+                    form_key: CheckoutConfig.getFormKey(),
+                    method_code: data.method_code
                 };
 
                 if (typeof data.contact_gov_id === 'string') {
@@ -102,6 +105,10 @@ define(
 
                 if (typeof data.card_amount === 'number') {
                     requestData.card_amount = data.card_amount;
+                }
+
+                if (typeof data.method_code === 'string') {
+                    requestData.method_code = data.method_code;
                 }
 
                 return {
