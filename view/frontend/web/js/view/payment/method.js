@@ -579,13 +579,13 @@ define(
                             me.cardAmountOptions([]);
                         }
                     });
-
-                    // Subscriber to change the availability status of the
-                    // payment method when the customer type changes.
-                    CheckoutModel.isCompany.subscribe(function () {
-                        me.isAvailable(isAvailable(me.getCode()));
-                    });
                 }
+
+                // Subscriber to change the availability status of the
+                // payment method when the customer type changes.
+                CheckoutModel.isCompany.subscribe(function () {
+                    me.isAvailable(isAvailable(me.getCode()));
+                });
             }
         });
     }
