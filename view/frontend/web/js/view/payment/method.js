@@ -233,6 +233,25 @@ define(
                 method.type === 'CARD'
         }
 
+        /**
+         * Whether the payment method is available for the chosen customer
+         * type.
+         *
+         * @param {string} code
+         * @returns {boolean}
+         */
+        function isAvailable(code) {
+            var method = CheckoutConfigLib.getPaymentMethod(code);
+
+            return (
+                CheckoutModel.isCompany() &&
+                method.customerType === 'LEGAL'
+            ) || (
+                !CheckoutModel.isCompany() &&
+                method.customerType === 'NATURAL'
+            );
+        }
+
         return Component.extend({
             defaults: {
                 redirectAfterPlaceOrder: true,
@@ -414,6 +433,13 @@ define(
                 me.cardAmountOptions = ko.observable([]);
 
                 /**
+                 * The availability status of the payment method.
+                 *
+                 * @type {Simplified.Observable.Boolean}
+                 */
+                me.isAvailable = ko.observable(isAvailable(me.getCode()));
+
+                /**
                  * Selects the payment method.
                  *
                  * @returns {boolean}
@@ -465,7 +491,8 @@ define(
                         !me.isCompanyCustomer() ||
                         (me.contactId() !== '' && !me.invalidContactId());
 
-                    return idResult &&
+                    return me.isAvailable() &&
+                        idResult &&
                         cardNumberResult &&
                         companyResult &&
                         me.isPlaceOrderActionAllowed();
@@ -486,6 +513,7 @@ define(
                         SessionLib.setSessionData({
                             gov_id: me.idNumber(),
                             is_company: me.isCompanyCustomer(),
+                            method_code: me.getCode(),
 
                             contact_gov_id:
                                 me.isCompanyCustomer() ?
@@ -552,6 +580,12 @@ define(
                         }
                     });
                 }
+
+                // Subscriber to change the availability status of the
+                // payment method when the customer type changes.
+                CheckoutModel.isCompany.subscribe(function () {
+                    me.isAvailable(isAvailable(me.getCode()));
+                });
             }
         });
     }

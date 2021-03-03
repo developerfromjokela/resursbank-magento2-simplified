@@ -9,8 +9,12 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Controller\Checkout;
 
 use Exception;
+use JsonException;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
+use Resursbank\Core\Exception\InvalidDataException;
+use Resursbank\Core\Model\PaymentMethodRepository;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Request;
 use Resursbank\Simplified\Helper\Session as CheckoutSession;
@@ -37,18 +41,26 @@ class Session implements HttpPostActionInterface
     private $requestHelper;
 
     /**
+     * @var PaymentMethodRepository
+     */
+    private $paymentMethodRepo;
+
+    /**
      * @param Log $log
      * @param CheckoutSession $session
      * @param Request $requestHelper
+     * @param PaymentMethodRepository $paymentMethodRepo
      */
     public function __construct(
         Log $log,
         CheckoutSession $session,
-        Request $requestHelper
+        Request $requestHelper,
+        PaymentMethodRepository $paymentMethodRepo
     ) {
         $this->log = $log;
         $this->session = $session;
         $this->requestHelper = $requestHelper;
+        $this->paymentMethodRepo = $paymentMethodRepo;
     }
 
     /**
@@ -69,6 +81,16 @@ class Session implements HttpPostActionInterface
             $isCompany = $this->requestHelper->isCompany();
             $cardAmount = $this->requestHelper->getCardAmount();
             $cardNumber = $this->requestHelper->getCardNumber();
+            $methodCode = $this->requestHelper->getMethodCode();
+
+            if (is_string($methodCode) &&
+                !$this->isValidMethod($methodCode, $isCompany)
+            ) {
+                throw new InvalidDataException(__(
+                    'The selected payment method is not available for the ' .
+                    'selected customer type.'
+                ));
+            }
 
             // Store government id and whether client is a company in session.
             $this->session
@@ -102,5 +124,39 @@ class Session implements HttpPostActionInterface
         }
 
         return $this->requestHelper->getResponse($data);
+    }
+
+    /**
+     * Validates that a payment method is usable by the customer by comparing
+     * the customer type of the method to the type the customer has selected.
+     *
+     * @param string $methodCode
+     * @param bool $isCompany
+     * @return bool
+     * @throws JsonException
+     * @throws NoSuchEntityException
+     */
+    public function isValidMethod(
+        string $methodCode,
+        bool $isCompany
+    ): bool {
+        $result = false;
+        $method = $this->paymentMethodRepo->getByCode($methodCode);
+
+        if ($method->getActive(false)) {
+            $raw = json_decode(
+                $method->getRaw(),
+                false,
+                512,
+                JSON_THROW_ON_ERROR
+            );
+
+            $customerType = $raw->customerType ?? '';
+            $result = $isCompany ?
+                $customerType === 'LEGAL' :
+                $customerType === 'NATURAL';
+        }
+
+        return $result;
     }
 }
