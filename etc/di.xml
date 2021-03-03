@@ -40,26 +40,4 @@
             name="resursbank_simplified_gateway_command_authorize"
             type="Resursbank\Simplified\Plugin\Gateway\Command\Authorize" />
     </type>
-
-<!--    &lt;!&ndash; Payment method configuration. &ndash;&gt;-->
-<!--    <type name="Resursbank\Core\Model\Payment\Resursbank">-->
-<!--        <arguments>-->
-<!--            <argument name="commandPool" xsi:type="object">-->
-<!--                ResursbankGatewayCommandPool-->
-<!--            </argument>-->
-<!--        </arguments>-->
-<!--    </type>-->
-
-<!--    &lt;!&ndash; Gateway command pool configuration. &ndash;&gt;-->
-<!--    <virtualType-->
-<!--        name="ResursbankGatewayCommandPool"-->
-<!--        type="Magento\Payment\Gateway\Command\CommandPool">-->
-<!--        <arguments>-->
-<!--            <argument name="commands" xsi:type="array">-->
-<!--                <item name="authorize" xsi:type="string">-->
-<!--                    Resursbank\Simplified\Gateway\Command\Authorize-->
-<!--                </item>-->
-<!--            </argument>-->
-<!--        </arguments>-->
-<!--    </virtualType>-->
 </config>
