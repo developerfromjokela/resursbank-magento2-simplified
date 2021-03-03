@@ -277,7 +277,7 @@ define(
                 );
 
                 /**
-                 * Path to the logo of a Swish payment method.
+                 * Path to the logo of a Resurs Bank payment method.
                  *
                  * @type {string}
                  */
