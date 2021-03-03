@@ -27,25 +27,17 @@
             type="Resursbank\Simplified\Plugin\Order\Success" />
     </type>
 
-    <!-- Payment method configuration. -->
-    <type name="Resursbank\Core\Model\Payment\Resursbank">
-        <arguments>
-            <argument name="commandPool" xsi:type="object">
-                ResursbankGatewayCommandPool
-            </argument>
-        </arguments>
+    <!-- Checkout success page. -->
+    <type name="Magento\Checkout\Controller\Onepage\Success">
+        <plugin
+            name="resursbank_simplified_order_success"
+            type="Resursbank\Simplified\Plugin\Order\Success" />
     </type>
 
-    <!-- Gateway command pool configuration. -->
-    <virtualType
-        name="ResursbankGatewayCommandPool"
-        type="Magento\Payment\Gateway\Command\CommandPool">
-        <arguments>
-            <argument name="commands" xsi:type="array">
-                <item name="authorize" xsi:type="string">
-                    Resursbank\Simplified\Gateway\Command\Authorize
-                </item>
-            </argument>
-        </arguments>
-    </virtualType>
+    <!-- Create payment at Resurs Bank during authorization. -->
+    <type name="Resursbank\Core\Gateway\Command\Authorize">
+        <plugin
+            name="resursbank_simplified_gateway_command_authorize"
+            type="Resursbank\Simplified\Plugin\Gateway\Command\Authorize" />
+    </type>
 </config>

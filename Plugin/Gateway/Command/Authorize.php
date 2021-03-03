@@ -6,18 +6,17 @@
 
 declare(strict_types=1);
 
-namespace Resursbank\Simplified\Gateway\Command;
+namespace Resursbank\Simplified\Plugin\Gateway\Command;
 
 use Exception;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\PaymentException;
 use Magento\Framework\Exception\ValidatorException;
-use Magento\Payment\Gateway\Command\ResultInterface;
-use Magento\Payment\Gateway\CommandInterface;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order\Payment;
 use Resursbank\Core\Exception\PaymentDataException;
+use Resursbank\Core\Gateway\Command\Authorize as Subject;
 use Resursbank\Core\Helper\Api;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\RBEcomPHP\RESURS_FLOW_TYPES;
@@ -32,7 +31,7 @@ use Resursbank\Simplified\Helper\Session as CheckoutSession;
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class Authorize implements CommandInterface
+class Authorize
 {
     /**
      * @var Log
@@ -81,15 +80,19 @@ class Authorize implements CommandInterface
     }
 
     /**
-     * @param array<string, mixed> $subject
-     * @return ResultInterface|null
-     * @throws Exception
+     * @param Subject $subject
+     * @param array<mixed> $data
+     * @return void
+     * @throws PaymentException
+     * @noinspection PhpUnusedParameterInspection
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function execute(
-        array $subject
-    ): ?ResultInterface {
+    public function beforeExecute(
+        Subject $subject,
+        array $data
+    ): void {
         try {
-            $payment = SubjectReader::readPayment($subject)->getPayment();
+            $payment = SubjectReader::readPayment($data)->getPayment();
 
             if ($payment instanceof Payment) {
                 $order = $payment->getOrder();
@@ -115,8 +118,6 @@ class Authorize implements CommandInterface
                 'could also try refreshing the page.'
             ));
         }
-
-        return null;
     }
 
     /**

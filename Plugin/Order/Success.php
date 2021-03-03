@@ -25,6 +25,7 @@ use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Payment;
 use Resursbank\Simplified\Helper\Session as SessionHelper;
 use Resursbank\Simplified\Model\Api\Payment as PaymentModel;
+use function is_string;
 
 /**
  * When utilising Simplified Flow the following actions will transpire at
@@ -207,6 +208,7 @@ class Success
     private function updateBillingAddress(
         OrderInterface $order
     ): void {
+        /** @noinspection BadExceptionsProcessingInspection */
         try {
             $incId = $order->getIncrementId();
 
@@ -287,7 +289,7 @@ class Success
     ): OrderInterface {
         $orderList = $this->orderRepository->getList(
             $this->searchBuilder
-                ->addFilter('quote_id', $quoteId, 'eq')
+                ->addFilter('quote_id', $quoteId)
                 ->create()
         )->getItems();
 
@@ -328,9 +330,16 @@ class Success
     ): void {
         $order = $this->getOrderByQuoteId($quoteId);
 
+        /** @phpstan-ignore-next-line */
         $this->session->setLastQuoteId($quoteId);
+
+        /** @phpstan-ignore-next-line */
         $this->session->setLastSuccessQuoteId($quoteId);
+
+        /** @phpstan-ignore-next-line */
         $this->session->setLastOrderId($order->getEntityId());
+
+        /** @phpstan-ignore-next-line */
         $this->session->setLastRealOrderId($order->getIncrementId());
     }
 
