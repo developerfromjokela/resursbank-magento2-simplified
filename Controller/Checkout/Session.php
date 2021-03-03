@@ -12,9 +12,9 @@ use Exception;
 use JsonException;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\ResultInterface;
-use Resursbank\Core\Api\Data\PaymentMethodInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Resursbank\Core\Exception\InvalidDataException;
-use Resursbank\Core\Helper\PaymentMethods;
+use Resursbank\Core\Model\PaymentMethodRepository;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Request;
 use Resursbank\Simplified\Helper\Session as CheckoutSession;
@@ -41,26 +41,26 @@ class Session implements HttpPostActionInterface
     private $requestHelper;
 
     /**
-     * @var PaymentMethods
+     * @var PaymentMethodRepository
      */
-    private $paymentMethodsHelper;
+    private $paymentMethodRepo;
 
     /**
      * @param Log $log
      * @param CheckoutSession $session
      * @param Request $requestHelper
-     * @param PaymentMethods $paymentMethodsHelper
+     * @param PaymentMethodRepository $paymentMethodRepo
      */
     public function __construct(
         Log $log,
         CheckoutSession $session,
         Request $requestHelper,
-        PaymentMethods $paymentMethodsHelper
+        PaymentMethodRepository $paymentMethodRepo
     ) {
         $this->log = $log;
         $this->session = $session;
         $this->requestHelper = $requestHelper;
-        $this->paymentMethodsHelper = $paymentMethodsHelper;
+        $this->paymentMethodRepo = $paymentMethodRepo;
     }
 
     /**
@@ -134,23 +134,16 @@ class Session implements HttpPostActionInterface
      * @param bool $isCompany
      * @return bool
      * @throws JsonException
+     * @throws NoSuchEntityException
      */
     public function isValidMethod(
         string $methodCode,
         bool $isCompany
     ): bool {
         $result = false;
-        /** @var null|PaymentMethodInterface $method */
-        $method = null;
+        $method = $this->paymentMethodRepo->getByCode($methodCode);
 
-        foreach ($this->paymentMethodsHelper->getActiveMethods() as $entry) {
-            if ($entry->getCode() === $methodCode) {
-                $method = $entry;
-                break;
-            }
-        }
-
-        if ($method instanceof PaymentMethodInterface) {
+        if ($method->getActive(false)) {
             $raw = json_decode(
                 $method->getRaw(),
                 false,
