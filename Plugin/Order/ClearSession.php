@@ -11,52 +11,34 @@ namespace Resursbank\Simplified\Plugin\Order;
 use Exception;
 use Magento\Checkout\Controller\Onepage\Success;
 use Magento\Framework\Controller\ResultInterface;
-use Resursbank\Core\Helper\Order;
-use Resursbank\Core\Helper\Request;
 use Resursbank\Simplified\Helper\Log;
-use Resursbank\Simplified\Helper\Payment;
+use Resursbank\Simplified\Helper\Session as SessionHelper;
 
 /**
- * Create payment at Resurs Bank.
+ * Clear session data after order placement.
  */
-class BookSignedPayment
+class ClearSession
 {
-    /**
-     * @var Request
-     */
-    private $request;
-
     /**
      * @var Log
      */
     private $log;
 
     /**
-     * @var Payment
+     * @var SessionHelper
      */
-    private $payment;
-
-    /**
-     * @var Order
-     */
-    private $order;
+    private $sessionHelper;
 
     /**
      * @param Log $log
-     * @param Payment $payment
-     * @param Request $request
-     * @param Order $order
+     * @param SessionHelper $sessionHelper
      */
     public function __construct(
         Log $log,
-        Payment $payment,
-        Request $request,
-        Order $order
+        SessionHelper $sessionHelper
     ) {
         $this->log = $log;
-        $this->payment = $payment;
-        $this->request = $request;
-        $this->order = $order;
+        $this->sessionHelper = $sessionHelper;
     }
 
     /**
@@ -71,9 +53,7 @@ class BookSignedPayment
         ResultInterface $result
     ): ResultInterface {
         try {
-            $this->payment->bookPaymentSession(
-                $this->order->getOrderByQuoteId($this->request->getQuoteId())
-            );
+            $this->sessionHelper->unsetAll();
         } catch (Exception $e) {
             $this->log->exception($e);
         }

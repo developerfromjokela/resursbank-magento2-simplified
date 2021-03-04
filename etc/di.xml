@@ -40,4 +40,12 @@
             type="Resursbank\Simplified\Plugin\Order\BookSignedPayment"
             sortOrder="1"/>
     </type>
+
+    <!-- Clear session data after order placement. -->
+    <type name="Magento\Checkout\Controller\Onepage\Success">
+        <plugin
+            name="resursbank_simplified_order_clear_session"
+            type="Resursbank\Simplified\Plugin\Order\ClearSession"
+            sortOrder="99"/>
+    </type>
 </config>

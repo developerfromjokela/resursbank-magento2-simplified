@@ -15,7 +15,7 @@ use Magento\Framework\Exception\ValidatorException;
 use Resursbank\Core\Exception\ApiDataException;
 use Resursbank\Core\Helper\Api as CoreApi;
 use Resursbank\Core\Helper\Api\Credentials;
-use Resursbank\Simplified\Model\Api\Address as ApiAddress;
+use Resursbank\Core\Model\Api\Address as ApiAddress;
 use Resursbank\Simplified\Model\CheckoutAddress;
 use function is_object;
 
@@ -87,7 +87,7 @@ class Address extends AbstractHelper
             throw new ApiDataException(__('Failed to fetch address.'));
         }
 
-        return $this->toAddress($address, $isCompany);
+        return $this->coreApi->toAddress($address, $isCompany);
     }
 
     /**
@@ -108,54 +108,6 @@ class Address extends AbstractHelper
             $address->getAddressRow2(),
             $address->getIsCompany() ?
                 $address->getFullName() :
-                ''
-        );
-    }
-
-    /**
-     * Creates address model data from a generic object. Expects the generic
-     * object to have the same properties as address data fetched from the API,
-     * but it's not required to. Missing properties will be created using
-     * default values.
-     *
-     * @param bool|null $isCompany
-     * @param object $address
-     * @return ApiAddress
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     */
-    public function toAddress(
-        object $address,
-        bool $isCompany = null
-    ): ApiAddress {
-        return new ApiAddress(
-            (
-                $isCompany === null &&
-                property_exists($address, 'fullName') &&
-                (string) $address->fullName !== ''
-            ) || $isCompany,
-            property_exists($address, 'fullName') ?
-                (string) $address->fullName :
-                '',
-            property_exists($address, 'firstName') ?
-                (string) $address->firstName :
-                '',
-            property_exists($address, 'lastName') ?
-                (string) $address->lastName :
-                '',
-            property_exists($address, 'addressRow1') ?
-                (string) $address->addressRow1 :
-                '',
-            property_exists($address, 'addressRow2') ?
-                (string) $address->addressRow2 :
-                '',
-            property_exists($address, 'postalArea') ?
-                (string) $address->postalArea :
-                '',
-            property_exists($address, 'postalCode') ?
-                (string) $address->postalCode :
-                '',
-            property_exists($address, 'country') ?
-                (string) $address->country :
                 ''
         );
     }
