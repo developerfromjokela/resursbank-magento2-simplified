@@ -267,8 +267,22 @@ define(
 
                 me._super();
 
+                /**
+                 * Whether this payment method is from Resurs Bank.
+                 *
+                 * @type {Simplified.Observable.Boolean}
+                 */
                 me.isResursInternalMethod = ko.observable(
                     isResursInternalMethod(this.getCode())
+                );
+
+                /**
+                 * Path to the logo of a Resurs Bank payment method.
+                 *
+                 * @type {string}
+                 */
+                me.resursBankLogo = require.toUrl(
+                    'Resursbank_Simplified/images/logo.png'
                 );
 
                 /**
