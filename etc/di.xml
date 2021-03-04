@@ -20,24 +20,24 @@
             type="Resursbank\Simplified\Plugin\Layout\Layout" />
     </type>
 
-    <!-- Checkout success page. -->
-    <type name="Magento\Checkout\Controller\Onepage\Success">
-        <plugin
-            name="resursbank_simplified_order_success"
-            type="Resursbank\Simplified\Plugin\Order\Success" />
-    </type>
-
-    <!-- Checkout success page. -->
-    <type name="Magento\Checkout\Controller\Onepage\Success">
-        <plugin
-            name="resursbank_simplified_order_success"
-            type="Resursbank\Simplified\Plugin\Order\Success" />
-    </type>
-
     <!-- Create payment at Resurs Bank during authorization. -->
     <type name="Resursbank\Core\Gateway\Command\Authorize">
         <plugin
             name="resursbank_simplified_gateway_command_authorize"
             type="Resursbank\Simplified\Plugin\Gateway\Command\Authorize" />
+    </type>
+
+    <!--
+    Book signed payment (ie. create payment at Resurs Bank) after order
+    placement.
+
+    NOTE: Order is important, there are several other events which occur at
+    order placement. See the Core module for most of them.
+     -->
+    <type name="Magento\Checkout\Controller\Onepage\Success">
+        <plugin
+            name="resursbank_simplified_order_success"
+            type="Resursbank\Simplified\Plugin\Order\BookSignedPayment"
+            sortOrder="1"/>
     </type>
 </config>

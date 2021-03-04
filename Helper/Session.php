@@ -348,8 +348,6 @@ class Session extends AbstractHelper
 
     /**
      * @return string|null - Null if a value cannot be found.
-     *
-     * @noinspection PhpUnused
      */
     public function getPaymentSigningUrl(): ?string
     {
