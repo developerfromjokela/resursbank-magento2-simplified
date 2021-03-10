@@ -13,6 +13,13 @@
             type="Resursbank\Simplified\Plugin\Layout\File\Collector" />
     </type>
 
+    <!-- Inject this payment method info Core's Flow setting. -->
+    <type name="Resursbank\Core\Model\Config\Source\Flow">
+        <plugin
+            name="resursbank_simplified_config_add_config_option"
+            type="Resursbank\Simplified\Plugin\Config\AddConfigOption" />
+    </type>
+
     <!-- Append dynamic information to compiled layout XML. -->
     <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
         <plugin
