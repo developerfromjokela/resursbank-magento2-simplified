@@ -17,7 +17,7 @@ use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Payment;
 
 /**
- * Create payment at Resurs Bank.
+ * Book the payment at Resurs Bank after signing it (i.e. create payment).
  */
 class BookSignedPayment
 {

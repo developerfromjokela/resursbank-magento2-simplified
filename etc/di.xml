@@ -28,17 +28,17 @@
     </type>
 
     <!--
-    Book signed payment (ie. create payment at Resurs Bank) after order
+    Book signed payment (i.e. create payment at Resurs Bank) after order
     placement.
 
-    NOTE: Order is important, there are several other events which occur at
-    order placement. See the Core module for most of them.
+    NOTE: The order of execution is important. There are several other events
+    which occur at order placement. See the Core module for most of them.
      -->
     <type name="Magento\Checkout\Controller\Onepage\Success">
         <plugin
             name="resursbank_simplified_order_success"
             type="Resursbank\Simplified\Plugin\Order\BookSignedPayment"
-            sortOrder="1"/>
+            sortOrder="11"/>
     </type>
 
     <!-- Clear session data after order placement. -->
@@ -46,6 +46,6 @@
         <plugin
             name="resursbank_simplified_order_clear_session"
             type="Resursbank\Simplified\Plugin\Order\ClearSession"
-            sortOrder="99"/>
+            sortOrder="111"/>
     </type>
 </config>

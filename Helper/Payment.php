@@ -29,6 +29,9 @@ use Resursbank\RBEcomPHP\ResursBank;
 use Resursbank\Simplified\Helper\Config as ConfigHelper;
 use stdClass;
 
+/**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class Payment extends AbstractHelper
 {
     /**

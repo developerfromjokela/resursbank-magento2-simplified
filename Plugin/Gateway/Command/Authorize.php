@@ -21,6 +21,7 @@ use Resursbank\Core\Helper\Api;
 use Resursbank\Core\Helper\Api\Credentials;
 use Resursbank\RBEcomPHP\RESURS_FLOW_TYPES;
 use Resursbank\RBEcomPHP\ResursBank;
+use Resursbank\Simplified\Helper\Config;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Payment as PaymentHelper;
 use Resursbank\Simplified\Helper\Session as CheckoutSession;
@@ -59,24 +60,32 @@ class Authorize
     private $paymentHelper;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * @param Log $log
      * @param Api $api
      * @param Credentials $credentials
      * @param CheckoutSession $session
      * @param PaymentHelper $paymentHelper
+     * @param Config $config
      */
     public function __construct(
         Log $log,
         Api $api,
         Credentials $credentials,
         CheckoutSession $session,
-        PaymentHelper $paymentHelper
+        PaymentHelper $paymentHelper,
+        Config $config
     ) {
         $this->api = $api;
         $this->log = $log;
         $this->credentials = $credentials;
         $this->session = $session;
         $this->paymentHelper = $paymentHelper;
+        $this->config = $config;
     }
 
     /**
@@ -92,22 +101,24 @@ class Authorize
         array $data
     ): void {
         try {
-            $payment = SubjectReader::readPayment($data)->getPayment();
+            if ($this->config->isActive()) {
+                $payment = SubjectReader::readPayment($data)->getPayment();
 
-            if ($payment instanceof Payment) {
-                $order = $payment->getOrder();
+                if ($payment instanceof Payment) {
+                    $order = $payment->getOrder();
 
-                // Establish API connection.
-                $connection = $this->getConnection();
+                    // Establish API connection.
+                    $connection = $this->getConnection();
 
-                // Apply payload data.
-                $this->setPayloadData($order, $connection);
+                    // Apply payload data.
+                    $this->setPayloadData($order, $connection);
 
-                // Create payment session at Resurs Bank and prepare signing.
-                $this->createPayment($order, $connection);
+                    // Create payment session at Resurs Bank and prepare signing.
+                    $this->createPayment($order, $connection);
 
-                // Clear Resurs Bank related data from session.
-                $this->session->unsetCustomerInfo();
+                    // Clear Resurs Bank related data from session.
+                    $this->session->unsetCustomerInfo();
+                }
             }
         } catch (Exception $e) {
             $this->log->exception($e);

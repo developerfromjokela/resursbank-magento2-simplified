@@ -15,7 +15,8 @@ use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Session as SessionHelper;
 
 /**
- * Clear session data after order placement.
+ * Clear this module's own session data after a successful order placement. The
+ * checkout session will not be touched.
  */
 class ClearSession
 {
