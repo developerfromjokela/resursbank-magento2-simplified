@@ -13,7 +13,7 @@
             type="Resursbank\Simplified\Plugin\Layout\File\Collector" />
     </type>
 
-    <!-- Inject this payment method info Core's Flow setting. -->
+    <!-- Inject this payment method into Core's Flow setting. -->
     <type name="Resursbank\Core\Model\Config\Source\Flow">
         <plugin
             name="resursbank_simplified_config_add_config_option"
