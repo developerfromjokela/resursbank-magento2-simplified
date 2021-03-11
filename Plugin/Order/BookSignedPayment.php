@@ -13,6 +13,7 @@ use Magento\Checkout\Controller\Onepage\Success;
 use Magento\Framework\Controller\ResultInterface;
 use Resursbank\Core\Helper\Order;
 use Resursbank\Core\Helper\Request;
+use Resursbank\Simplified\Helper\Config;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Payment;
 
@@ -42,21 +43,29 @@ class BookSignedPayment
     private $order;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * @param Log $log
      * @param Payment $payment
      * @param Request $request
      * @param Order $order
+     * @param Config $config
      */
     public function __construct(
         Log $log,
         Payment $payment,
         Request $request,
-        Order $order
+        Order $order,
+        Config $config
     ) {
         $this->log = $log;
         $this->payment = $payment;
         $this->request = $request;
         $this->order = $order;
+        $this->config = $config;
     }
 
     /**
@@ -71,9 +80,11 @@ class BookSignedPayment
         ResultInterface $result
     ): ResultInterface {
         try {
-            $this->payment->bookPaymentSession(
-                $this->order->getOrderByQuoteId($this->request->getQuoteId())
-            );
+            if ($this->config->isActive()) {
+                $this->payment->bookPaymentSession(
+                    $this->order->getOrderByQuoteId($this->request->getQuoteId())
+                );
+            }
         } catch (Exception $e) {
             $this->log->exception($e);
         }

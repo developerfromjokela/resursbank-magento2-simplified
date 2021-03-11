@@ -11,6 +11,7 @@ namespace Resursbank\Simplified\Plugin\Order;
 use Exception;
 use Magento\Checkout\Controller\Onepage\Success;
 use Magento\Framework\Controller\ResultInterface;
+use Resursbank\Simplified\Helper\Config;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Session as SessionHelper;
 
@@ -31,15 +32,23 @@ class ClearSession
     private $sessionHelper;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * @param Log $log
      * @param SessionHelper $sessionHelper
+     * @param Config $config
      */
     public function __construct(
         Log $log,
-        SessionHelper $sessionHelper
+        SessionHelper $sessionHelper,
+        Config $config
     ) {
         $this->log = $log;
         $this->sessionHelper = $sessionHelper;
+        $this->config = $config;
     }
 
     /**
@@ -54,7 +63,9 @@ class ClearSession
         ResultInterface $result
     ): ResultInterface {
         try {
-            $this->sessionHelper->unsetAll();
+            if ($this->config->isActive()) {
+                $this->sessionHelper->unsetAll();
+            }
         } catch (Exception $e) {
             $this->log->exception($e);
         }
