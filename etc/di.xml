@@ -13,6 +13,13 @@
             type="Resursbank\Simplified\Plugin\Layout\File\Collector" />
     </type>
 
+    <!-- Append Simplified Flow as an option to the setting in Core. -->
+    <type name="Resursbank\Core\Model\Config\Source\Flow">
+        <plugin
+            name="resursbank_simplified_config_add_flow_option"
+            type="Resursbank\Simplified\Plugin\Config\AddFlowOption" />
+    </type>
+
     <!-- Append dynamic information to compiled layout XML. -->
     <type name="Magento\Checkout\Block\Checkout\LayoutProcessor">
         <plugin
