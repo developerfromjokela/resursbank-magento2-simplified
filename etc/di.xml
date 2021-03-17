@@ -13,11 +13,11 @@
             type="Resursbank\Simplified\Plugin\Layout\File\Collector" />
     </type>
 
-    <!-- Inject this payment method into Core's Flow setting. -->
+    <!-- Append Simplified Flow as an option to the setting in Core. -->
     <type name="Resursbank\Core\Model\Config\Source\Flow">
         <plugin
-            name="resursbank_simplified_config_add_config_option"
-            type="Resursbank\Simplified\Plugin\Config\AddConfigOption" />
+            name="resursbank_simplified_config_add_flow_option"
+            type="Resursbank\Simplified\Plugin\Config\AddFlowOption" />
     </type>
 
     <!-- Append dynamic information to compiled layout XML. -->
