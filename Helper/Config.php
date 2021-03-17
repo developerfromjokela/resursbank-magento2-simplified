@@ -27,12 +27,7 @@ class Config extends AbstractConfig
         ?string $scopeCode = null,
         string $scopeType = ScopeInterface::SCOPE_STORE
     ): bool {
-        return $this->isEnabled(
-            self::GROUP,
-            'active',
-            $scopeCode,
-            $scopeType
-        );
+        return true;
     }
 
     /**
