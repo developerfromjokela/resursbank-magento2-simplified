@@ -143,7 +143,7 @@ class Session implements HttpPostActionInterface
         $result = false;
         $method = $this->paymentMethodRepo->getByCode($methodCode);
 
-        if ($method->getActive(false)) {
+        if ($method->getActive(false) && is_string($method->getRaw())) {
             $raw = json_decode(
                 $method->getRaw(),
                 false,

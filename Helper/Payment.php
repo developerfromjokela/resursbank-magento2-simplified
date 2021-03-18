@@ -10,28 +10,23 @@ namespace Resursbank\Simplified\Helper;
 
 use Exception;
 use InvalidArgumentException;
+use function is_string;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\Exception\ValidatorException;
 use Magento\Quote\Model\Quote;
 use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Model\Order;
 use Resursbank\Core\Exception\InvalidDataException;
-use function property_exists;
 use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Core\Helper\Api as CoreApi;
-use Resursbank\Core\Helper\Api\Credentials;
+use Resursbank\Core\Model\Api\Payment as PaymentModel;
 use Resursbank\Core\Model\Api\Payment\Converter\QuoteConverter;
 use Resursbank\Core\Model\PaymentMethodRepository;
 use Resursbank\RBEcomPHP\ResursBank;
-use Resursbank\Simplified\Helper\Address as AddressHelper;
 use Resursbank\Simplified\Helper\Config as ConfigHelper;
-use Resursbank\Simplified\Model\Api\Customer;
-use Resursbank\Simplified\Model\Api\Payment as PaymentModel;
-use ResursException;
 use stdClass;
 
 /**
@@ -50,11 +45,6 @@ class Payment extends AbstractHelper
     private $configHelper;
 
     /**
-     * @var AddressHelper
-     */
-    private $addressHelper;
-
-    /**
      * @var QuoteConverter
      */
     private $quoteConverter;
@@ -70,36 +60,25 @@ class Payment extends AbstractHelper
     public $coreApi;
 
     /**
-     * @var Credentials
-     */
-    private $credentials;
-
-    /**
-     * @param Credentials $credentials
      * @param Context $context
      * @param Session $session
-     * @param AddressHelper $addressHelper
      * @param QuoteConverter $quoteConverter
      * @param PaymentMethodRepository $paymentMethodRepo
      * @param CoreApi $coreApi
      * @param Config $configHelper
      */
     public function __construct(
-        Credentials $credentials,
         Context $context,
         Session $session,
-        AddressHelper $addressHelper,
         QuoteConverter $quoteConverter,
         PaymentMethodRepository $paymentMethodRepo,
         CoreApi $coreApi,
         ConfigHelper $configHelper
     ) {
         $this->session = $session;
-        $this->addressHelper = $addressHelper;
         $this->quoteConverter = $quoteConverter;
         $this->paymentMethodRepo = $paymentMethodRepo;
         $this->coreApi = $coreApi;
-        $this->credentials = $credentials;
         $this->configHelper = $configHelper;
 
         parent::__construct($context);
@@ -148,7 +127,6 @@ class Payment extends AbstractHelper
         ResursBank $connection
     ): self {
         // Ecom wrongfully types both params as null.
-        /** @phpstan-ignore-next-line */
         $connection->setCardData(
             (string) $this->session->getCardNumber(),
             (float) $this->session->getCardAmount()
@@ -248,7 +226,6 @@ class Payment extends AbstractHelper
         $items = $this->quoteConverter->convert($this->session->getQuote());
 
         foreach ($items as $item) {
-            /** @phpstan-ignore-next-line */
             $connection->addOrderLine(
                 $item->getArtNo(),
                 $item->getDescription(),
@@ -376,28 +353,7 @@ class Payment extends AbstractHelper
         /** @var stdClass $payment */
         $payment = $connection->createPayment($identifier);
 
-        return $this->toPayment($payment, $isCompany);
-    }
-
-    /**
-     * @param string $paymentId
-     * @return PaymentModel|null
-     * @throws ResursException
-     * @throws ValidatorException
-     * @throws Exception
-     */
-    public function getPayment(
-        string $paymentId
-    ): ?PaymentModel {
-        $connection = $this->coreApi->getConnection(
-            $this->credentials->resolveFromConfig()
-        );
-
-        $payment = $connection->getPayment($paymentId);
-
-        return $payment !== null ?
-            $this->toPayment($payment) :
-            null;
+        return $this->coreApi->toPayment($payment, $isCompany);
     }
 
     /**
@@ -421,111 +377,33 @@ class Payment extends AbstractHelper
     }
 
     /**
-     * Creates payment model data from a generic object. Expects the generic
-     * object to have the same properties as payment data fetched from the API,
-     * but it's not required to. Missing properties will be created using
-     * default values.
-     *
-     * @param bool|null $isCompany
-     * @param stdClass $payment
-     * @return PaymentModel
-     */
-    public function toPayment(
-        stdClass $payment,
-        bool $isCompany = null
-    ): PaymentModel {
-        $paymentId = '';
-
-        if (property_exists($payment, 'paymentId')) {
-            $paymentId = (string) $payment->paymentId;
-        } elseif (property_exists($payment, 'id')) {
-            $paymentId = (string) $payment->id;
-        }
-
-        return new PaymentModel(
-            $paymentId,
-            property_exists(
-                $payment,
-                'bookPaymentStatus'
-            ) ?
-                (string) $payment->bookPaymentStatus :
-                '',
-            property_exists($payment, 'approvedAmount') ?
-                (float) $payment->approvedAmount :
-                0.0,
-            property_exists($payment, 'signingUrl') ?
-                (string) $payment->signingUrl :
-                '',
-            property_exists($payment, 'customer') ?
-                $this->toCustomer(
-                    $payment->customer,
-                    $isCompany
-                ) :
-                new Customer(),
-        );
-    }
-
-    /**
-     * Creates customer model data from a generic object. Expects the generic
-     * object to have the same properties as customer data fetched from the API,
-     * but it's not required to. Missing properties will be created using
-     * default values.
-     *
-     * @param bool|null $isCompany
-     * @param stdClass $customer
-     * @return Customer
-     */
-    public function toCustomer(
-        stdClass $customer,
-        bool $isCompany = null
-    ): Customer {
-        return new Customer(
-            property_exists($customer, 'governmentId') ?
-                (string) $customer->governmentId :
-                '',
-            property_exists($customer, 'phone') ?
-                (string) $customer->phone :
-                '',
-            property_exists($customer, 'email') ?
-                (string) $customer->email :
-                '',
-            property_exists($customer, 'type') ?
-                (string) $customer->type :
-                '',
-            property_exists($customer, 'address') ?
-                $this->addressHelper->toAddress(
-                    $customer->address,
-                    $isCompany
-                ) :
-                null
-        );
-    }
-
-    /**
      * Book payment after it's been signed by the client.
      *
-     * @param string $paymentId
+     * @param OrderInterface $order
      * @return PaymentModel
      * @throws Exception
      */
     public function bookPaymentSession(
-        string $paymentId
+        OrderInterface $order
     ): PaymentModel {
-        // Fill data on payment object.
-        $payment = $this->coreApi->getConnection(
-            $this->credentials->resolveFromConfig()
-        )->bookSignedPayment($paymentId);
+        // Establish API connection.
+        $connection = $this->coreApi->getConnection(
+            $this->coreApi->getCredentialsFromOrder($order)
+        );
 
-        $result = $this->toPayment($payment);
+        // Fill data on payment object.
+        $payment = $this->coreApi->toPayment(
+            $connection->bookSignedPayment($order->getIncrementId())
+        );
 
         // Reject denied / failed payment.
-        switch ($result->getBookPaymentStatus()) {
+        switch ($payment->getBookPaymentStatus()) {
             case 'DENIED':
                 throw new PaymentDataException(__('Payment denied.'));
             case 'SIGNING':
                 throw new PaymentDataException(__('Payment failed.'));
         }
 
-        return $result;
+        return $payment;
     }
 }
