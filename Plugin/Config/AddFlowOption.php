@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Plugin\Config;
 
 use Resursbank\Core\Model\Config\Source\Flow as Subject;
+use Resursbank\Simplified\Helper\Config;
 
 class AddFlowOption
 {
@@ -25,7 +26,7 @@ class AddFlowOption
         Subject $subject,
         array $result
     ): array {
-        $result['simplified'] = __(
+        $result[Config::API_FLOW_OPTION] = __(
             'Two step Magento Checkout with Resurs payment methods'
         );
 
