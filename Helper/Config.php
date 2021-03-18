@@ -8,15 +8,46 @@ declare(strict_types=1);
 
 namespace Resursbank\Simplified\Helper;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\App\Helper\Context;
 use Magento\Store\Model\ScopeInterface;
 use Resursbank\Core\Helper\AbstractConfig;
+use Resursbank\Core\Helper\Config as CoreConfig;
 
 class Config extends AbstractConfig
 {
     /**
+     * @var CoreConfig
+     */
+    private $coreConfig;
+
+    /**
      * @var string
      */
     public const GROUP = 'simplified';
+
+    /**
+     * API flow option appended by this module.
+     */
+    public const API_FLOW_OPTION = 'simplified';
+
+    /**
+     * @param ScopeConfigInterface $reader
+     * @param WriterInterface $writer
+     * @param CoreConfig $coreConfig
+     * @param Context $context
+     */
+    public function __construct(
+        ScopeConfigInterface $reader,
+        WriterInterface $writer,
+        CoreConfig $coreConfig,
+        Context $context
+    ) {
+        $this->coreConfig = $coreConfig;
+
+        parent::__construct($reader, $writer, $context);
+    }
 
     /**
      * @param string|null $scopeCode
@@ -27,7 +58,8 @@ class Config extends AbstractConfig
         ?string $scopeCode = null,
         string $scopeType = ScopeInterface::SCOPE_STORE
     ): bool {
-        return true;
+        return $this->coreConfig->getFlow($scopeCode, $scopeType) ===
+            self::API_FLOW_OPTION;
     }
 
     /**
