@@ -141,7 +141,7 @@ define(
                  *
                  * @type {Simplified.Observable.String}
                  */
-                me.idNumber = ko.observable('');
+                me.govId = ko.observable('');
 
                 /**
                  * The selected customer type.
@@ -226,6 +226,7 @@ define(
                         me.failedToFetchAddressError(response.error.message);
                     } else if (Object.keys(response.address).length > 0) {
                         CheckoutLib.applyAddress(response.address);
+                        CheckoutAction.setGovId(me.govId());
 
                         me.isAddressApplied(true)
                     }
@@ -256,7 +257,7 @@ define(
                  */
                 function validateId() {
                     var valid = Credentials.validate(
-                        me.idNumber(),
+                        me.govId(),
                         'SE',
                         me.isCompanyCustomer()
                     );
@@ -282,7 +283,7 @@ define(
 
                         FetchAddress
                             .fetchAddress(
-                                me.idNumber(),
+                                me.govId(),
                                 me.isCompanyCustomer()
                             )
                             .done(onFetchAddressDone)
@@ -298,9 +299,10 @@ define(
                  */
                 me.removeAddress = function () {
                     CheckoutLib.removeAddress();
+                    CheckoutAction.removeGovId();
 
                     me.isAddressApplied(false);
-                    me.idNumber('');
+                    me.govId('');
                 }
             }
         });

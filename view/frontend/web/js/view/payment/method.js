@@ -24,7 +24,8 @@ define(
         'Resursbank_Simplified/js/lib/checkout-config',
         'Resursbank_Simplified/js/lib/credentials',
         'Resursbank_Simplified/js/lib/session',
-        'Resursbank_Simplified/js/model/checkout'
+        'Resursbank_Simplified/js/model/checkout',
+        'Resursbank_Simplified/js/storage/checkout'
     ],
 
     /**
@@ -43,6 +44,7 @@ define(
      * @param CredentialsLib {Simplified.Lib.Credentials}
      * @param SessionLib {Simplified.Lib.Session}
      * @param CheckoutModel {Simplified.Model.Checkout}
+     * @param CheckoutStorage {Simplified.Storage.Checkout}
      * @returns {*}
      */
     function (
@@ -60,7 +62,8 @@ define(
         CheckoutConfigLib,
         CredentialsLib,
         SessionLib,
-        CheckoutModel
+        CheckoutModel,
+        CheckoutStorage
     ) {
         'use strict';
 
@@ -262,8 +265,8 @@ define(
              * Initialization method.
              */
             initialize: function() {
-                this._super();
                 var me = this;
+                var storageGovId = CheckoutStorage.getGovId();
 
                 me._super();
 
@@ -331,18 +334,20 @@ define(
                  *
                  * @type {Simplified.Observable.String}
                  */
-                me.idNumber = ko.observable('');
+                me.govId = ko.observable(
+                    typeof storageGovId === 'string' ? storageGovId : ''
+                );
 
                 /**
                  * Whether the given id number is invalid.
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
-                me.invalidIdNumber = ko.computed(function () {
+                me.invalidGovId = ko.computed(function () {
                     var address = getRelevantQuoteAddress();
 
                     return !CredentialsLib.validate(
-                        me.idNumber(),
+                        me.govId(),
                         address.countryId || '',
                         CheckoutModel.isCompany()
                     );
@@ -353,7 +358,7 @@ define(
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
-                me.disableIdNumber = ko.computed(function () {
+                me.disableGovId = ko.computed(function () {
                     return false;
                 });
 
@@ -495,7 +500,7 @@ define(
                 me.canPlaceOrder = ko.computed(function () {
                     var idResult =
                         !me.hasSsnField ||
-                        (me.idNumber() !== '' && !me.invalidIdNumber());
+                        (me.govId() !== '' && !me.invalidGovId());
 
                     var cardNumberResult =
                         !me.requiresCardNumber ||
@@ -525,7 +530,7 @@ define(
                 ) {
                     if (me.canPlaceOrder()) {
                         SessionLib.setSessionData({
-                            gov_id: me.idNumber(),
+                            gov_id: me.govId(),
                             is_company: me.isCompanyCustomer(),
                             method_code: me.getCode(),
 

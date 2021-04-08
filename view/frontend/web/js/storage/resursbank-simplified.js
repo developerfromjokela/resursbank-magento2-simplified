@@ -58,6 +58,16 @@ define(
              */
             get: function (sectionName) {
                 return storage.get(sectionName);
+            },
+
+            /**
+             * @link https://github.com/julien-maurel/jQuery-Storage-API#remove
+             * @param {string|string[]} path
+             * @param {...string} path
+             * @returns {*}
+             */
+            remove: function (path) {
+                return storage.remove(arguments);
             }
         };
 
