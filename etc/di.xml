@@ -55,4 +55,11 @@
             type="Resursbank\Simplified\Plugin\Order\ClearSession"
             sortOrder="111"/>
     </type>
+
+    <!-- Append module version info to API call user agent header. -->
+    <type name="Resursbank\Core\Helper\Api">
+        <plugin
+            name="resursbank_Simplified_api"
+            type="Resursbank\Simplified\Plugin\Helper\Api" />
+    </type>
 </config>

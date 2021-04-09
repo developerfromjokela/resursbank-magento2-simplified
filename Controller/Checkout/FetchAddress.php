@@ -6,103 +6,88 @@
 
 declare(strict_types=1);
 
-namespace Resursbank\Simplified\Controller\Checkout;
+namespace Resursbank\Partpayment\Controller;
 
 use Exception;
-use Magento\Framework\App\Action\HttpPostActionInterface;
-use Magento\Framework\Controller\ResultInterface;
-use Magento\Framework\Exception\ValidatorException;
-use Resursbank\Core\Exception\ApiDataException;
-use Resursbank\Core\Exception\InvalidDataException;
-use Resursbank\Core\Exception\MissingRequestParameterException;
-use Resursbank\Simplified\Helper\Address as AddressHelper;
+use Magento\Framework\App\Action\HttpGetActionInterface;
+use Magento\Framework\Controller\Result\Redirect as RedirectResult;
+use Magento\Framework\Controller\Result\RedirectFactory;
+use Resursbank\Core\Model\Api\Payment\Converter\QuoteConverter;
 use Resursbank\Simplified\Helper\Log;
-use Resursbank\Simplified\Helper\Request;
+use Resursbank\Simplified\Helper\Session;
 
 /**
- * Fetch customer address from API using supplied SSN and customer type.
- *
- * @noinspection PhpUnused
+ * Fetch HTML containing part payment option details.
  */
-class FetchAddress implements HttpPostActionInterface
+class FetchAddress implements HttpGetActionInterface
 {
+    /**
+     * @var RedirectFactory
+     */
+    private $redirectFactory;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
     /**
      * @var Log
      */
     private $log;
-
     /**
-     * @var AddressHelper
+     * @var QuoteConverter
      */
-    private $addressHelper;
+    private $quoteConverter;
 
     /**
-     * @var Request
-     */
-    private $requestHelper;
-
-    /**
+     * @param RedirectFactory $redirectFactory
+     * @param Session $session
      * @param Log $log
-     * @param AddressHelper $fetchAddressHelper
-     * @param Request $request
+     * @param QuoteConverter $quoteConverter
      */
     public function __construct(
+        RedirectFactory $redirectFactory,
+        Session $session,
         Log $log,
-        AddressHelper $fetchAddressHelper,
-        Request $request
+        QuoteConverter $quoteConverter
     ) {
+        $this->redirectFactory = $redirectFactory;
+        $this->session = $session;
         $this->log = $log;
-        $this->addressHelper = $fetchAddressHelper;
-        $this->requestHelper = $request;
+        $this->quoteConverter = $quoteConverter;
     }
 
     /**
+     * Redirect to signing URL. If there is none, redirect straight to success
+     * page.
+     *
+     * @return RedirectResult
      * @throws Exception
-     * @return ResultInterface
      */
-    public function execute(): ResultInterface
+    public function execute(): RedirectResult
     {
-        $data = [
-            'address' => [],
-            'error' => [
-                'message' => ''
-            ]
-        ];
+        $this->quoteConverter->convert($this->session->getQuote());
+        $test = 'ad';
+        
+        $redirect = $this->redirectFactory->create();
 
-        // Resolve customer address.
         try {
-            $data['address'] = $this->getAddress();
+            $url = (string) $this->session->getPaymentSigningUrl();
+
+            if ($url !== '') {
+                // Redirect to Resurs Bank signing page.
+                $redirect->setUrl($url);
+            } else {
+                // Redirect to success page.
+                $redirect->setPath('checkout/onepage/success');
+            }
         } catch (Exception $e) {
             $this->log->exception($e);
 
-            // Display friendly (safe) error message to customer.
-            $data['error']['message'] = __(
-                'Something went wrong when fetching the address. Please ' .
-                'try again.'
-            );
+            throw $e;
         }
 
-        return $this->requestHelper->getResponse($data);
-    }
-
-    /**
-     * @return array<string, mixed>
-     * @throws ApiDataException
-     * @throws ValidatorException
-     * @throws MissingRequestParameterException
-     * @throws InvalidDataException
-     */
-    private function getAddress(): array
-    {
-        $isCompany = $this->requestHelper->isCompany();
-
-        return $this->addressHelper
-            ->toCheckoutAddress(
-                $this->addressHelper->fetch(
-                    $this->requestHelper->getGovId($isCompany),
-                    $isCompany
-                )
-            )
-            ->toArray();
+        return $redirect;
     }
 }
