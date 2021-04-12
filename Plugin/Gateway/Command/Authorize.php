@@ -15,6 +15,8 @@ use Magento\Framework\Exception\ValidatorException;
 use Magento\Payment\Gateway\Helper\SubjectReader;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Model\Order\Payment;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Core\Gateway\Command\Authorize as Subject;
 use Resursbank\Core\Helper\Api;
@@ -65,6 +67,11 @@ class Authorize
     private $config;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * @param Log $log
      * @param Api $api
      * @param Credentials $credentials
@@ -78,7 +85,8 @@ class Authorize
         Credentials $credentials,
         CheckoutSession $session,
         PaymentHelper $paymentHelper,
-        Config $config
+        Config $config,
+        StoreManagerInterface $storeManager
     ) {
         $this->api = $api;
         $this->log = $log;
@@ -86,6 +94,7 @@ class Authorize
         $this->session = $session;
         $this->paymentHelper = $paymentHelper;
         $this->config = $config;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -101,14 +110,16 @@ class Authorize
         array $data
     ): void {
         try {
-            if ($this->config->isActive()) {
+            $storeCode = $this->storeManager->getStore()->getCode();
+
+            if ($this->config->isActive($storeCode)) {
                 $payment = SubjectReader::readPayment($data)->getPayment();
 
                 if ($payment instanceof Payment) {
                     $order = $payment->getOrder();
 
                     // Establish API connection.
-                    $connection = $this->getConnection();
+                    $connection = $this->getConnection($order);
 
                     // Apply payload data.
                     $this->setPayloadData($order, $connection);
@@ -134,15 +145,19 @@ class Authorize
     /**
      * Resolve API connection.
      *
+     * @param OrderInterface $order
      * @return ResursBank
      * @throws ValidatorException
-     * @throws Exception
      */
-    private function getConnection(): ResursBank
-    {
+    private function getConnection(
+        OrderInterface $order
+    ): ResursBank {
         try {
             $connection = $this->api->getConnection(
-                $this->credentials->resolveFromConfig()
+                $this->credentials->resolveFromConfig(
+                    (string) $order->getStoreId(),
+                    ScopeInterface::SCOPE_STORES
+                )
             );
 
             $connection->setPreferredPaymentFlowService(

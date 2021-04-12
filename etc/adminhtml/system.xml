@@ -10,28 +10,27 @@
         <section id="payment">
             <group id="resursbank_section">
                 <group id="resursbank">
-                    <group id="simplified" translate="label" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Resurs Bank Simplified</label>
-                        <field id="wait_for_fraud_control" type="select" sortOrder="0" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <group id="advanced">
+                        <field id="wait_for_fraud_control" type="select" sortOrder="90" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Wait for fraud control</label>
-                            <comment>Defines whether the plugin should wait for the fraud control when booking payments, or not.</comment>
+                            <comment>Execute fraud controls before booking payments.</comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                            <config_path>resursbank/simplified/wait_for_fraud_control</config_path>
+                            <config_path>payment/resursbank_simplified/wait_for_fraud_control</config_path>
                         </field>
-                        <field id="annul_if_frozen" type="select" sortOrder="1" translate="label, comment"  showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Annul if frozen</label>
-                            <comment>Defines if a payment should be annulled immediately if Resurs Bank returns a FROZEN state. This setting requires waitForFraudControl to be active.</comment>
+                        <field id="annul_if_frozen" type="select" sortOrder="91" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Cancel automatically</label>
+                            <comment>When the payment is assigned status FROZEN.</comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>payment/resursbank_simplified/annul_if_frozen</config_path>
                             <depends>
-                                <field id="resursbank/simplified/wait_for_fraud_control">1</field>
+                                <field id="wait_for_fraud_control">1</field>
                             </depends>
-                            <config_path>resursbank/simplified/annul_if_frozen</config_path>
                         </field>
-                        <field id="finalize_if_booked" type="select" sortOrder="2" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Finalize if booked</label>
-                            <comment>Defines if a payment should be debited immediately on a booked payment.</comment>
+                        <field id="finalize_if_booked" type="select" sortOrder="92" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Debit automatically</label>
+                            <comment>When the payment has been booked.</comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                            <config_path>resursbank/simplified/finalize_if_booked</config_path>
+                            <config_path>payment/resursbank_simplified/finalize_if_booked</config_path>
                         </field>
                     </group>
                 </group>
