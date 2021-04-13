@@ -13,13 +13,13 @@
                     <group id="advanced">
                         <field id="wait_for_fraud_control" type="select" sortOrder="90" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Wait for fraud control</label>
-                            <comment>Execute fraud controls before booking payments.</comment>
+                            <comment>Perform fraud controls before booking payments. Consult Resurs Bank before activating.</comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/resursbank_simplified/wait_for_fraud_control</config_path>
                         </field>
                         <field id="annul_if_frozen" type="select" sortOrder="91" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Cancel automatically</label>
-                            <comment>When the payment is assigned status FROZEN.</comment>
+                            <comment>When the payment is assigned status FROZEN. Consult Resurs Bank before activating.</comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/resursbank_simplified/annul_if_frozen</config_path>
                             <depends>
@@ -28,7 +28,7 @@
                         </field>
                         <field id="finalize_if_booked" type="select" sortOrder="92" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Debit automatically</label>
-                            <comment>When the payment has been booked.</comment>
+                            <comment>When the payment has been booked. Consult Resurs Bank before activating.</comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/resursbank_simplified/finalize_if_booked</config_path>
                         </field>

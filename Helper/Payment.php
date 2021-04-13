@@ -72,6 +72,7 @@ class Payment extends AbstractHelper
      * @param PaymentMethodRepository $paymentMethodRepo
      * @param CoreApi $coreApi
      * @param Config $configHelper
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Context $context,
@@ -87,9 +88,9 @@ class Payment extends AbstractHelper
         $this->paymentMethodRepo = $paymentMethodRepo;
         $this->coreApi = $coreApi;
         $this->configHelper = $configHelper;
+        $this->storeManager = $storeManager;
 
         parent::__construct($context);
-        $this->storeManager = $storeManager;
     }
 
     /**
