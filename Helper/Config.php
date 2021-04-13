@@ -55,8 +55,8 @@ class Config extends AbstractConfig
      * @return bool
      */
     public function isActive(
-        ?string $scopeCode = null,
-        string $scopeType = ScopeInterface::SCOPE_STORE
+        ?string $scopeCode,
+        string $scopeType = ScopeInterface::SCOPE_STORES
     ): bool {
         return $this->coreConfig->getFlow($scopeCode, $scopeType) ===
             self::API_FLOW_OPTION;
@@ -68,8 +68,8 @@ class Config extends AbstractConfig
      * @return bool
      */
     public function isWaitingForFraudControl(
-        ?string $scopeCode = null,
-        string $scopeType = ScopeInterface::SCOPE_STORE
+        ?string $scopeCode,
+        string $scopeType = ScopeInterface::SCOPE_STORES
     ): bool {
         return $this->isEnabled(
             self::GROUP,
@@ -85,8 +85,8 @@ class Config extends AbstractConfig
      * @return bool
      */
     public function isAnnulIfFrozen(
-        ?string $scopeCode = null,
-        string $scopeType = ScopeInterface::SCOPE_STORE
+        ?string $scopeCode,
+        string $scopeType = ScopeInterface::SCOPE_STORES
     ): bool {
         return $this->isEnabled(
             self::GROUP,
@@ -102,8 +102,8 @@ class Config extends AbstractConfig
      * @return bool
      */
     public function isFinalizeIfBooked(
-        ?string $scopeCode = null,
-        string $scopeType = ScopeInterface::SCOPE_STORE
+        ?string $scopeCode,
+        string $scopeType = ScopeInterface::SCOPE_STORES
     ): bool {
         return $this->isEnabled(
             self::GROUP,

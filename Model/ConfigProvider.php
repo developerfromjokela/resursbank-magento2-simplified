@@ -11,9 +11,11 @@ namespace Resursbank\Simplified\Model;
 use Exception;
 use JsonException;
 use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Api\Data\PaymentMethodInterface;
-use Resursbank\Simplified\Helper\Log;
 use Resursbank\Core\Helper\PaymentMethods;
+use Resursbank\Simplified\Helper\Log;
 
 /**
  * Gather all of our payment methods and put them in their own section of the
@@ -32,15 +34,22 @@ class ConfigProvider implements ConfigProviderInterface
     private $helper;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * @param Log $log
      * @param PaymentMethods $helper
      */
     public function __construct(
         Log $log,
-        PaymentMethods $helper
+        PaymentMethods $helper,
+        StoreManagerInterface $storeManager
     ) {
         $this->log = $log;
         $this->helper = $helper;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -59,7 +68,12 @@ class ConfigProvider implements ConfigProviderInterface
         ];
 
         try {
-            foreach ($this->helper->getMethodsByCredentials() as $method) {
+            $methods = $this->helper->getMethodsByCredentials(
+                $this->storeManager->getStore()->getCode(),
+                ScopeInterface::SCOPE_STORES
+            );
+
+            foreach ($methods as $method) {
                 $result['payment']['resursbank_simplified']['methods'][] =
                     $this->mapPaymentMethod($method);
             }

@@ -12,6 +12,8 @@ use Exception;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\ValidatorException;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\ApiDataException;
 use Resursbank\Core\Helper\Api as CoreApi;
 use Resursbank\Core\Helper\Api\Credentials;
@@ -46,15 +48,22 @@ class Address extends AbstractHelper
     public $coreApi;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * @inheritDoc
      */
     public function __construct(
         Context $context,
         Credentials $credentials,
-        CoreApi $coreApi
+        CoreApi $coreApi,
+        StoreManagerInterface $storeManager
     ) {
         $this->coreApi = $coreApi;
         $this->credentials = $credentials;
+        $this->storeManager = $storeManager;
 
         parent::__construct($context);
     }
@@ -75,7 +84,10 @@ class Address extends AbstractHelper
         bool $isCompany
     ): ApiAddress {
         $connection = $this->coreApi->getConnection(
-            $this->credentials->resolveFromConfig()
+            $this->credentials->resolveFromConfig(
+                $this->storeManager->getStore()->getCode(),
+                ScopeInterface::SCOPE_STORES
+            )
         );
 
         $address = $connection->getAddress(

@@ -19,6 +19,7 @@ use Magento\Sales\Api\Data\OrderAddressInterface;
 use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
 use Magento\Sales\Model\Order;
+use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Core\Helper\Api as CoreApi;
@@ -60,12 +61,18 @@ class Payment extends AbstractHelper
     public $coreApi;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * @param Context $context
      * @param Session $session
      * @param QuoteConverter $quoteConverter
      * @param PaymentMethodRepository $paymentMethodRepo
      * @param CoreApi $coreApi
      * @param Config $configHelper
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Context $context,
@@ -73,13 +80,15 @@ class Payment extends AbstractHelper
         QuoteConverter $quoteConverter,
         PaymentMethodRepository $paymentMethodRepo,
         CoreApi $coreApi,
-        ConfigHelper $configHelper
+        ConfigHelper $configHelper,
+        StoreManagerInterface $storeManager
     ) {
         $this->session = $session;
         $this->quoteConverter = $quoteConverter;
         $this->paymentMethodRepo = $paymentMethodRepo;
         $this->coreApi = $coreApi;
         $this->configHelper = $configHelper;
+        $this->storeManager = $storeManager;
 
         parent::__construct($context);
     }
@@ -288,24 +297,27 @@ class Payment extends AbstractHelper
      *
      * @param ResursBank $connection
      * @return self
+     * @throws NoSuchEntityException
      */
     public function setPaymentData(
         ResursBank $connection
     ): self {
+        $storeCode = $this->storeManager->getStore()->getCode();
+
         // Wait for fraud controls to be performed.
         $connection->setWaitForFraudControl(
-            $this->configHelper->isWaitingForFraudControl()
+            $this->configHelper->isWaitingForFraudControl($storeCode)
         );
 
         // Automatically annul payment if it becomes [FROZEN].
         $connection->setAnnulIfFrozen(
-            $this->configHelper->isWaitingForFraudControl() &&
-            $this->configHelper->isAnnulIfFrozen()
+            $this->configHelper->isWaitingForFraudControl($storeCode) &&
+            $this->configHelper->isAnnulIfFrozen($storeCode)
         );
 
         // Automatically finalize payment if it becomes [BOOKED].
         $connection->setFinalizeIfBooked(
-            $this->configHelper->isFinalizeIfBooked()
+            $this->configHelper->isFinalizeIfBooked($storeCode)
         );
 
         return $this;
