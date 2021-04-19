@@ -14,10 +14,10 @@ define(
         'ko',
         'uiRegistry',
         'mage/translate',
+        'mage/url',
         'Magento_Checkout/js/model/quote',
         'Magento_Checkout/js/view/payment/default',
         'Magento_Checkout/js/action/redirect-on-success',
-        'mage/url',
         'Magento_Checkout/js/model/totals',
         'Magento_Checkout/js/checkout-data',
         'Magento_Ui/js/lib/validation/validator',
@@ -50,10 +50,10 @@ define(
         ko,
         uiRegistry,
         translate,
+        url,
         Quote,
         Component,
         redirectOnSuccessAction,
-        url,
         totals,
         CheckoutData,
         validator,
@@ -570,6 +570,10 @@ define(
                 ) {
                     if (response.error.message === '') {
                         me.placeOrder(data, event);
+                    } else {
+                        me.messageContainer.addErrorMessage({
+                            message: response.error.message
+                        });
                     }
                 }
 
