@@ -59,10 +59,8 @@ define(
             /**
              * Validates an ssn or organization number.
              *
-             * NOTE: The if-else is as intended to support the nestled business
-             * logic.
-             *
-             * NOTE: Some countries do not require an SSN.
+             * NOTE: Some countries do not require an SSN, so the result will
+             * be "true" when the "idNum" parameter is an empty string.
              *
              * @param {string} idNum
              * @param {string} country
@@ -80,7 +78,7 @@ define(
                             result = EXPORT.validateSsn(idNum, country);
                         }
                     }
-                } else {
+                } else if (!this.isSweden(country)) {
                     result = true;
                 }
 
