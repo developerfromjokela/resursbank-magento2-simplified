@@ -53,7 +53,7 @@
                 disabled: disableIdNumber
                 },
                 value: idNumber,
-                valueUpdate: 'blur'">
+                valueUpdate: 'input'">
             <!-- ko if: invalidIdNumber() -->
             <div class="field-error">
                 <span data-bind="i18n: 'Wrong SSN/Org. number.'"></span>
@@ -76,7 +76,7 @@
                    id: getCode() + '-contact-id',
                    disabled: disableContactId
                    },
-                   valueUpdate: 'blur'">
+                   valueUpdate: 'input'">
             <!-- ko if: invalidContactId() -->
             <div class="field-error">
                 <span data-bind="i18n: 'Wrong SSN/Org. number.'"></span>
@@ -120,7 +120,7 @@
                     id: getCode() + '-card-number'
                     },
                     value: cardNumber,
-                    valueUpdate: 'blur'">
+                    valueUpdate: 'input'">
 
                 <!-- ko if: invalidCardNumber() -->
                 <div class="field-error">
