@@ -25,6 +25,7 @@ define(
         /**
          * @typedef {object} Simplified.Storage.Checkout.Data
          * @property {string|undefined} isCompany
+         * @property {string|undefined} govId
          */
 
         /**
@@ -47,6 +48,51 @@ define(
              */
             getData: function () {
                 return storage.get(cacheKey);
+            },
+
+            /**
+             * @param {string} value
+             * @throws {Error}
+             */
+            setGovId: function (value) {
+                var data;
+
+                if (typeof value !== 'string') {
+                    throw Error(
+                        'Local storage key [govId] expects a string value.'
+                    );
+                }
+
+                data = EXPORT.getData();
+
+                if (typeof data !== 'undefined') {
+                    data.govId = JSON.stringify(value);
+                }
+
+                storage.set(cacheKey, data);
+            },
+
+            /**
+             * @return {string|undefined}
+             */
+            getGovId: function () {
+                var data = EXPORT.getData();
+
+                /** @type {string|undefined} */
+                var value = typeof data !== 'undefined' ?
+                    data.govId :
+                    data;
+
+                return typeof value !== 'undefined' ?
+                    JSON.parse(value) :
+                    value;
+            },
+
+            /**
+             * @return {boolean}
+             */
+            removeGovId: function () {
+                return storage.remove(cacheKey, 'govId');
             },
 
             /**
@@ -93,7 +139,7 @@ define(
              * @return {boolean}
              */
             removeIsCompany: function () {
-                return storage.remove('isCompany');
+                return storage.remove(cacheKey, 'isCompany');
             }
         };
 

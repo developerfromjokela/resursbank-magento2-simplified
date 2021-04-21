@@ -35,7 +35,7 @@
         <!-- ko if: hasSsnField -->
         <div
             class="resursbank-simplified-payment-method-ssn resursbank-simplified-payment-method-input field required"
-            data-bind="css: {_error: invalidIdNumber }">
+            data-bind="css: {_error: invalidGovId }">
             <label class="label" data-bind="attr: {for: getCode() + '-id-number'}">
                 <!-- ko if: !isCompanyCustomer() -->
                 <span data-bind="i18n: 'SSN (YYYYMMDDXXXX)'"></span>
@@ -50,11 +50,11 @@
                 class="input-text"
                 data-bind="attr: {
                 id: getCode() + '-id-number',
-                disabled: disableIdNumber
+                disabled: disableGovId
                 },
-                value: idNumber,
+                value: govId,
                 valueUpdate: 'input'">
-            <!-- ko if: invalidIdNumber() -->
+            <!-- ko if: invalidGovId() -->
             <div class="field-error">
                 <span data-bind="i18n: 'Wrong SSN/Org. number.'"></span>
             </div>
