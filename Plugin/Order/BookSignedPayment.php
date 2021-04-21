@@ -11,6 +11,7 @@ namespace Resursbank\Simplified\Plugin\Order;
 use Exception;
 use Magento\Checkout\Controller\Onepage\Success;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Helper\Order;
 use Resursbank\Core\Helper\Request;
 use Resursbank\Simplified\Helper\Config;
@@ -48,6 +49,11 @@ class BookSignedPayment
     private $config;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * @param Log $log
      * @param Payment $payment
      * @param Request $request
@@ -59,13 +65,15 @@ class BookSignedPayment
         Payment $payment,
         Request $request,
         Order $order,
-        Config $config
+        Config $config,
+        StoreManagerInterface $storeManager
     ) {
         $this->log = $log;
         $this->payment = $payment;
         $this->request = $request;
         $this->order = $order;
         $this->config = $config;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -80,9 +88,13 @@ class BookSignedPayment
         ResultInterface $result
     ): ResultInterface {
         try {
-            if ($this->config->isActive()) {
+            $storeCode = $this->storeManager->getStore()->getCode();
+
+            if ($this->config->isActive($storeCode)) {
                 $this->payment->bookPaymentSession(
-                    $this->order->getOrderByQuoteId($this->request->getQuoteId())
+                    $this->order->getOrderByQuoteId(
+                        $this->request->getQuoteId()
+                    )
                 );
             }
         } catch (Exception $e) {

@@ -4,11 +4,16 @@
  * See LICENSE for license details.
  */
 
+declare(strict_types=1);
+
 namespace Resursbank\Simplified\Plugin\Layout\File;
 
+use Exception;
 use Magento\Framework\View\File;
 use Magento\Framework\View\Layout\File\Collector\Aggregated;
+use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Simplified\Helper\Config;
+use Resursbank\Simplified\Helper\Log;
 use function strpos;
 
 /**
@@ -27,12 +32,26 @@ class Collector
     private $config;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * @var Log
+     */
+    private $log;
+
+    /**
      * @param Config $config
      */
     public function __construct(
-        Config $config
+        Config $config,
+        StoreManagerInterface $storeManager,
+        Log $log
     ) {
         $this->config = $config;
+        $this->storeManager = $storeManager;
+        $this->log = $log;
     }
 
     /**
@@ -49,12 +68,18 @@ class Collector
         Aggregated $subject,
         array $result
     ): array {
-        if (!$this->config->isActive()) {
-            foreach ($result as $key => $file) {
-                if ($this->isOurLayoutFile($file)) {
-                    unset($result[$key]);
+        try {
+            $storeCode = $this->storeManager->getStore()->getCode();
+
+            if (!$this->config->isActive($storeCode)) {
+                foreach ($result as $key => $file) {
+                    if ($this->isOurLayoutFile($file)) {
+                        unset($result[$key]);
+                    }
                 }
             }
+        } catch (Exception $e) {
+            $this->log->exception($e);
         }
 
         return $result;

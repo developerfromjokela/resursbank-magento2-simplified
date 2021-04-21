@@ -6,4 +6,13 @@
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <resursbank_simplified>
+                <wait_for_fraud_control>0</wait_for_fraud_control>
+                <annul_if_frozen>0</annul_if_frozen>
+                <finalize_if_booked>0</finalize_if_booked>
+            </resursbank_simplified>
+        </payment>
+    </default>
 </config>

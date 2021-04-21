@@ -8,6 +8,8 @@ namespace Resursbank\Simplified\Plugin\Layout;
 
 use Exception;
 use Magento\Checkout\Block\Checkout\LayoutProcessor\Interceptor;
+use Magento\Store\Model\ScopeInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Simplified\Helper\Log;
@@ -33,15 +35,23 @@ class Layout
     private $helper;
 
     /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * @param Log $log
      * @param PaymentMethods $helper
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Log $log,
-        PaymentMethods $helper
+        PaymentMethods $helper,
+        StoreManagerInterface $storeManager
     ) {
         $this->log = $log;
         $this->helper = $helper;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -57,14 +67,16 @@ class Layout
         array $result
     ): array {
         try {
-            /** @var string|null $code */
-            $code = null;
-
             if (isset($result['components']['checkout']['children']['steps']
                 ['children']['billing-step']['children']
                 ['payment']['children'])
             ) {
-                foreach ($this->helper->getMethodsByCredentials() as $method) {
+                $methods = $this->helper->getMethodsByCredentials(
+                    $this->storeManager->getStore()->getCode(),
+                    ScopeInterface::SCOPE_STORES
+                );
+
+                foreach ($methods as $method) {
                     $code = $method->getCode();
 
                     if (!is_string($code)) {
