@@ -21,3 +21,5 @@
 "Cancel automatically","Avbryt automatiskt"
 "Debit automatically","Debitera automatiskt"
 "Two step Magento Checkout with Resurs payment methods","Tvåstegs Magento kassa med Resurs betalmetoder"
+"Payment denied.","Betalningen godkändes inte."
+"Payment failed","Betalningen misslyckades."
