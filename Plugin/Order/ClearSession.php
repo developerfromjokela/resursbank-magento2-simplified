@@ -9,8 +9,11 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Plugin\Order;
 
 use Exception;
+use Magento\Checkout\Controller\Onepage\Failure;
 use Magento\Checkout\Controller\Onepage\Success;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\View\Result\Page;
 use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Simplified\Helper\Config;
 use Resursbank\Simplified\Helper\Log;
@@ -46,6 +49,7 @@ class ClearSession
      * @param Log $log
      * @param SessionHelper $sessionHelper
      * @param Config $config
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Log $log,
@@ -60,16 +64,16 @@ class ClearSession
     }
 
     /**
-     * @param Success $subject
-     * @param ResultInterface $result
-     * @return ResultInterface
+     * @param Success|Failure $subject
+     * @param ResultInterface|Redirect|Page $result
+     * @return ResultInterface|Redirect|Page
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection
      */
     public function afterExecute(
-        Success $subject,
-        ResultInterface $result
-    ): ResultInterface {
+        $subject,
+        $result
+    ) {
         try {
             $storeCode = $this->storeManager->getStore()->getCode();
 

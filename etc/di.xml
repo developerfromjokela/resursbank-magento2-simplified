@@ -34,28 +34,6 @@
             type="Resursbank\Simplified\Plugin\Gateway\Command\Authorize" />
     </type>
 
-    <!--
-    Book signed payment (i.e. create payment at Resurs Bank) after order
-    placement.
-
-    NOTE: The order of execution is important. There are several other events
-    which occur at order placement. See the Core module for most of them.
-     -->
-    <type name="Magento\Checkout\Controller\Onepage\Success">
-        <plugin
-            name="resursbank_simplified_order_success"
-            type="Resursbank\Simplified\Plugin\Order\BookSignedPayment"
-            sortOrder="11"/>
-    </type>
-
-    <!-- Clear session data after order placement. -->
-    <type name="Magento\Checkout\Controller\Onepage\Success">
-        <plugin
-            name="resursbank_simplified_order_clear_session"
-            type="Resursbank\Simplified\Plugin\Order\ClearSession"
-            sortOrder="111"/>
-    </type>
-
     <!-- Append module version info to API call user agent header. -->
     <type name="Resursbank\Core\Helper\Api">
         <plugin
