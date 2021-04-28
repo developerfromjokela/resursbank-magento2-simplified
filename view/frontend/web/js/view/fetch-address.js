@@ -196,6 +196,7 @@ define(
                  * @type {Simplified.Observable.Boolean}
                  */
                 me.showComponent = ko.computed(function () {
+                    console.log(CheckoutConfig.getDefaultCountryId());
                     return CheckoutConfig.getDefaultCountryId() === 'SE';
                 });
 

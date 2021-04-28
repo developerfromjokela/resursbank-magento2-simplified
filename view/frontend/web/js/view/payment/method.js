@@ -528,7 +528,9 @@ define(
                     data,
                     event
                 ) {
-                    if (me.canPlaceOrder()) {
+                    if (!me.isResursInternalMethod()) {
+                        me.placeOrder(data, event);
+                    } else if (me.canPlaceOrder()) {
                         SessionLib.setSessionData({
                             gov_id: me.govId(),
                             is_company: me.isCompanyCustomer(),
