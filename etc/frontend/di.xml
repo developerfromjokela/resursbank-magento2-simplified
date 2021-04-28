@@ -7,6 +7,8 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <!-- Append payment method data to frontend config provider. -->
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
@@ -15,5 +17,36 @@
                 </item>
             </argument>
         </arguments>
+    </type>
+
+    <!-- Events occruing after successful order placement. -->
+    <type name="Magento\Checkout\Controller\Onepage\Success">
+        <!--
+        Book signed payment (i.e. create payment at Resurs Bank) after order
+        placement.
+
+        NOTE: The order of execution is important. There are several other
+        events which occur at order placement. See the Core module for most of
+        them.
+        -->
+        <plugin
+            name="resursbank_simplified_order_success"
+            type="Resursbank\Simplified\Plugin\Order\BookSignedPayment"
+            sortOrder="11"/>
+
+        <!-- Clear session data after order placement. -->
+        <plugin
+            name="resursbank_simplified_order_clear_session_success"
+            type="Resursbank\Simplified\Plugin\Order\ClearSession"
+            sortOrder="111"/>
+    </type>
+
+
+    <!-- Clear session data after order placement failure. -->
+    <type name="Magento\Checkout\Controller\Onepage\Failure">
+        <plugin
+            name="resursbank_simplified_order_clear_session_failure"
+            type="Resursbank\Simplified\Plugin\Order\ClearSession"
+            sortOrder="111"/>
     </type>
 </config>
