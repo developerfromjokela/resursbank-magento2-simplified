@@ -10,7 +10,9 @@ namespace Resursbank\Simplified\Plugin\Order;
 
 use Exception;
 use Magento\Checkout\Controller\Onepage\Success;
+use Magento\Framework\Controller\Result\Redirect;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\UrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Helper\Order;
 use Resursbank\Core\Helper\Request;
@@ -54,11 +56,18 @@ class BookSignedPayment
     private $storeManager;
 
     /**
+     * @var UrlInterface
+     */
+    private $url;
+
+    /**
      * @param Log $log
      * @param Payment $payment
      * @param Request $request
      * @param Order $order
      * @param Config $config
+     * @param StoreManagerInterface $storeManager
+     * @param UrlInterface $url
      */
     public function __construct(
         Log $log,
@@ -66,7 +75,8 @@ class BookSignedPayment
         Request $request,
         Order $order,
         Config $config,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        UrlInterface $url
     ) {
         $this->log = $log;
         $this->payment = $payment;
@@ -74,11 +84,12 @@ class BookSignedPayment
         $this->order = $order;
         $this->config = $config;
         $this->storeManager = $storeManager;
+        $this->url = $url;
     }
 
     /**
      * @param Success $subject
-     * @param ResultInterface $result
+     * @param ResultInterface|Redirect $result
      * @return ResultInterface
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection
@@ -99,6 +110,16 @@ class BookSignedPayment
             }
         } catch (Exception $e) {
             $this->log->exception($e);
+
+            $result->setHttpResponseCode(302)->setHeader(
+                'Location',
+                $this->url->getUrl(
+                    'checkout/onepage/failure',
+                    [
+                        'disable_rebuild_cart' => 1
+                    ]
+                )
+            );
         }
 
         return $result;
