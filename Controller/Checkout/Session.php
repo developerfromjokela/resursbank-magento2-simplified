@@ -18,6 +18,9 @@ use Resursbank\Core\Model\PaymentMethodRepository;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Request;
 use Resursbank\Simplified\Helper\Session as CheckoutSession;
+use function in_array;
+use function is_array;
+use function is_string;
 
 /**
  * Store data supplied through inputs in the checkout process in the PHP session
@@ -151,10 +154,21 @@ class Session implements HttpPostActionInterface
                 JSON_THROW_ON_ERROR
             );
 
-            $customerType = $raw->customerType ?? '';
-            $result = $isCompany ?
-                $customerType === 'LEGAL' :
-                $customerType === 'NATURAL';
+            $customerType = $raw->customerType ?? [];
+
+            if (is_string($customerType)) {
+                $customerType = [$customerType];
+            }
+
+            $search = $isCompany ? 'LEGAL' : 'NATURAL';
+
+            $result = (
+                is_array($customerType) &&
+                (
+                    empty($customerType) ||
+                    in_array($search, $customerType, true)
+                )
+            );
         }
 
         return $result;

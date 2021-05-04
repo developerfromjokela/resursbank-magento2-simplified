@@ -16,6 +16,8 @@ use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Api\Data\PaymentMethodInterface;
 use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Simplified\Helper\Log;
+use function is_array;
+use function is_string;
 
 /**
  * Gather all of our payment methods and put them in their own section of the
@@ -41,6 +43,7 @@ class ConfigProvider implements ConfigProviderInterface
     /**
      * @param Log $log
      * @param PaymentMethods $helper
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Log $log,
@@ -105,6 +108,12 @@ class ConfigProvider implements ConfigProviderInterface
             ) :
             [];
 
+        $customerType = $decoded['customerType'] ?? [];
+
+        $customerType = is_string($customerType) ?
+            [$decoded['customerType']] :
+            $decoded['customerType'];
+
         return [
             'code' => $method->getCode(),
             'title' => $method->getTitle(),
@@ -112,7 +121,7 @@ class ConfigProvider implements ConfigProviderInterface
             'sortOrder' => $method->getSortOrder(0),
             'type' => $decoded['type'] ?? '',
             'specificType' => $decoded['specificType'] ?? '',
-            'customerType' => $decoded['customerType'] ?? ''
+            'customerType' => is_array($customerType) ? $customerType : []
         ];
     }
 }

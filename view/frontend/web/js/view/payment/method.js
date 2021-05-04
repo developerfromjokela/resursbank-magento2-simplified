@@ -248,10 +248,10 @@ define(
 
             return (
                 CheckoutModel.isCompany() &&
-                method.customerType === 'LEGAL'
+                method.customerType.includes('LEGAL')
             ) || (
                 !CheckoutModel.isCompany() &&
-                method.customerType === 'NATURAL'
+                method.customerType.includes('NATURAL')
             );
         }
 
