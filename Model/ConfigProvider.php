@@ -109,6 +109,7 @@ class ConfigProvider implements ConfigProviderInterface
             'code' => $method->getCode(),
             'title' => $method->getTitle(),
             'maxOrderTotal' => $method->getMaxOrderTotal(),
+            'sortOrder' => $method->getSortOrder(0),
             'type' => $decoded['type'] ?? '',
             'specificType' => $decoded['specificType'] ?? '',
             'customerType' => $decoded['customerType'] ?? ''
