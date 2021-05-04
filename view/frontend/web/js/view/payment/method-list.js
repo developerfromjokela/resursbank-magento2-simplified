@@ -28,6 +28,9 @@ define(
 
         methods.forEach(function (method) {
             RendererList.push({
+                config: {
+                    sortOrder: method.sortOrder
+                },
                 type: method.code,
                 component: 'Resursbank_Simplified/js/view/payment/method'
             });
