@@ -9,15 +9,12 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Model;
 
 use Exception;
-use JsonException;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Api\Data\PaymentMethodInterface;
 use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Simplified\Helper\Log;
-use function is_array;
-use function is_string;
 
 /**
  * Gather all of our payment methods and put them in their own section of the
@@ -93,26 +90,12 @@ class ConfigProvider implements ConfigProviderInterface
      *
      * @param PaymentMethodInterface $method
      * @return array<string, mixed>
-     * @throws JsonException
      */
     private function mapPaymentMethod(
         PaymentMethodInterface $method
     ): array {
-        $rawValue = $method->getRaw('');
-        $decoded = $rawValue !== '' && $rawValue !== null ?
-            json_decode(
-                $rawValue,
-                true,
-                512,
-                JSON_THROW_ON_ERROR
-            ) :
-            [];
-
-        $customerType = $decoded['customerType'] ?? [];
-
-        $customerType = is_string($customerType) ?
-            [$decoded['customerType']] :
-            $decoded['customerType'];
+        $test= $this->helper->getCustomerTypes($method);
+        $this->log->info(\json_encode($test), true);
 
         return [
             'code' => $method->getCode(),
@@ -121,7 +104,7 @@ class ConfigProvider implements ConfigProviderInterface
             'sortOrder' => $method->getSortOrder(0),
             'type' => $decoded['type'] ?? '',
             'specificType' => $decoded['specificType'] ?? '',
-            'customerType' => is_array($customerType) ? $customerType : []
+            'customerType' => $test
         ];
     }
 }
