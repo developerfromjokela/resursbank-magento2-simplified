@@ -9,17 +9,16 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Controller\Checkout;
 
 use Exception;
-use JsonException;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Model\PaymentMethodRepository;
+use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Request;
 use Resursbank\Simplified\Helper\Session as CheckoutSession;
 use function in_array;
-use function is_array;
 use function is_string;
 
 /**
@@ -49,21 +48,29 @@ class Session implements HttpPostActionInterface
     private $paymentMethodRepo;
 
     /**
+     * @var PaymentMethods
+     */
+    private $paymentMethods;
+
+    /**
      * @param Log $log
      * @param CheckoutSession $session
      * @param Request $requestHelper
      * @param PaymentMethodRepository $paymentMethodRepo
+     * @param PaymentMethods $paymentMethods
      */
     public function __construct(
         Log $log,
         CheckoutSession $session,
         Request $requestHelper,
-        PaymentMethodRepository $paymentMethodRepo
+        PaymentMethodRepository $paymentMethodRepo,
+        PaymentMethods $paymentMethods
     ) {
         $this->log = $log;
         $this->session = $session;
         $this->requestHelper = $requestHelper;
         $this->paymentMethodRepo = $paymentMethodRepo;
+        $this->paymentMethods = $paymentMethods;
     }
 
     /**
@@ -136,41 +143,21 @@ class Session implements HttpPostActionInterface
      * @param string $methodCode
      * @param bool $isCompany
      * @return bool
-     * @throws JsonException
      * @throws NoSuchEntityException
      */
     public function isValidMethod(
         string $methodCode,
         bool $isCompany
     ): bool {
-        $result = false;
         $method = $this->paymentMethodRepo->getByCode($methodCode);
 
-        if ($method->getActive(false) && is_string($method->getRaw())) {
-            $raw = json_decode(
-                $method->getRaw(),
-                false,
-                512,
-                JSON_THROW_ON_ERROR
-            );
-
-            $customerType = $raw->customerType ?? [];
-
-            if (is_string($customerType)) {
-                $customerType = [$customerType];
-            }
-
-            $search = $isCompany ? 'LEGAL' : 'NATURAL';
-
-            $result = (
-                is_array($customerType) &&
-                (
-                    empty($customerType) ||
-                    in_array($search, $customerType, true)
-                )
-            );
-        }
-
-        return $result;
+        return (
+            $method->getActive(false) &&
+            in_array(
+                ($isCompany ? 'LEGAL' : 'NATURAL'),
+                $this->paymentMethods->getCustomerTypes($method),
+                true
+            )
+        );
     }
 }
