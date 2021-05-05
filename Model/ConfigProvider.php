@@ -94,9 +94,6 @@ class ConfigProvider implements ConfigProviderInterface
     private function mapPaymentMethod(
         PaymentMethodInterface $method
     ): array {
-        $test= $this->helper->getCustomerTypes($method);
-        $this->log->info(\json_encode($test), true);
-
         return [
             'code' => $method->getCode(),
             'title' => $method->getTitle(),
@@ -104,7 +101,7 @@ class ConfigProvider implements ConfigProviderInterface
             'sortOrder' => $method->getSortOrder(0),
             'type' => $decoded['type'] ?? '',
             'specificType' => $decoded['specificType'] ?? '',
-            'customerType' => $test
+            'customerType' => $this->helper->getCustomerTypes($method)
         ];
     }
 }
