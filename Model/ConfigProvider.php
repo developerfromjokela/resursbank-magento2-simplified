@@ -94,13 +94,15 @@ class ConfigProvider implements ConfigProviderInterface
     private function mapPaymentMethod(
         PaymentMethodInterface $method
     ): array {
+        $data = $this->helper->getRaw($method);
+
         return [
             'code' => $method->getCode(),
             'title' => $method->getTitle(),
             'maxOrderTotal' => $method->getMaxOrderTotal(),
             'sortOrder' => $method->getSortOrder(0),
-            'type' => $decoded['type'] ?? '',
-            'specificType' => $decoded['specificType'] ?? '',
+            'type' => $data['type'] ?? '',
+            'specificType' => $data['specificType'] ?? '',
             'customerType' => $this->helper->getCustomerTypes($method)
         ];
     }
