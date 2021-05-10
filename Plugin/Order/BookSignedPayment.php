@@ -10,9 +10,10 @@ namespace Resursbank\Simplified\Plugin\Order;
 
 use Exception;
 use Magento\Checkout\Controller\Onepage\Success;
-use Magento\Framework\Controller\Result\Redirect;
+use Magento\Checkout\Model\Session;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\UrlInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Helper\Order;
 use Resursbank\Core\Helper\Request;
@@ -61,6 +62,16 @@ class BookSignedPayment
     private $url;
 
     /**
+     * @var OrderRepositoryInterface
+     */
+    private $orderRepository;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
      * @param Log $log
      * @param Payment $payment
      * @param Request $request
@@ -68,6 +79,8 @@ class BookSignedPayment
      * @param Config $config
      * @param StoreManagerInterface $storeManager
      * @param UrlInterface $url
+     * @param OrderRepositoryInterface $orderRepository
+     * @param Session $session
      */
     public function __construct(
         Log $log,
@@ -76,7 +89,9 @@ class BookSignedPayment
         Order $order,
         Config $config,
         StoreManagerInterface $storeManager,
-        UrlInterface $url
+        UrlInterface $url,
+        OrderRepositoryInterface $orderRepository,
+        Session $session
     ) {
         $this->log = $log;
         $this->payment = $payment;
@@ -85,11 +100,13 @@ class BookSignedPayment
         $this->config = $config;
         $this->storeManager = $storeManager;
         $this->url = $url;
+        $this->orderRepository = $orderRepository;
+        $this->session = $session;
     }
 
     /**
      * @param Success $subject
-     * @param ResultInterface|Redirect $result
+     * @param ResultInterface $result
      * @return ResultInterface
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection
@@ -111,6 +128,18 @@ class BookSignedPayment
         } catch (Exception $e) {
             $this->log->exception($e);
 
+            // Cancel to order (so it won't be left as pending / processing).
+            $this->cancelOrder();
+
+            // Because the message bag is not rendered on the failure page.
+            /** @noinspection PhpUndefinedMethodInspection */
+            $this->session->setErrorMessage(__(
+                'Something went wrong when completing your payment. Your ' .
+                'order has been canceled. We apologize for this ' .
+                'inconvenience, please try again.'
+            ));
+
+            // Redirect to failure page (without rebuilding the cart).
             $result->setHttpResponseCode(302)->setHeader(
                 'Location',
                 $this->url->getUrl(
@@ -123,5 +152,21 @@ class BookSignedPayment
         }
 
         return $result;
+    }
+
+    /**
+     * @return void
+     */
+    private function cancelOrder(): void
+    {
+        try {
+            $this->orderRepository->save(
+                $this->order->getOrderByQuoteId(
+                    $this->request->getQuoteId()
+                )->cancel()
+            );
+        } catch (Exception $e) {
+            $this->log->exception($e);
+        }
     }
 }
