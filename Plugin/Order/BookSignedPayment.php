@@ -155,8 +155,6 @@ class BookSignedPayment
     }
 
     /**
-     * Cancel request order.
-     *
      * @return void
      */
     private function cancelOrder(): void
