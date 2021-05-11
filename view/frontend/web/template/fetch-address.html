@@ -37,6 +37,7 @@
                 <span data-bind="i18n: 'Company'"></span>
             </label>
         </div>
+    <!-- ko if: isSweden() -->
         <label
             for="resursbank-simplified-fetch-address-id-number-field"
             data-bind="if: !isCompanyCustomer()">
@@ -61,6 +62,26 @@
                 </div>
             <!-- /ko -->
         </div>
+    <!-- /ko -->
+    <!-- ko if: isNorway() -->
+        <label for="resursbank-simplified-fetch-address-phone-number-field">
+            <span data-bind="i18n: 'Phone Number'"></span>
+        </label>
+        <div class="control">
+            <input
+                type="text"
+                id="resursbank-simplified-fetch-address-phone-number-field"
+                class="input-text"
+                data-bind="
+                        value: phoneNumber,
+                        disable: disablePhoneInput()">
+        <!-- ko if: failedToFetchAddressError() !== '' -->
+            <div class="field-error">
+                <span data-bind="text: failedToFetchAddressError"></span>
+            </div>
+        <!-- /ko -->
+        </div>
+    <!-- /ko -->
         <!-- ko if: !isAddressApplied() -->
             <button
                 type="button"

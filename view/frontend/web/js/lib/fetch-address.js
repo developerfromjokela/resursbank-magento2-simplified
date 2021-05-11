@@ -33,6 +33,7 @@ define(
          * @property {string} postcode
          * @property {string} street0
          * @property {string} street1
+         * @property {string} telephone
          */
 
         /**
@@ -45,7 +46,7 @@ define(
          * @property {string} type
          * @property {string} url
          * @property {object} data
-         * @property {string} data.gov_id
+         * @property {string} data.identifier
          * @property {boolean} data.is_company
          * @property {string} data.form_key
          */
@@ -66,30 +67,34 @@ define(
         var EXPORT = {
             /**
              * Sends a request to the server that returns the address
-             * information for the given SSN/Org. nr.
+             * information for the supplied SSN/Org. nr (Sweden), or phone
+             * number (Norway).
              *
-             * @param {string} idNum
+             * @param {string} identifier
              * @param {boolean} isCompany
              * @return {jQuery}
              */
-            fetchAddress: function (idNum, isCompany) {
-                return $.ajax(EXPORT.getFetchAddressCall(idNum, isCompany));
+            fetchAddress: function (identifier, isCompany) {
+                return $.ajax(EXPORT.getFetchAddressCall(
+                    identifier,
+                    isCompany)
+                );
             },
 
             /**
              * Produces a call object to make a request to fetch the address of
-             * a given SSN/Org. nr.
+             * a given SSN/Org. nr (Sweden) or phone number (Norway).
              *
-             * @param {string} idNum
+             * @param {string} identifier
              * @param {boolean} isCompany
              * @returns {Simplified.Lib.FetchAddress.Call}
              */
-            getFetchAddressCall: function (idNum, isCompany) {
+            getFetchAddressCall: function (identifier, isCompany) {
                 return {
                     type: 'POST',
                     url: EXPORT.buildUrl('checkout/fetchAddress'),
                     data: {
-                        gov_id: idNum,
+                        identifier: identifier,
                         is_company: isCompany,
                         form_key: CheckoutConfig.getFormKey()
                     }
