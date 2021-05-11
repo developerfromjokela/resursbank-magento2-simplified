@@ -19,6 +19,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\InvalidDataException;
 
 /**
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
  */
@@ -123,6 +124,8 @@ class Session extends AbstractHelper
      * @param ValidateGovernmentId $validateGovId
      * @param ValidateCard $validateCard
      * @param UrlInterface $url
+     * @param Config $config
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Context $context,
