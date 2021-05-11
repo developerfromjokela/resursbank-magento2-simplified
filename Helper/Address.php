@@ -11,6 +11,7 @@ namespace Resursbank\Simplified\Helper;
 use Exception;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\ValidatorException;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -53,36 +54,50 @@ class Address extends AbstractHelper
     private $storeManager;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * @inheritDoc
      */
     public function __construct(
         Context $context,
         Credentials $credentials,
         CoreApi $coreApi,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        Config $config
     ) {
         $this->coreApi = $coreApi;
         $this->credentials = $credentials;
         $this->storeManager = $storeManager;
+        $this->config = $config;
 
         parent::__construct($context);
     }
 
     /**
-     * Fetches a customer address using a valid government ID from Resurs Banks
-     * API.
+     * Fetch address from the API using either government id (Sweden) or a phone
+     * number (Norway).
      *
-     * @param string $governmentId
+     * @param string $identifier
      * @param bool $isCompany
      * @return ApiAddress
-     * @throws ValidatorException
      * @throws ApiDataException
+     * @throws ValidatorException
+     * @throws NoSuchEntityException
      * @throws Exception
      */
     public function fetch(
-        string $governmentId,
+        string $identifier,
         bool $isCompany
     ): ApiAddress {
+        // What country the store is associated with.
+        $country = $this->config->getCountry(
+            $this->storeManager->getStore()->getCode()
+        );
+
+        // Establish API connection.
         $connection = $this->coreApi->getConnection(
             $this->credentials->resolveFromConfig(
                 $this->storeManager->getStore()->getCode(),
@@ -90,16 +105,33 @@ class Address extends AbstractHelper
             )
         );
 
-        $address = $connection->getAddress(
-            $governmentId,
-            $this->getCustomerType($isCompany)
-        );
+        // Customer type (NATURAL|LEGAL).
+        $type = $this->getCustomerType($isCompany);
 
+        // Raw address data resolved from the API.
+        $address = null;
+
+        // Fetch address data from the API.
+        switch ($country) {
+            case 'SE':
+                $address = $connection->getAddress($identifier, $type);
+                break;
+            case 'NO':
+                $address = $connection->getAddressByPhone($identifier, $type);
+                break;
+        }
+
+        // Validate return value.
         if (!is_object($address)) {
             throw new ApiDataException(__('Failed to fetch address.'));
         }
 
-        return $this->coreApi->toAddress($address, $isCompany);
+        // Convert and return address data.
+        return $this->coreApi->toAddress(
+            $address,
+            $isCompany,
+            ($country === 'NO' ? $identifier : '')
+        );
     }
 
     /**
@@ -120,7 +152,8 @@ class Address extends AbstractHelper
             $address->getAddressRow2(),
             $address->getIsCompany() ?
                 $address->getFullName() :
-                ''
+                '',
+            $address->getTelephone()
         );
     }
 

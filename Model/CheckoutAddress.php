@@ -69,6 +69,11 @@ class CheckoutAddress
     public $company;
 
     /**
+     * @var string
+     */
+    public $telephone;
+
+    /**
      * @param string $firstName
      * @param string $lastName
      * @param string $city
@@ -77,6 +82,7 @@ class CheckoutAddress
      * @param string $street0
      * @param string $street1
      * @param string $company
+     * @param string $telephone
      * @throws ApiDataException
      */
     public function __construct(
@@ -87,7 +93,8 @@ class CheckoutAddress
         string $country,
         string $street0,
         string $street1 = '',
-        string $company = ''
+        string $company = '',
+        string $telephone = ''
     ) {
         $this->firstName = $firstName;
         $this->lastName = $lastName;
@@ -95,21 +102,23 @@ class CheckoutAddress
         $this->street0 = $street0;
         $this->street1 = $street1;
         $this->company = $company;
+        $this->telephone = $telephone;
 
-        $this->setPostcode($postcode)
-            ->setCountry($country);
+        $this->setCountry($country)->setPostcode($postcode, $country);
     }
 
     /**
-     * @see CheckoutAddress::$postcode
      * @param string $val
+     * @param string $country
      * @return self
+     * @see CheckoutAddress::$postcode
      */
     public function setPostcode(
-        string $val
+        string $val,
+        string $country
     ): self {
         // Magento expects postcodes to be formatted as "123 45".
-        if (strlen($val) > 3) {
+        if ($country === 'SE' && strlen($val) > 3) {
             $this->postcode =
                 substr($val, 0, 3) .
                 ' ' .
@@ -139,7 +148,7 @@ class CheckoutAddress
     public function setCountry(
         string $val
     ): self {
-        if ($val !== 'SE') {
+        if ($val !== 'SE' && $val !== 'NO') {
             throw new ApiDataException(
                 __('%1 is not a valid country.', $val)
             );
@@ -173,6 +182,7 @@ class CheckoutAddress
             'street0' => $this->street0,
             'street1' => $this->street1,
             'company' => $this->company,
+            'telephone' => $this->telephone
         ];
     }
 }

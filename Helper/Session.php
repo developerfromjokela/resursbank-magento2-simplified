@@ -15,6 +15,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Quote\Model\Quote;
+use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\InvalidDataException;
 
 /**
@@ -107,6 +108,16 @@ class Session extends AbstractHelper
     private $url;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
      * @param Context $context
      * @param CheckoutSession $sessionManager
      * @param ValidateGovernmentId $validateGovId
@@ -118,12 +129,16 @@ class Session extends AbstractHelper
         CheckoutSession $sessionManager,
         ValidateGovernmentId $validateGovId,
         ValidateCard $validateCard,
-        UrlInterface $url
+        UrlInterface $url,
+        Config $config,
+        StoreManagerInterface $storeManager
     ) {
         $this->checkoutSession = $sessionManager;
         $this->validateGovId = $validateGovId;
         $this->validateCard = $validateCard;
         $this->url = $url;
+        $this->config = $config;
+        $this->storeManager = $storeManager;
 
         parent::__construct($context);
     }
@@ -135,14 +150,19 @@ class Session extends AbstractHelper
      * @param bool $isCompany
      * @return self
      * @throws InvalidDataException
+     * @throws NoSuchEntityException
      * @noinspection PhpUndefinedMethodInspection
      */
     public function setGovernmentId(
         string $govId,
         bool $isCompany
     ): self {
-        if (!$this->validateGovId->sweden($govId, $isCompany, true)) {
-            throw new InvalidDataException(__('Invalid SE government ID.'));
+        $iso = $this->config->getCountry(
+            $this->storeManager->getStore()->getCode()
+        );
+
+        if (!$this->validateGovId->validate($govId, $isCompany, $iso, true)) {
+            throw new InvalidDataException(__('Invalid government ID.'));
         }
 
         /** @phpstan-ignore-next-line */

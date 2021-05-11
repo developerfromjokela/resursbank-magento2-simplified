@@ -79,6 +79,7 @@ define(
                 inputs.street1.value(address.street1);
                 inputs.country.value(address.country);
                 inputs.company.value(address.company);
+                inputs.telephone.value(address.telephone);
 
                 return EXPORT;
             },
@@ -101,6 +102,7 @@ define(
                 inputs.street1.reset();
                 inputs.country.reset();
                 inputs.company.reset();
+                inputs.telephone.reset();
 
                 return EXPORT;
             }

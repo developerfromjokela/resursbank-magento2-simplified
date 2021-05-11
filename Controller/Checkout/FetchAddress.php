@@ -11,6 +11,7 @@ namespace Resursbank\Simplified\Controller\Checkout;
 use Exception;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\ValidatorException;
 use Resursbank\Core\Exception\ApiDataException;
 use Resursbank\Core\Exception\InvalidDataException;
@@ -91,6 +92,7 @@ class FetchAddress implements HttpPostActionInterface
      * @throws ValidatorException
      * @throws MissingRequestParameterException
      * @throws InvalidDataException
+     * @throws NoSuchEntityException
      */
     private function getAddress(): array
     {
@@ -99,7 +101,7 @@ class FetchAddress implements HttpPostActionInterface
         return $this->addressHelper
             ->toCheckoutAddress(
                 $this->addressHelper->fetch(
-                    $this->requestHelper->getGovId($isCompany),
+                    $this->requestHelper->getIdentifier($isCompany),
                     $isCompany
                 )
             )

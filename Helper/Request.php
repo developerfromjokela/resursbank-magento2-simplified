@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Helper;
 
 use Exception;
+use Magento\Framework\Exception\NoSuchEntityException;
 use function is_bool;
 use function is_string;
 use Magento\Framework\App\Helper\AbstractHelper;
@@ -16,6 +17,7 @@ use Magento\Framework\App\Helper\Context;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\Controller\Result\Json;
 use Magento\Framework\Controller\ResultFactory;
+use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Exception\MissingRequestParameterException;
 
@@ -50,12 +52,30 @@ class Request extends AbstractHelper
     private $validateCard;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
+    /**
+     * @var ValidatePhoneNumber
+     */
+    private $validatePhoneNumber;
+
+    /**
      * @param Context $context
      * @param ResultFactory $resultFactory
      * @param Log $log
      * @param RequestInterface $request
      * @param ValidateGovernmentId $validateGovernmentId
      * @param ValidateCard $validateCard
+     * @param ValidatePhoneNumber $validatePhoneNumber
+     * @param Config $config
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Context $context,
@@ -63,13 +83,19 @@ class Request extends AbstractHelper
         Log $log,
         RequestInterface $request,
         ValidateGovernmentId $validateGovernmentId,
-        ValidateCard $validateCard
+        ValidateCard $validateCard,
+        ValidatePhoneNumber $validatePhoneNumber,
+        Config $config,
+        StoreManagerInterface $storeManager
     ) {
         $this->resultFactory = $resultFactory;
         $this->log = $log;
         $this->request = $request;
         $this->validateGovernmentId = $validateGovernmentId;
         $this->validateCard = $validateCard;
+        $this->config = $config;
+        $this->storeManager = $storeManager;
+        $this->validatePhoneNumber = $validatePhoneNumber;
 
         parent::__construct($context);
     }
@@ -118,6 +144,47 @@ class Request extends AbstractHelper
         if (!is_bool($result)) {
             throw new MissingRequestParameterException(
                 __('Parameter [is_company] was not set or isn\'t a bool.')
+            );
+        }
+
+        return $result;
+    }
+
+    /**
+     * Validates and returns identifier value utilised to fetch address.
+     *
+     * @param bool $isCompany
+     * @return string
+     * @throws InvalidDataException
+     * @throws MissingRequestParameterException
+     * @throws NoSuchEntityException
+     */
+    public function getIdentifier(
+        bool $isCompany
+    ): string {
+        $result = $this->request->getParam('identifier');
+
+        if (!is_string($result)) {
+            throw new MissingRequestParameterException(
+                __('Parameter [identifier] was not set or isn\'t a string.')
+            );
+        }
+
+        $country = $this->config->getCountry(
+            $this->storeManager->getStore()->getCode()
+        );
+
+        if ($country === 'SE' &&
+            !$this->validateGovernmentId->sweden($result, $isCompany)
+        ) {
+            throw new InvalidDataException(
+                __('Invalid Swedish government ID.')
+            );
+        } else if ($country === 'NO' &&
+            !$this->validatePhoneNumber->norway($result)
+        ) {
+            throw new InvalidDataException(
+                __('Invalid phone number.')
             );
         }
 

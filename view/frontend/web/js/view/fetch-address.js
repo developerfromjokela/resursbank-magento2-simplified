@@ -144,6 +144,13 @@ define(
                 me.govId = ko.observable('');
 
                 /**
+                 * The customers phone number.
+                 *
+                 * @type {Simplified.Observable.String}
+                 */
+                me.phoneNumber = ko.observable('');
+
+                /**
                  * The selected customer type.
                  *
                  * @type {Simplified.Observable.String}
@@ -173,6 +180,24 @@ define(
                 });
 
                 /**
+                 * Whether the ID-number input should be disabled.
+                 *
+                 * @type {Simplified.Observable.Boolean}
+                 */
+                me.disableIdInput = ko.computed(function () {
+                    return !me.isFetchingEnabled();
+                });
+
+                /**
+                 * Whether the phone number input should be disabled.
+                 *
+                 * @type {Simplified.Observable.Boolean}
+                 */
+                me.disablePhoneInput = ko.computed(function () {
+                    return !me.isFetchingEnabled();
+                });
+
+                /**
                  * Whether the customer selection inputs should be disabled.
                  *
                  * @type {Simplified.Observable.Boolean}
@@ -191,12 +216,30 @@ define(
                 });
 
                 /**
+                 * Whether the website is configured as Swedish.
+                 *
+                 * @type {Simplified.Observable.Boolean}
+                 */
+                me.isSweden = function () {
+                    return CheckoutConfig.getDefaultCountryId() === 'SE';
+                };
+
+                /**
+                 * Whether the website is configured as Norwegian.
+                 *
+                 * @type {Simplified.Observable.Boolean}
+                 */
+                me.isNorway = function () {
+                    return CheckoutConfig.getDefaultCountryId() === 'NO';
+                };
+
+                /**
                  * Whether the component should be displayed.
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
                 me.showComponent = ko.computed(function () {
-                    return CheckoutConfig.getDefaultCountryId() === 'SE';
+                    return me.isSweden() || me.isNorway();
                 });
 
                 /**
@@ -250,6 +293,38 @@ define(
                 }
 
                 /**
+                 * Retrieve identifier value.
+                 */
+                function getIdentifier() {
+                    var result = '';
+
+                    if (me.isSweden()) {
+                        result = me.govId();
+                    } else if (me.isNorway()) {
+                        result = me.phoneNumber();
+                    }
+
+                    return result;
+                }
+
+                /**
+                 * Validate value utilised to fetch address data.
+                 *
+                 * @returns {boolean}
+                 */
+                function validate() {
+                    var result = false;
+
+                    if (me.isSweden()) {
+                        result = validateId();
+                    } else if (me.isNorway()) {
+                        result = validatePhone();
+                    }
+
+                    return result;
+                }
+
+                /**
                  * Validates the applied ID-number and displays relevant error
                  * messages.
                  *
@@ -264,7 +339,27 @@ define(
 
                     if (!valid) {
                         me.failedToFetchAddressError(
-                            $.mage.__('Wrong SSN/Org. number.')
+                            $.mage.__('Invalid SSN/Org. number.')
+                        );
+                    }
+
+                    return valid;
+                }
+
+                /**
+                 * Validate phone number.
+                 *
+                 * @returns {boolean}
+                 */
+                function validatePhone() {
+                    var valid = Credentials.validatePhone(
+                        me.phoneNumber(),
+                        'NO'
+                    );
+
+                    if (!valid) {
+                        me.failedToFetchAddressError(
+                            $.mage.__('Invalid phone number.')
                         );
                     }
 
@@ -277,13 +372,13 @@ define(
                  * message will be displayed underneath the ID-number input.
                  */
                 me.fetchAddress = function () {
-                    if (!me.isFetchingAddress() && validateId()) {
+                    if (!me.isFetchingAddress() && validate()) {
                         me.failedToFetchAddressError('');
                         me.isFetchingAddress(true);
 
                         FetchAddress
                             .fetchAddress(
-                                me.govId(),
+                                getIdentifier(),
                                 me.isCompanyCustomer()
                             )
                             .done(onFetchAddressDone)
