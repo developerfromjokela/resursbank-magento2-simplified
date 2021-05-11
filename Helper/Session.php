@@ -15,7 +15,6 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Quote\Model\Quote;
-use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\InvalidDataException;
 
 /**
@@ -37,7 +36,7 @@ class Session extends AbstractHelper
      *
      * @var string
      */
-    public const KEY_CONTACT_GOVERNMENT_ID =
+    public const KEY_CONTACT_GOV_ID =
         self::KEY_PREFIX . 'contact_government_id';
 
     /**
@@ -45,8 +44,7 @@ class Session extends AbstractHelper
      *
      * @var string
      */
-    public const KEY_GOVERNMENT_ID =
-        self::KEY_PREFIX . 'government_id';
+    public const KEY_GOV_ID = self::KEY_PREFIX . 'government_id';
 
     /**
      * Key to store and retrieve customer type (NATURAL | LEGAL).
@@ -94,11 +92,6 @@ class Session extends AbstractHelper
     private $checkoutSession;
 
     /**
-     * @var ValidateGovernmentId
-     */
-    private $validateGovId;
-
-    /**
      * @var ValidateCard
      */
     private $validateCard;
@@ -109,39 +102,20 @@ class Session extends AbstractHelper
     private $url;
 
     /**
-     * @var Config
-     */
-    private $config;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
      * @param Context $context
      * @param CheckoutSession $sessionManager
-     * @param ValidateGovernmentId $validateGovId
      * @param ValidateCard $validateCard
      * @param UrlInterface $url
-     * @param Config $config
-     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Context $context,
         CheckoutSession $sessionManager,
-        ValidateGovernmentId $validateGovId,
         ValidateCard $validateCard,
-        UrlInterface $url,
-        Config $config,
-        StoreManagerInterface $storeManager
+        UrlInterface $url
     ) {
         $this->checkoutSession = $sessionManager;
-        $this->validateGovId = $validateGovId;
         $this->validateCard = $validateCard;
         $this->url = $url;
-        $this->config = $config;
-        $this->storeManager = $storeManager;
 
         parent::__construct($context);
     }
@@ -149,27 +123,15 @@ class Session extends AbstractHelper
     /**
      * Store a customer's SSN/Org nr. in the session.
      *
-     * @param string $govId - Must be a valid swedish SSN/Org. number.
-     * @param bool $isCompany
+     * @param string $govId - Must be a valid Swedish SSN/Org. number.
      * @return self
-     * @throws InvalidDataException
-     * @throws NoSuchEntityException
      * @noinspection PhpUndefinedMethodInspection
      */
-    public function setGovernmentId(
-        string $govId,
-        bool $isCompany
+    public function setGovId(
+        string $govId
     ): self {
-        $iso = $this->config->getCountry(
-            $this->storeManager->getStore()->getCode()
-        );
-
-        if (!$this->validateGovId->validate($govId, $isCompany, $iso, true)) {
-            throw new InvalidDataException(__('Invalid government ID.'));
-        }
-
         /** @phpstan-ignore-next-line */
-        $this->checkoutSession->setData(self::KEY_GOVERNMENT_ID, $govId);
+        $this->checkoutSession->setData(self::KEY_GOV_ID, $govId);
 
         return $this;
     }
@@ -177,19 +139,19 @@ class Session extends AbstractHelper
     /**
      * @return string|null - Null if a value cannot be found.
      */
-    public function getGovernmentId(): ?string
+    public function getGovId(): ?string
     {
-        return $this->checkoutSession->getData(self::KEY_GOVERNMENT_ID);
+        return $this->checkoutSession->getData(self::KEY_GOV_ID);
     }
 
     /**
      * @return self
      * @noinspection PhpUndefinedMethodInspection
      */
-    public function unsetGovernmentId(): self
+    public function unsetGovId(): self
     {
         /** @phpstan-ignore-next-line */
-        $this->checkoutSession->unsetData(self::KEY_GOVERNMENT_ID);
+        $this->checkoutSession->unsetData(self::KEY_GOV_ID);
 
         return $this;
     }
@@ -198,21 +160,16 @@ class Session extends AbstractHelper
      * Stores a customer's contact government ID in the session. Required for
      * company customers, personal SSN of a company reference.
      *
-     * @param string $govId - Must be a valid swedish SSN.
+     * @param string $govId - Must be a valid SSN of a supported country.
      * @return self
-     * @throws InvalidDataException - Throws if SSN is invalid.
      * @noinspection PhpUndefinedMethodInspection
      */
-    public function setContactGovernmentId(
+    public function setContactGovId(
         string $govId
     ): self {
-        if (!$this->validateGovId->swedenSsn($govId, true)) {
-            throw new InvalidDataException(__('Invalid SE government ID.'));
-        }
-
         /** @phpstan-ignore-next-line */
         $this->checkoutSession->setData(
-            self::KEY_CONTACT_GOVERNMENT_ID,
+            self::KEY_CONTACT_GOV_ID,
             $govId
         );
 
@@ -222,19 +179,19 @@ class Session extends AbstractHelper
     /**
      * @return string|null - Null if a value cannot be found.
      */
-    public function getContactGovernmentId(): ?string
+    public function getContactGovId(): ?string
     {
-        return $this->checkoutSession->getData(self::KEY_CONTACT_GOVERNMENT_ID);
+        return $this->checkoutSession->getData(self::KEY_CONTACT_GOV_ID);
     }
 
     /**
      * @return self
      * @noinspection PhpUndefinedMethodInspection
      */
-    public function unsetContactGovernmentId(): self
+    public function unsetContactGovId(): self
     {
         /** @phpstan-ignore-next-line */
-        $this->checkoutSession->unsetData(self::KEY_CONTACT_GOVERNMENT_ID);
+        $this->checkoutSession->unsetData(self::KEY_CONTACT_GOV_ID);
 
         return $this;
     }
@@ -444,9 +401,9 @@ class Session extends AbstractHelper
     {
         return $this->unsetCardAmount()
             ->unsetCardNumber()
-            ->unsetContactGovernmentId()
+            ->unsetContactGovId()
             ->unsetIsCompany()
-            ->unsetGovernmentId();
+            ->unsetGovId();
     }
 
     /**

@@ -115,12 +115,12 @@ class Payment extends AbstractHelper
         }
 
         $connection->setCustomer(
-            (string) $this->session->getGovernmentId(),
+            (string) $this->session->getGovId(),
             (string) $billingAddress->getTelephone(),
             (string) $billingAddress->getTelephone(),
             (string) $order->getCustomerEmail(),
             $this->session->getIsCompany() ? 'LEGAL' : 'NATURAL',
-            (string) $this->session->getContactGovernmentId()
+            (string) $this->session->getContactGovId()
         );
 
         return $this;

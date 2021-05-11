@@ -16,7 +16,7 @@ use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Exception\MissingRequestParameterException;
 use Resursbank\Simplified\Helper\Request;
 use Resursbank\Simplified\Helper\ValidateCard;
-use Resursbank\Simplified\Helper\ValidateGovernmentId;
+use Resursbank\Simplified\Helper\ValidateGovId;
 
 /**
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
@@ -50,7 +50,7 @@ class RequestTest extends TestCase
                 [
                     'request' => $this->request,
                     'validateGovernmentId' => $objectManager->getObject(
-                        ValidateGovernmentId::class
+                        ValidateGovId::class
                     ),
                     'validateCard' => $objectManager->getObject(
                         ValidateCard::class

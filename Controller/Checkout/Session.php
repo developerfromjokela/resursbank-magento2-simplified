@@ -104,7 +104,7 @@ class Session implements HttpPostActionInterface
 
             // Store government id and whether client is a company in session.
             $this->session
-                ->setGovernmentId(
+                ->setGovId(
                     $this->requestHelper->getGovId($isCompany),
                     $isCompany
                 )
@@ -112,7 +112,7 @@ class Session implements HttpPostActionInterface
 
             // If client is a company, store private reference SSN in session.
             if ($isCompany) {
-                $this->session->setContactGovernmentId(
+                $this->session->setContactGovId(
                     $this->requestHelper->getContactGovId()
                 );
             }
