@@ -216,7 +216,7 @@ define(
                 });
 
                 /**
-                 * Whether the website is configured as Swedish.
+                 * Whether default country is Sweden.
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
@@ -225,7 +225,7 @@ define(
                 };
 
                 /**
-                 * Whether the website is configured as Norwegian.
+                 * Whether default country is Norway.
                  *
                  * @type {Simplified.Observable.Boolean}
                  */

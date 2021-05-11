@@ -83,18 +83,18 @@ define(
 
             /**
              * Produces a call object to make a request to fetch the address of
-             * a given SSN/Org. nr.
+             * a given SSN/Org. nr (Sweden) or phone number (Norway).
              *
-             * @param {string} idNum
+             * @param {string} identifier
              * @param {boolean} isCompany
              * @returns {Simplified.Lib.FetchAddress.Call}
              */
-            getFetchAddressCall: function (idNum, isCompany) {
+            getFetchAddressCall: function (identifier, isCompany) {
                 return {
                     type: 'POST',
                     url: EXPORT.buildUrl('checkout/fetchAddress'),
                     data: {
-                        identifier: idNum,
+                        identifier: identifier,
                         is_company: isCompany,
                         form_key: CheckoutConfig.getFormKey()
                     }

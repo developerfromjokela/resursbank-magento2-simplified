@@ -180,7 +180,7 @@ class Request extends AbstractHelper
             throw new InvalidDataException(
                 __('Invalid Swedish government ID.')
             );
-        } else if ($country === 'NO' &&
+        } elseif ($country === 'NO' &&
             !$this->validatePhoneNumber->norway($result)
         ) {
             throw new InvalidDataException(
