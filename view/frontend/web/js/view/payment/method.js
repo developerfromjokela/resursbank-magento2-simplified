@@ -15,6 +15,7 @@ define(
         'uiRegistry',
         'mage/translate',
         'mage/url',
+        'uiLayout',
         'Magento_Checkout/js/model/quote',
         'Magento_Checkout/js/view/payment/default',
         'Magento_Checkout/js/action/redirect-on-success',
@@ -25,7 +26,8 @@ define(
         'Resursbank_Simplified/js/lib/credentials',
         'Resursbank_Simplified/js/lib/session',
         'Resursbank_Simplified/js/model/checkout',
-        'Resursbank_Simplified/js/storage/checkout'
+        'Resursbank_Simplified/js/storage/checkout',
+        'Resursbank_Simplified/js/model/payment/method-render-list'
     ],
 
     /**
@@ -33,18 +35,20 @@ define(
      * @param ko
      * @param uiRegistry
      * @param translate
+     * @param url
+     * @param layout
      * @param Quote
      * @param Component
      * @param redirectOnSuccessAction
-     * @param url
      * @param totals
      * @param CheckoutData
      * @param validator
-     * @param CheckoutConfigLib {Simplified.Lib.CheckoutConfig}
-     * @param CredentialsLib {Simplified.Lib.Credentials}
-     * @param SessionLib {Simplified.Lib.Session}
-     * @param CheckoutModel {Simplified.Model.Checkout}
-     * @param CheckoutStorage {Simplified.Storage.Checkout}
+     * @param {Simplified.Lib.CheckoutConfig} CheckoutConfigLib
+     * @param {Simplified.Lib.Credentials} CredentialsLib
+     * @param {Simplified.Lib.Session} SessionLib
+     * @param {Simplified.Model.Checkout} CheckoutModel
+     * @param {Simplified.Storage.Checkout} CheckoutStorage
+     * @param {Simplified.Observable.MethodRenderList} MethodRenderList
      * @returns {*}
      */
     function (
@@ -53,6 +57,7 @@ define(
         uiRegistry,
         translate,
         url,
+        layout,
         Quote,
         Component,
         redirectOnSuccessAction,
@@ -63,7 +68,8 @@ define(
         CredentialsLib,
         SessionLib,
         CheckoutModel,
-        CheckoutStorage
+        CheckoutStorage,
+        MethodRenderList
     ) {
         'use strict';
 
@@ -606,11 +612,32 @@ define(
                     });
                 }
 
-                // Subscriber to change the availability status of the
-                // payment method when the customer type changes.
-                CheckoutModel.isCompany.subscribe(function () {
-                    me.isAvailable(isAvailable(me.getCode()));
-                });
+                (function init() {
+                    // Initialize components that wants to add themselves to
+                    // this payment method. Components will be rendered in the
+                    // "displayArea" they have specified.
+                    layout(MethodRenderList().some(function (component) {
+                        if (me.getCode() === component.methodCode) {
+                            layout([{
+                                parent: me.name,
+                                name: me.name + '.' + component.name,
+                                displayArea: component.displayArea,
+                                component: component.component,
+                                config: {
+                                    methodCode: component.methodCode
+                                }
+                            }]);
+
+                            return true;
+                        }
+                    }));
+
+                    // Subscriber to change the availability status of the
+                    // payment method when the customer type changes.
+                    CheckoutModel.isCompany.subscribe(function () {
+                        me.isAvailable(isAvailable(me.getCode()));
+                    });
+                }());
             }
         });
     }
