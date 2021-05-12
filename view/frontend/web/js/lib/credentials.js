@@ -23,7 +23,8 @@ define(
             isCountryAllowed: function (country) {
                 return EXPORT.isSweden(country) ||
                     EXPORT.isNorway(country) ||
-                    EXPORT.isFinland(country);
+                    EXPORT.isFinland(country) ||
+                    EXPORT.isDenmark(country);
             },
 
             /**
@@ -54,6 +55,16 @@ define(
              */
             isFinland: function (country) {
                 return country === 'FI';
+            },
+
+            /**
+             * Check for the Danish country id.
+             *
+             * @param {string} country
+             * @returns {boolean}
+             */
+            isDenmark: function (country) {
+                return country === 'DK';
             },
 
             /**
@@ -99,6 +110,7 @@ define(
                 var norway = /^([0][1-9]|[1-2][0-9]|3[0-1])(0[1-9]|1[0-2])(\d{2})(\-)?([\d]{5})$/;
                 var finland = /^([\d]{6})[\+-A]([\d]{3})([0123456789ABCDEFHJKLMNPRSTUVWXY])$/;
                 var sweden = /^(18\d{2}|19\d{2}|20\d{2}|\d{2})(0[1-9]|1[0-2])([0][1-9]|[1-2][0-9]|3[0-1])(\-|\+)?([\d]{4})$/;
+                var denmark = /^((3[0-1])|([1-2][0-9])|(0[1-9]))((1[0-2])|(0[1-9]))(\d{2})(\-)?([\d]{4})$/;
 
                 if (EXPORT.isSweden(country)) {
                     result = sweden.test(ssn);
@@ -106,6 +118,8 @@ define(
                     result = norway.test(ssn);
                 } else if (EXPORT.isFinland(country)) {
                     result = finland.test(ssn);
+                } else if (EXPORT.isDenmark(country)) {
+                    result = denmark.test(ssn);
                 }
 
                 return result;
@@ -165,6 +179,9 @@ define(
                 ) || (
                     EXPORT.isFinland(country) &&
                     EXPORT.validatePhoneFinland(num)
+                ) || (
+                    EXPORT.isDenmark(country) &&
+                    EXPORT.validatePhoneDenmark(num)
                 );
             },
 
@@ -196,6 +213,16 @@ define(
              */
             validatePhoneFinland: function (num) {
                 return /^((\+358|00358|0)[-| ]?(1[1-9]|[2-9]|[1][0][1-9]|201|2021|[2][0][2][4-9]|[2][0][3-8]|29|[3][0][1-9]|71|73|[7][5][0][0][3-9]|[7][5][3][0][3-9]|[7][5][3][2][3-9]|[7][5][7][5][3-9]|[7][5][9][8][3-9]|[5][0][0-9]{0,2}|[4][0-9]{1,3})([-| ]?[0-9]){3,10})?$/.test(num);
+            },
+
+            /**
+             * Validates a Danish phone number.
+             *
+             * @param {string} num
+             * @returns {boolean}
+             */
+            validatePhoneDenmark: function (num) {
+                return /^(\+45|0045|)?[ |-]?[2-9]([ |-]?[0-9]){7,7}$/.test(num);
             }
         };
 

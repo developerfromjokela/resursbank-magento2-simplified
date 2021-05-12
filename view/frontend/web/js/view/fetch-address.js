@@ -234,12 +234,30 @@ define(
                 };
 
                 /**
+                 * Whether default country is Finland.
+                 *
+                 * @type {Simplified.Observable.Boolean}
+                 */
+                me.isFinland = function () {
+                    return CheckoutConfig.getDefaultCountryId() === 'FI';
+                };
+
+                /**
+                 * Whether default country is Denmark.
+                 *
+                 * @type {Simplified.Observable.Boolean}
+                 */
+                me.isDenmark = function () {
+                    return CheckoutConfig.getDefaultCountryId() === 'DK';
+                };
+
+                /**
                  * Whether the component should be displayed.
                  *
                  * @type {Simplified.Observable.Boolean}
                  */
                 me.showComponent = ko.computed(function () {
-                    return me.isSweden() || me.isNorway();
+                    return me.isSweden() || me.isNorway() || me.isFinland();
                 });
 
                 /**

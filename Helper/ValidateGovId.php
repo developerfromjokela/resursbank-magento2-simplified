@@ -11,7 +11,11 @@ namespace Resursbank\Simplified\Helper;
 use Magento\Framework\App\Helper\AbstractHelper;
 use function preg_match;
 
-class ValidateGovernmentId extends AbstractHelper
+/**
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ */
+class ValidateGovId extends AbstractHelper
 {
     /**
      * Validates government ID.
@@ -29,11 +33,15 @@ class ValidateGovernmentId extends AbstractHelper
         bool $allowEmptyId = false
     ): bool {
         $result = false;
-        
+
         if ($country === 'SE') {
             $result = $this->sweden($govId, $isCompany, $allowEmptyId);
         } elseif ($country === 'NO') {
             $result = $this->norway($govId, $isCompany, $allowEmptyId);
+        } elseif ($country === 'FI') {
+            $result = $this->finland($govId, $isCompany, $allowEmptyId);
+        } elseif ($country === 'DK') {
+            $result = $this->denmark($govId, $allowEmptyId);
         }
 
         return $result;
@@ -145,6 +153,91 @@ class ValidateGovernmentId extends AbstractHelper
         return ($allowEmptyId && $num === '') || (bool) preg_match(
             '/^(16\d{2}|18\d{2}|19\d{2}|20\d{2}|\d{2})(\d{2})(\d{2})' .
             '(\-|\+)?([\d]{4})$/',
+            $num
+        );
+    }
+
+    /**
+     * Validates a Finish government ID (SSN or Org. nr.).
+     *
+     * @param string $govId
+     * @param bool $isCompany
+     * @param bool $allowEmptyId
+     * @return bool
+     */
+    public function finland(
+        string $govId,
+        bool $isCompany,
+        bool $allowEmptyId = false
+    ): bool {
+        return $isCompany ?
+            $this->finlandOrg($govId, $allowEmptyId) :
+            $this->finlandSsn($govId, $allowEmptyId);
+    }
+
+    /**
+     * Validates a SSN for Finland.
+     *
+     * @param string $num
+     * @param bool $allowEmptyId
+     * @return bool
+     */
+    public function finlandSsn(
+        string $num,
+        bool $allowEmptyId = false
+    ): bool {
+        return ($allowEmptyId && $num === '') || (bool) preg_match(
+            '/^([\d]{6})[\+-A]([\d]{3})' .
+            '([0123456789ABCDEFHJKLMNPRSTUVWXY])$/',
+            $num
+        );
+    }
+
+    /**
+     * Validates an organisation number for Finland.
+     *
+     * @param string $num
+     * @param bool $allowEmptyId
+     * @return bool
+     */
+    public function finlandOrg(
+        string $num,
+        bool $allowEmptyId = false
+    ): bool {
+        return ($allowEmptyId && $num === '') || (bool) preg_match(
+            '/^((\d{7})(\-)?\d)$/',
+            $num
+        );
+    }
+
+    /**
+     * Validates a Danish government ID (SSN or Org. nr.).
+     *
+     * @param string $govId
+     * @param bool $allowEmptyId
+     * @return bool
+     */
+    public function denmark(
+        string $govId,
+        bool $allowEmptyId = false
+    ): bool {
+        return $this->denmarkSsn($govId, $allowEmptyId);
+    }
+
+    /**
+     * Validates a SSN for Denmark.
+     *
+     * @param string $num
+     * @param bool $allowEmptyId
+     * @return bool
+     */
+    public function denmarkSsn(
+        string $num,
+        bool $allowEmptyId = false
+    ): bool {
+        return ($allowEmptyId && $num === '') || (bool) preg_match(
+            '/^((3[0-1])|([1-2][0-9])|(0[1-9]))((1[0-2])|(0[1-9]))' .
+            '(\d{2})(\-)?([\d]{4})$/',
             $num
         );
     }

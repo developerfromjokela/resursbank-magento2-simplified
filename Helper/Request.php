@@ -42,9 +42,9 @@ class Request extends AbstractHelper
     private $request;
 
     /**
-     * @var ValidateGovernmentId
+     * @var ValidateGovId
      */
-    private $validateGovernmentId;
+    private $validateGovId;
 
     /**
      * @var ValidateCard
@@ -71,7 +71,7 @@ class Request extends AbstractHelper
      * @param ResultFactory $resultFactory
      * @param Log $log
      * @param RequestInterface $request
-     * @param ValidateGovernmentId $validateGovernmentId
+     * @param ValidateGovId $validateGovId
      * @param ValidateCard $validateCard
      * @param ValidatePhoneNumber $validatePhoneNumber
      * @param Config $config
@@ -82,7 +82,7 @@ class Request extends AbstractHelper
         ResultFactory $resultFactory,
         Log $log,
         RequestInterface $request,
-        ValidateGovernmentId $validateGovernmentId,
+        ValidateGovId $validateGovId,
         ValidateCard $validateCard,
         ValidatePhoneNumber $validatePhoneNumber,
         Config $config,
@@ -91,7 +91,7 @@ class Request extends AbstractHelper
         $this->resultFactory = $resultFactory;
         $this->log = $log;
         $this->request = $request;
-        $this->validateGovernmentId = $validateGovernmentId;
+        $this->validateGovId = $validateGovId;
         $this->validateCard = $validateCard;
         $this->config = $config;
         $this->storeManager = $storeManager;
@@ -175,7 +175,7 @@ class Request extends AbstractHelper
         );
 
         if ($country === 'SE' &&
-            !$this->validateGovernmentId->sweden($result, $isCompany)
+            !$this->validateGovId->sweden($result, $isCompany)
         ) {
             throw new InvalidDataException(
                 __('Invalid Swedish government ID.')
@@ -198,6 +198,7 @@ class Request extends AbstractHelper
      * @return string
      * @throws InvalidDataException
      * @throws MissingRequestParameterException
+     * @throws NoSuchEntityException
      */
     public function getGovId(
         bool $isCompany
@@ -210,9 +211,13 @@ class Request extends AbstractHelper
             );
         }
 
-        if (!$this->validateGovernmentId->sweden($result, $isCompany)) {
+        $country = $this->config->getCountry(
+            $this->storeManager->getStore()->getCode()
+        );
+
+        if (!$this->validateGovId->validate($result, $isCompany, $country)) {
             throw new InvalidDataException(
-                __('Invalid Swedish government ID.')
+                __('Invalid government ID.')
             );
         }
 
@@ -227,6 +232,7 @@ class Request extends AbstractHelper
      * @return string
      * @throws InvalidDataException
      * @throws MissingRequestParameterException
+     * @throws NoSuchEntityException
      */
     public function getContactGovId(): string
     {
@@ -239,9 +245,13 @@ class Request extends AbstractHelper
             ));
         }
 
-        if (!$this->validateGovernmentId->swedenSsn($result)) {
+        $country = $this->config->getCountry(
+            $this->storeManager->getStore()->getCode()
+        );
+
+        if (!$this->validateGovId->validate($result, false, $country)) {
             throw new InvalidDataException(__(
-                'Invalid Swedish government ID.'
+                'Invalid government ID.'
             ));
         }
 
