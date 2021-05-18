@@ -443,47 +443,4 @@ class Session extends AbstractHelper
     {
         return $this->checkoutSession->getQuote();
     }
-
-    /**
-     * URL client is redirect back to after successfully completing their
-     * payment at the gateway.
-     *
-     * NOTE: We include quote id and order increment id to support intermediate
-     * browser change during the signing procedure. For example, if the client
-     * signs their payment at the gateway using BankID on a smart phone the
-     * redirect URL may be opened in the OS default browser instead of the
-     * browser utilised by the customer to perform the purchase. This means the
-     * session data is lost and the order will thus fail. By including these
-     * parameters we can load the data back into the session if it's missing.
-     *
-     * @param string $quoteId
-     * @return string
-     */
-    public function getSuccessCallbackUrl(
-        string $quoteId
-    ): string {
-        return $this->url->getUrl(
-            'checkout/onepage/success/' .
-            'quote_id/' . $quoteId
-        );
-    }
-
-    /**
-     * URL client is redirect back to after failing to completing their payment
-     * at the gateway.
-     *
-     * NOTE: For information regarding the included quote and order parameters
-     * please refer to the getSuccessCallbackUrl() docblock above.
-     *
-     * @param string $quoteId
-     * @return string
-     */
-    public function getFailureCallbackUrl(
-        string $quoteId
-    ): string {
-        return $this->url->getUrl(
-            'checkout/onepage/failure/' .
-            'quote_id/' . $quoteId
-        );
-    }
 }

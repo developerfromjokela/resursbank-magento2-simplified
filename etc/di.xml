@@ -40,4 +40,11 @@
             name="resursbank_simplified_api"
             type="Resursbank\Simplified\Plugin\Helper\Api" />
     </type>
+
+    <!-- Redirect clients to step two of the checkout process on faiulure. -->
+    <type name="Resursbank\Core\Helper\Url">
+        <plugin
+            name="resursbank_simplified_url"
+            type="Resursbank\Simplified\Plugin\Helper\Url" />
+    </type>
 </config>

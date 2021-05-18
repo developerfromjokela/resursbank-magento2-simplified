@@ -23,6 +23,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Core\Helper\Api as CoreApi;
+use Resursbank\Core\Helper\Url;
 use Resursbank\Core\Model\Api\Payment as PaymentModel;
 use Resursbank\Core\Model\Api\Payment\Converter\QuoteConverter;
 use Resursbank\Core\Model\PaymentMethodRepository;
@@ -66,6 +67,11 @@ class Payment extends AbstractHelper
     private $storeManager;
 
     /**
+     * @var Url
+     */
+    private $url;
+
+    /**
      * @param Context $context
      * @param Session $session
      * @param QuoteConverter $quoteConverter
@@ -73,6 +79,7 @@ class Payment extends AbstractHelper
      * @param CoreApi $coreApi
      * @param Config $configHelper
      * @param StoreManagerInterface $storeManager
+     * @param Url $url
      */
     public function __construct(
         Context $context,
@@ -81,7 +88,8 @@ class Payment extends AbstractHelper
         PaymentMethodRepository $paymentMethodRepo,
         CoreApi $coreApi,
         ConfigHelper $configHelper,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        Url $url
     ) {
         $this->session = $session;
         $this->quoteConverter = $quoteConverter;
@@ -89,6 +97,7 @@ class Payment extends AbstractHelper
         $this->coreApi = $coreApi;
         $this->configHelper = $configHelper;
         $this->storeManager = $storeManager;
+        $this->url = $url;
 
         parent::__construct($context);
     }
@@ -281,12 +290,8 @@ class Payment extends AbstractHelper
         Quote $quote
     ): self {
         $connection->setSigning(
-            $this->session->getSuccessCallbackUrl(
-                (string) $quote->getId()
-            ),
-            $this->session->getFailureCallbackUrl(
-                (string) $quote->getId()
-            )
+            $this->url->getSuccessUrl((int) $quote->getId()),
+            $this->url->getFailureUrl((int) $quote->getId())
         );
 
         return $this;
