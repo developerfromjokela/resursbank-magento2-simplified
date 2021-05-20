@@ -23,11 +23,6 @@ class Config extends AbstractConfig
     private $coreConfig;
 
     /**
-     * @var string
-     */
-    public const GROUP = 'simplified';
-
-    /**
      * API flow option appended by this module.
      */
     public const API_FLOW_OPTION = 'simplified';
@@ -90,7 +85,7 @@ class Config extends AbstractConfig
         string $scopeType = ScopeInterface::SCOPE_STORES
     ): bool {
         return $this->isEnabled(
-            self::GROUP,
+            CoreConfig::ADVANCED_GROUP,
             'wait_for_fraud_control',
             $scopeCode,
             $scopeType
@@ -107,7 +102,7 @@ class Config extends AbstractConfig
         string $scopeType = ScopeInterface::SCOPE_STORES
     ): bool {
         return $this->isEnabled(
-            self::GROUP,
+            CoreConfig::ADVANCED_GROUP,
             'annul_if_frozen',
             $scopeCode,
             $scopeType
@@ -124,7 +119,7 @@ class Config extends AbstractConfig
         string $scopeType = ScopeInterface::SCOPE_STORES
     ): bool {
         return $this->isEnabled(
-            self::GROUP,
+            CoreConfig::ADVANCED_GROUP,
             'finalize_if_booked',
             $scopeCode,
             $scopeType
