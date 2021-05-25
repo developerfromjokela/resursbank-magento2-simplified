@@ -45,24 +45,6 @@ class Config extends AbstractConfig
     }
 
     /**
-     * Retrieve configured default country.
-     *
-     * @param string|null $scopeCode
-     * @param string $scopeType
-     * @return string
-     */
-    public function getCountry(
-        ?string $scopeCode,
-        string $scopeType = ScopeInterface::SCOPE_STORES
-    ): string {
-        return (string) $this->reader->getValue(
-            'tax/defaults/country',
-            $scopeType,
-            $scopeCode
-        );
-    }
-
-    /**
      * @param string|null $scopeCode
      * @param string $scopeType
      * @return bool

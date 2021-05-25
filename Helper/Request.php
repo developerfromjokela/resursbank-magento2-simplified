@@ -20,6 +20,7 @@ use Magento\Framework\Controller\ResultFactory;
 use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Exception\MissingRequestParameterException;
+use Resursbank\Core\Helper\Config as CoreConfig;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -52,7 +53,7 @@ class Request extends AbstractHelper
     private $validateCard;
 
     /**
-     * @var Config
+     * @var CoreConfig
      */
     private $config;
 
@@ -74,7 +75,7 @@ class Request extends AbstractHelper
      * @param ValidateGovId $validateGovId
      * @param ValidateCard $validateCard
      * @param ValidatePhoneNumber $validatePhoneNumber
-     * @param Config $config
+     * @param CoreConfig $config
      * @param StoreManagerInterface $storeManager
      */
     public function __construct(
@@ -85,7 +86,7 @@ class Request extends AbstractHelper
         ValidateGovId $validateGovId,
         ValidateCard $validateCard,
         ValidatePhoneNumber $validatePhoneNumber,
-        Config $config,
+        CoreConfig $config,
         StoreManagerInterface $storeManager
     ) {
         $this->resultFactory = $resultFactory;
@@ -170,7 +171,7 @@ class Request extends AbstractHelper
             );
         }
 
-        $country = $this->config->getCountry(
+        $country = $this->config->getDefaultCountry(
             $this->storeManager->getStore()->getCode()
         );
 
@@ -211,7 +212,7 @@ class Request extends AbstractHelper
             );
         }
 
-        $country = $this->config->getCountry(
+        $country = $this->config->getDefaultCountry(
             $this->storeManager->getStore()->getCode()
         );
 
@@ -245,7 +246,7 @@ class Request extends AbstractHelper
             ));
         }
 
-        $country = $this->config->getCountry(
+        $country = $this->config->getDefaultCountry(
             $this->storeManager->getStore()->getCode()
         );
 
