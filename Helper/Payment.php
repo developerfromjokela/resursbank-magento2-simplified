@@ -33,6 +33,7 @@ use stdClass;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @noinspection EfferentObjectCouplingInspection
  */
 class Payment extends AbstractHelper
 {
@@ -416,7 +417,10 @@ class Payment extends AbstractHelper
         // Reject denied / failed payment.
         switch ($payment->getBookPaymentStatus()) {
             case 'DENIED':
-                throw new PaymentDataException(__('Payment denied.'));
+                throw new PaymentDataException(__(
+                    'Your credit application was denied, please select a ' .
+                    'different payment method.'
+                ));
             case 'SIGNING':
                 throw new PaymentDataException(__('Payment failed.'));
         }
