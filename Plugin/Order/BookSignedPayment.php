@@ -15,6 +15,7 @@ use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Store\Model\StoreManagerInterface;
+use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Core\Helper\Order;
 use Resursbank\Core\Helper\Request;
 use Resursbank\Simplified\Helper\Config;
@@ -133,11 +134,13 @@ class BookSignedPayment
 
             // Because the message bag is not rendered on the failure page.
             /** @noinspection PhpUndefinedMethodInspection */
-            $this->session->setErrorMessage(__(
-                'Something went wrong when completing your payment. Your ' .
-                'order has been canceled. We apologize for this ' .
-                'inconvenience, please try again.'
-            ));
+            $this->session->setErrorMessage(
+                ($e instanceof PaymentDataException) ? __(
+                    'Something went wrong when completing your payment. Your ' .
+                    'order has been canceled. We apologize for this ' .
+                    'inconvenience, please try again.'
+                ) : __($e->getMessage())
+            );
 
             // Redirect to failure page (without rebuilding the cart).
             $result->setHttpResponseCode(302)->setHeader(

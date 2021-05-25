@@ -33,6 +33,7 @@ use stdClass;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @noinspection EfferentObjectCouplingInspection
  */
 class Payment extends AbstractHelper
 {
