@@ -78,6 +78,7 @@ class Authorize
      * @param CheckoutSession $session
      * @param PaymentHelper $paymentHelper
      * @param Config $config
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
         Log $log,
@@ -131,6 +132,10 @@ class Authorize
                     $this->session->unsetCustomerInfo();
                 }
             }
+        } catch (PaymentDataException $e) {
+            $this->log->exception($e);
+
+            throw new PaymentException(__($e->getMessage()));
         } catch (Exception $e) {
             $this->log->exception($e);
 
@@ -227,7 +232,11 @@ class Authorize
 
             // Reject denied payment.
             if ($payment->getBookPaymentStatus() === 'DENIED') {
-                throw new PaymentDataException(__('Payment denied.'));
+                $test = 'asd';
+                throw new PaymentDataException(__(
+                    'Your credit application was denied, please select a ' .
+                    'different payment method.'
+                ));
             }
 
             // Prepare redirecting client to gateway.
