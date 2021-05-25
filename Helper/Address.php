@@ -18,6 +18,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\ApiDataException;
 use Resursbank\Core\Helper\Api as CoreApi;
 use Resursbank\Core\Helper\Api\Credentials;
+use Resursbank\Core\Helper\Config as CoreConfig;
 use Resursbank\Core\Model\Api\Address as ApiAddress;
 use Resursbank\Simplified\Model\CheckoutAddress;
 use function is_object;
@@ -54,19 +55,23 @@ class Address extends AbstractHelper
     private $storeManager;
 
     /**
-     * @var Config
+     * @var CoreConfig
      */
     private $config;
 
     /**
-     * @inheritDoc
+     * @param Context $context
+     * @param Credentials $credentials
+     * @param CoreApi $coreApi
+     * @param StoreManagerInterface $storeManager
+     * @param CoreConfig $config
      */
     public function __construct(
         Context $context,
         Credentials $credentials,
         CoreApi $coreApi,
         StoreManagerInterface $storeManager,
-        Config $config
+        CoreConfig $config
     ) {
         $this->coreApi = $coreApi;
         $this->credentials = $credentials;
@@ -93,7 +98,7 @@ class Address extends AbstractHelper
         bool $isCompany
     ): ApiAddress {
         // What country the store is associated with.
-        $country = $this->config->getCountry(
+        $country = $this->config->getDefaultCountry(
             $this->storeManager->getStore()->getCode()
         );
 
