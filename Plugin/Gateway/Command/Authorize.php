@@ -232,7 +232,6 @@ class Authorize
 
             // Reject denied payment.
             if ($payment->getBookPaymentStatus() === 'DENIED') {
-                $test = 'asd';
                 throw new PaymentDataException(__(
                     'Your credit application was denied, please select a ' .
                     'different payment method.'

@@ -416,7 +416,6 @@ class Payment extends AbstractHelper
         // Reject denied / failed payment.
         switch ($payment->getBookPaymentStatus()) {
             case 'DENIED':
-                $test = 'asd';
                 throw new PaymentDataException(__(
                     'Your credit application was denied, please select a ' .
                     'different payment method.'
