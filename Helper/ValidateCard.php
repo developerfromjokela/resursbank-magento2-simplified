@@ -24,6 +24,7 @@ class ValidateCard extends AbstractHelper
         string $num,
         bool $allowEmptyId = false
     ): bool {
+        /** @noinspection PhpTernaryExpressionCanBeReplacedWithConditionInspection */
         return $allowEmptyId && $num === '' ?
             true :
             (bool) preg_match(

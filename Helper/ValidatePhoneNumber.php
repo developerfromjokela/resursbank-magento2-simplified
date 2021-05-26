@@ -22,6 +22,7 @@ class ValidatePhoneNumber extends AbstractHelper
     public function norway(
         string $val
     ): bool {
+        /** @noinspection NotOptimalRegularExpressionsInspection */
         return (bool) preg_match(
             '/^(\+47|0047|)?[ |-]?[2-9]([ |-]?[0-9]){7,7}$/',
             $val

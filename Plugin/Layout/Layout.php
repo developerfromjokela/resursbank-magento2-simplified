@@ -4,6 +4,8 @@
  * See LICENSE for license details.
  */
 
+declare(strict_types=1);
+
 namespace Resursbank\Simplified\Plugin\Layout;
 
 use Exception;
@@ -93,7 +95,7 @@ class Layout
                 }
             }
         } catch (Exception $e) {
-            $this->log->error($e);
+            $this->log->exception($e);
             throw $e;
         }
 

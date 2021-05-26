@@ -43,6 +43,8 @@ class Collector
 
     /**
      * @param Config $config
+     * @param StoreManagerInterface $storeManager
+     * @param Log $log
      */
     public function __construct(
         Config $config,

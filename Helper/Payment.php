@@ -145,7 +145,7 @@ class Payment extends AbstractHelper
     public function setCardData(
         ResursBank $connection
     ): self {
-        // Ecom wrongfully types both params as null.
+        /** @phpstan-ignore-next-line */
         $connection->setCardData(
             (string) $this->session->getCardNumber(),
             (float) $this->session->getCardAmount()
@@ -245,6 +245,7 @@ class Payment extends AbstractHelper
         $items = $this->quoteConverter->convert($this->session->getQuote());
 
         foreach ($items as $item) {
+            /** @phpstan-ignore-next-line */
             $connection->addOrderLine(
                 $item->getArtNo(),
                 $item->getDescription(),
@@ -409,9 +410,16 @@ class Payment extends AbstractHelper
             $this->coreApi->getCredentialsFromOrder($order)
         );
 
+        // Resolve order reference.
+        $orderId = $order->getIncrementId();
+
+        if ($orderId === null || $orderId === '') {
+            throw new InvalidDataException(__('Missing order reference.'));
+        }
+
         // Fill data on payment object.
         $payment = $this->coreApi->toPayment(
-            $connection->bookSignedPayment($order->getIncrementId())
+            $connection->bookSignedPayment($orderId)
         );
 
         // Reject denied / failed payment.

@@ -13,12 +13,10 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
-use Magento\Framework\UrlInterface;
 use Magento\Quote\Model\Quote;
 use Resursbank\Core\Exception\InvalidDataException;
 
 /**
- * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.CookieAndSessionMisuse)
  */
@@ -97,25 +95,17 @@ class Session extends AbstractHelper
     private $validateCard;
 
     /**
-     * @var UrlInterface
-     */
-    private $url;
-
-    /**
      * @param Context $context
      * @param CheckoutSession $sessionManager
      * @param ValidateCard $validateCard
-     * @param UrlInterface $url
      */
     public function __construct(
         Context $context,
         CheckoutSession $sessionManager,
-        ValidateCard $validateCard,
-        UrlInterface $url
+        ValidateCard $validateCard
     ) {
         $this->checkoutSession = $sessionManager;
         $this->validateCard = $validateCard;
-        $this->url = $url;
 
         parent::__construct($context);
     }

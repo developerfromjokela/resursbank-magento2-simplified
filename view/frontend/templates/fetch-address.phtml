@@ -3,17 +3,22 @@
  * Copyright © Resurs Bank AB. All rights reserved.
  * See LICENSE for license details.
  */
-?>
-<?php
-/**
- * @var $block Magento\Framework\View\Element\Template
- */
-/**
- * @var Resursbank\Simplified\ViewModel\FetchAddress $viewModel
- */
+
+declare(strict_types=1);
+
+use Magento\Framework\Escaper;
+use Magento\Framework\View\Element\Template;
+use Resursbank\Simplified\ViewModel\FetchAddress;
+
+/** @var Template $block */
+/** @var FetchAddress $viewModel */
+/** @var Escaper $escaper */
+/** @noinspection PhpUndefinedMethodInspection */
+/** @phpstan-ignore-next-line */
 $viewModel = $block->getViewModel();
 ?>
 
+<!--suppress JSUnusedLocalSymbols -->
 <script>
     require([
         // Add initialization module here.
@@ -22,9 +27,9 @@ $viewModel = $block->getViewModel();
     ) {
         var initializationData = {
             privateCustomerType:
-                '<?php echo $viewModel->getPrivateCustomerType(); ?>',
+                '<?= $escaper->escapeHtml($viewModel->getPrivateCustomerType()) ?>',
             companyCustomerType:
-                '<?php echo $viewModel->getCompanyCustomerType(); ?>',
+                '<?= $escaper->escapeHtml($viewModel->getCompanyCustomerType()) ?>',
         }
     });
 </script>

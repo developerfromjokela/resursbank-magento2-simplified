@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace Resursbank\Simplified\Plugin\Config;
 
+use Magento\Framework\Phrase;
 use Resursbank\Core\Model\Config\Source\Flow as Subject;
 use Resursbank\Simplified\Helper\Config;
 
@@ -17,8 +18,8 @@ class AddFlowOption
      * Add Simplified Flow to the list of available API flows in Core module.
      *
      * @param Subject $subject
-     * @param array $result
-     * @return array
+     * @param array<string, Phrase> $result
+     * @return array<string, Phrase>
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection
      */
