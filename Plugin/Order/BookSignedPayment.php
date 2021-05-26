@@ -14,7 +14,9 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
+use Magento\Sales\Model\Order as OrderModel;
 use Magento\Store\Model\StoreManagerInterface;
+use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Helper\Order;
 use Resursbank\Core\Helper\Request;
 use Resursbank\Simplified\Helper\Config;
@@ -160,11 +162,17 @@ class BookSignedPayment
     private function cancelOrder(): void
     {
         try {
-            $this->orderRepository->save(
-                $this->order->getOrderByQuoteId(
-                    $this->request->getQuoteId()
-                )->cancel()
+            $order = $this->order->getOrderByQuoteId(
+                $this->request->getQuoteId()
             );
+
+            if (!($order instanceof OrderModel)) {
+                throw new InvalidDataException(
+                    __('Unexpected Order instance.')
+                );
+            }
+
+            $this->orderRepository->save($order->cancel());
         } catch (Exception $e) {
             $this->log->exception($e);
         }
