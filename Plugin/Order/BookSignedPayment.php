@@ -25,6 +25,8 @@ use Resursbank\Simplified\Helper\Payment;
 
 /**
  * Book the payment at Resurs Bank after signing it (i.e. create payment).
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class BookSignedPayment
 {
