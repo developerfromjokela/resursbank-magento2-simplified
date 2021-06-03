@@ -36,7 +36,12 @@ define(
             /**
              * @type {Simplified.Model.Checkout.isCompany}
              */
-            isCompany: ko.observable(false)
+            isCompany: ko.observable(false),
+
+            /**
+             * @type {Simplified.Observable.String}
+             */
+            govId: ko.observable('')
         });
 
         /**
@@ -60,6 +65,21 @@ define(
                 write: function (value) {
                     if (typeof value === 'boolean') {
                         PRIVATE.isCompany(value);
+                    }
+                }
+            }),
+
+            /**
+             * @type {Simplified.Observable.String}
+             */
+            govId: ko.computed({
+                read: function () {
+                    return PRIVATE.govId();
+                },
+
+                write: function (value) {
+                    if (typeof value === 'string') {
+                        PRIVATE.govId(value);
                     }
                 }
             })
