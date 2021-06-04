@@ -352,7 +352,7 @@ define(
                 me.invalidGovId = ko.computed(function () {
                     var address = getRelevantQuoteAddress();
 
-                    return !CredentialsLib.validate(
+                    return me.govId() !== '' && !CredentialsLib.validate(
                         me.govId(),
                         address.countryId || '',
                         CheckoutModel.isCompany()
