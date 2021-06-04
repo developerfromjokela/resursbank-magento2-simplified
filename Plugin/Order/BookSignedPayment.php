@@ -27,6 +27,8 @@ use Resursbank\Simplified\Helper\Payment;
 
 /**
  * Book the payment at Resurs Bank after signing it (i.e. create payment).
+ *
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class BookSignedPayment
 {
@@ -91,6 +93,7 @@ class BookSignedPayment
      * @param OrderRepositoryInterface $orderRepository
      * @param Session $session
      * @param PaymentMethods $paymentMethods
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         Log $log,
@@ -132,8 +135,8 @@ class BookSignedPayment
             $order = $this->getOrder();
             $payment = $order->getPayment();
 
-            if ($this->config->isActive($storeCode) &&
-                $payment !== null &&
+            if ($payment !== null &&
+                $this->config->isActive($storeCode) &&
                 $this->paymentMethods->isResursBankMethod($payment->getMethod())
             ) {
                 $this->payment->bookPaymentSession($order);
@@ -206,13 +209,13 @@ class BookSignedPayment
     private function hasQuoteId(): bool
     {
         $result = true;
-        
+
         try {
             $this->request->getQuoteId();
         } catch (Exception $e) {
             $result = false;
         }
-        
+
         return $result;
     }
 }
