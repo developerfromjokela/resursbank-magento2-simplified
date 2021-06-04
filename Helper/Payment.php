@@ -145,11 +145,16 @@ class Payment extends AbstractHelper
     public function setCardData(
         ResursBank $connection
     ): self {
-        /** @phpstan-ignore-next-line */
-        $connection->setCardData(
-            (string) $this->session->getCardNumber(),
-            (float) $this->session->getCardAmount()
-        );
+        $cardNumber = $this->session->getCardNumber();
+        $cardAmount = $this->session->getCardAmount();
+        
+        if ($cardNumber !== null || $cardAmount !== null) {
+            /** @phpstan-ignore-next-line */
+            $connection->setCardData(
+                $cardNumber,
+                $cardAmount
+            );
+        }
 
         return $this;
     }

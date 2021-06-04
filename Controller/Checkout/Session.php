@@ -116,10 +116,14 @@ class Session implements HttpPostActionInterface
 
             if ($cardNumber !== null) {
                 $this->session->setCardNumber($cardNumber);
+            } else {
+                $this->session->unsetCardNumber();
             }
 
             if ($cardAmount !== null) {
                 $this->session->setCardAmount($cardAmount);
+            } else {
+                $this->session->unsetCardAmount();
             }
         } catch (Exception $e) {
             $this->log->exception($e);
