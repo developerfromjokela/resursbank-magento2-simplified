@@ -26,6 +26,7 @@ define(
         'Resursbank_Simplified/js/lib/credentials',
         'Resursbank_Simplified/js/lib/session',
         'Resursbank_Simplified/js/model/checkout',
+        'Resursbank_Simplified/js/action/checkout',
         'Resursbank_Simplified/js/storage/checkout',
         'Resursbank_Simplified/js/model/payment/method-render-list'
     ],
@@ -47,6 +48,7 @@ define(
      * @param {Simplified.Lib.Credentials} CredentialsLib
      * @param {Simplified.Lib.Session} SessionLib
      * @param {Simplified.Model.Checkout} CheckoutModel
+     * @param {Simplified.Action.Checkout} CheckoutAction
      * @param {Simplified.Storage.Checkout} CheckoutStorage
      * @param {Simplified.Observable.MethodRenderList} MethodRenderList
      * @returns {*}
@@ -68,6 +70,7 @@ define(
         CredentialsLib,
         SessionLib,
         CheckoutModel,
+        CheckoutAction,
         CheckoutStorage,
         MethodRenderList
     ) {
@@ -274,6 +277,8 @@ define(
                 var me = this;
                 var storageGovId = CheckoutStorage.getGovId();
 
+                CheckoutAction.setGovId(storageGovId);
+
                 me._super();
 
                 /**
@@ -340,9 +345,15 @@ define(
                  *
                  * @type {Simplified.Observable.String}
                  */
-                me.govId = ko.observable(
-                    typeof storageGovId === 'string' ? storageGovId : ''
-                );
+                me.govId = ko.computed({
+                    read: function () {
+                        return CheckoutModel.govId();
+                    },
+
+                    write: function (value) {
+                        CheckoutAction.setGovId(value);
+                    }
+                });
 
                 /**
                  * Whether the given id number is invalid.

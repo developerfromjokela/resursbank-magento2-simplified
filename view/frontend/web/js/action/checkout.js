@@ -45,7 +45,8 @@ define(
              */
             setGovId: function (value) {
                 Storage.setGovId(value);
-                
+                Model.govId(value);
+
                 return EXPORT;
             },
 
@@ -54,6 +55,7 @@ define(
              */
             removeGovId: function () {
                 Storage.removeGovId();
+                Model.govId('');
 
                 return EXPORT;
             }
