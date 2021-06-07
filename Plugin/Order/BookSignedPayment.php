@@ -13,12 +13,14 @@ use Magento\Checkout\Controller\Onepage\Success;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\UrlInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Sales\Api\OrderRepositoryInterface;
 use Magento\Sales\Model\Order as OrderModel;
 use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Helper\Order;
 use Resursbank\Core\Helper\Request;
+use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Simplified\Helper\Config;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Payment;
@@ -76,6 +78,11 @@ class BookSignedPayment
     private $session;
 
     /**
+     * @var PaymentMethods
+     */
+    private $paymentMethods;
+
+    /**
      * @param Log $log
      * @param Payment $payment
      * @param Request $request
@@ -85,6 +92,8 @@ class BookSignedPayment
      * @param UrlInterface $url
      * @param OrderRepositoryInterface $orderRepository
      * @param Session $session
+     * @param PaymentMethods $paymentMethods
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         Log $log,
@@ -95,7 +104,8 @@ class BookSignedPayment
         StoreManagerInterface $storeManager,
         UrlInterface $url,
         OrderRepositoryInterface $orderRepository,
-        Session $session
+        Session $session,
+        PaymentMethods $paymentMethods
     ) {
         $this->log = $log;
         $this->payment = $payment;
@@ -106,6 +116,7 @@ class BookSignedPayment
         $this->url = $url;
         $this->orderRepository = $orderRepository;
         $this->session = $session;
+        $this->paymentMethods = $paymentMethods;
     }
 
     /**
@@ -121,13 +132,14 @@ class BookSignedPayment
     ): ResultInterface {
         try {
             $storeCode = $this->storeManager->getStore()->getCode();
+            $order = $this->getOrder();
+            $payment = $order->getPayment();
 
-            if ($this->config->isActive($storeCode)) {
-                $this->payment->bookPaymentSession(
-                    $this->order->getOrderByQuoteId(
-                        $this->request->getQuoteId()
-                    )
-                );
+            if ($payment !== null &&
+                $this->config->isActive($storeCode) &&
+                $this->paymentMethods->isResursBankMethod($payment->getMethod())
+            ) {
+                $this->payment->bookPaymentSession($order);
             }
         } catch (Exception $e) {
             $this->log->exception($e);
@@ -164,9 +176,7 @@ class BookSignedPayment
     private function cancelOrder(): void
     {
         try {
-            $order = $this->order->getOrderByQuoteId(
-                $this->request->getQuoteId()
-            );
+            $order = $this->getOrder();
 
             if (!($order instanceof OrderModel)) {
                 throw new InvalidDataException(
@@ -178,5 +188,34 @@ class BookSignedPayment
         } catch (Exception $e) {
             $this->log->exception($e);
         }
+    }
+
+    /**
+     * @return OrderInterface
+     * @throws InvalidDataException
+     */
+    private function getOrder(): OrderInterface
+    {
+        return $this->hasQuoteId() ?
+            $this->order->getOrderByQuoteId(
+                $this->request->getQuoteId()
+            ) :
+            $this->session->getLastRealOrder();
+    }
+
+    /**
+     * @return bool
+     */
+    private function hasQuoteId(): bool
+    {
+        $result = true;
+
+        try {
+            $this->request->getQuoteId();
+        } catch (Exception $e) {
+            $result = false;
+        }
+
+        return $result;
     }
 }
