@@ -277,7 +277,11 @@ define(
                 var me = this;
                 var storageGovId = CheckoutStorage.getGovId();
 
-                CheckoutAction.setGovId(storageGovId);
+                CheckoutAction.setGovId(
+                    typeof storageGovId === 'string' ? 
+                        storageGovId :
+                        ''
+                );
 
                 me._super();
 
