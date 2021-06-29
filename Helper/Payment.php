@@ -27,6 +27,7 @@ use Resursbank\Core\Helper\Url;
 use Resursbank\Core\Model\Api\Payment as PaymentModel;
 use Resursbank\Core\Model\Api\Payment\Converter\QuoteConverter;
 use Resursbank\Core\Model\PaymentMethodRepository;
+use Resursbank\Core\Helper\Order as OrderHelper;
 use Resursbank\RBEcomPHP\ResursBank;
 use Resursbank\Simplified\Helper\Config as ConfigHelper;
 use stdClass;
@@ -73,6 +74,11 @@ class Payment extends AbstractHelper
     private $url;
 
     /**
+     * @var OrderHelper
+     */
+    private OrderHelper $orderHelper;
+
+    /**
      * @param Context $context
      * @param Session $session
      * @param QuoteConverter $quoteConverter
@@ -81,6 +87,7 @@ class Payment extends AbstractHelper
      * @param Config $configHelper
      * @param StoreManagerInterface $storeManager
      * @param Url $url
+     * @param OrderHelper $orderHelper
      */
     public function __construct(
         Context $context,
@@ -90,7 +97,8 @@ class Payment extends AbstractHelper
         CoreApi $coreApi,
         ConfigHelper $configHelper,
         StoreManagerInterface $storeManager,
-        Url $url
+        Url $url,
+        OrderHelper $orderHelper
     ) {
         $this->session = $session;
         $this->quoteConverter = $quoteConverter;
@@ -99,6 +107,7 @@ class Payment extends AbstractHelper
         $this->configHelper = $configHelper;
         $this->storeManager = $storeManager;
         $this->url = $url;
+        $this->orderHelper = $orderHelper;
 
         parent::__construct($context);
     }
@@ -147,7 +156,7 @@ class Payment extends AbstractHelper
     ): self {
         $cardNumber = $this->session->getCardNumber();
         $cardAmount = $this->session->getCardAmount();
-        
+
         if ($cardNumber !== null || $cardAmount !== null) {
             /** @phpstan-ignore-next-line */
             $connection->setCardData(
@@ -430,6 +439,7 @@ class Payment extends AbstractHelper
         // Reject denied / failed payment.
         switch ($payment->getBookPaymentStatus()) {
             case 'DENIED':
+                $this->orderHelper->setCreditDeniedStatus($order);
                 throw new PaymentDataException(__(
                     'Your credit application was denied, please select a ' .
                     'different payment method.'
