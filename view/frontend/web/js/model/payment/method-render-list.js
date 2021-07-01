@@ -19,7 +19,7 @@
  */
 
 /**
- * @callback Simplified.Observable.MethodRenderList
+ * @callback Simplified.Ko.MethodRenderList
  * @param {Simplified.Checkout.MethodRenderList} [value]
  * @return {Simplified.Checkout.MethodRenderList}
  */
@@ -31,7 +31,7 @@ define(
 
     /**
      * @param ko
-     * @return {Simplified.Observable.MethodRenderList}
+     * @return {Simplified.Ko.MethodRenderList}
      */
     function (
         ko

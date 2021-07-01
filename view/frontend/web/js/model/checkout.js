@@ -39,7 +39,7 @@ define(
             isCompany: ko.observable(false),
 
             /**
-             * @type {Simplified.Observable.String}
+             * @type {RbC.Ko.String}
              */
             govId: ko.observable('')
         });
@@ -70,7 +70,7 @@ define(
             }),
 
             /**
-             * @type {Simplified.Observable.String}
+             * @type {RbC.Ko.String}
              */
             govId: ko.computed({
                 read: function () {
