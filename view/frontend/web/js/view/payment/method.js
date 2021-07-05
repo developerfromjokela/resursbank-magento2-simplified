@@ -38,7 +38,7 @@ define(
      * @param uiRegistry
      * @param translate
      * @param url
-     * @param layout
+     * @param Layout
      * @param Quote
      * @param Component
      * @param redirectOnSuccessAction
@@ -60,7 +60,7 @@ define(
         uiRegistry,
         translate,
         url,
-        layout,
+        Layout,
         Quote,
         Component,
         redirectOnSuccessAction,
@@ -644,7 +644,7 @@ define(
 
                 (function init() {
                     if (hasLegalInfoLink(me.getCode())) {
-                        layout([{
+                        Layout([{
                             parent: me.name,
                             name: me.name + '.legal-info',
                             displayArea: 'legal-info-link',
