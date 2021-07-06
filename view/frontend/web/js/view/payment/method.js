@@ -652,6 +652,7 @@ define(
                             config: {
                                 modalComponent: 'Resursbank_Core/js/view/remodal-checkout',
                                 methodCode: me.getCode(),
+                                modalTitle: '',
                                 requestFn: function () {
                                     var method = Quote.paymentMethod();
                                     var gt = parseFloat(
