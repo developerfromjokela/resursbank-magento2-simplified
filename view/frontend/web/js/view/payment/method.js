@@ -22,7 +22,7 @@ define(
         'Magento_Checkout/js/model/totals',
         'Magento_Checkout/js/checkout-data',
         'Magento_Ui/js/lib/validation/validator',
-        'Resursbank_Core/js/lib/part-payment',
+        'Resursbank_Core/js/lib/read-more',
         'Resursbank_Simplified/js/lib/checkout-config',
         'Resursbank_Simplified/js/lib/credentials',
         'Resursbank_Simplified/js/lib/session',
@@ -45,7 +45,7 @@ define(
      * @param totals
      * @param CheckoutData
      * @param validator
-     * @param {RbC.Lib.PartPayment} PartPaymentLib
+     * @param {RbC.Lib.ReadMore} ReadMoreLib
      * @param {Simplified.Lib.CheckoutConfig} CheckoutConfigLib
      * @param {Simplified.Lib.Credentials} CredentialsLib
      * @param {Simplified.Lib.Session} SessionLib
@@ -67,7 +67,7 @@ define(
         totals,
         CheckoutData,
         validator,
-        PartPaymentLib,
+        ReadMoreLib,
         CheckoutConfigLib,
         CredentialsLib,
         SessionLib,
@@ -648,7 +648,7 @@ define(
                             parent: me.name,
                             name: me.name + '.legal-info',
                             displayArea: 'legal-info-link',
-                            component: 'Resursbank_Core/js/view/part-payment',
+                            component: 'Resursbank_Core/js/view/read-more',
                             config: {
                                 modalComponent: 'Resursbank_Core/js/view/remodal-checkout',
                                 methodCode: me.getCode(),
@@ -661,9 +661,10 @@ define(
                                     var result;
 
                                     if (method !== null && !Number.isNaN(gt)) {
-                                        result = PartPaymentLib.getCostOfPurchase(
+                                        result = ReadMoreLib.getCostOfPurchase(
                                             gt,
-                                            method.method
+                                            method.method,
+                                            CheckoutConfigLib.getFormKey()
                                         );
                                     }
 

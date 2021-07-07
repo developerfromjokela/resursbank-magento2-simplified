@@ -10,7 +10,7 @@
         <css src="Resursbank_Core::css/remodal.css" />
         <css src="Resursbank_Core::css/remodal-default-theme.css" />
         <css src="Resursbank_Core::css/remodal-custom.css" />
-        <css src="Resursbank_Core::css/part-payment.css" />
+        <css src="Resursbank_Core::css/read-more.css" />
         <css src="Resursbank_Simplified::css/fetch-address.css" />
         <css src="Resursbank_Simplified::css/payment-method.css" />
     </head>
