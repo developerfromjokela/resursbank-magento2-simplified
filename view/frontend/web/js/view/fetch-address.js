@@ -49,24 +49,6 @@ define(
         'use strict';
 
         /**
-         * @callback Simplified.Observable.String
-         * @param {string} [value]
-         * @return {string}
-         */
-
-        /**
-         * @callback Simplified.Observable.Boolean
-         * @param {boolean} [value]
-         * @return {boolean}
-         */
-
-        /**
-         * @callback Simplified.Observable.Number
-         * @param {number} [value]
-         * @return {number}
-         */
-
-        /**
          * @type {string}
          * @constant
          */
@@ -117,14 +99,14 @@ define(
                  * Whether a request has been sent to fetch a shipping address
                  * for the supplied ID-number.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.isFetchingAddress = ko.observable(false);
 
                 /**
                  * Whether a shipping address has been fetched and applied.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.isAddressApplied = ko.observable(false);
 
@@ -132,28 +114,28 @@ define(
                  * Whether an error occurred while fetching the shipping
                  * address.
                  *
-                 * @type {Simplified.Observable.String}
+                 * @type {RbC.Ko.String}
                  */
                 me.failedToFetchAddressError = ko.observable('');
 
                 /**
                  * The customer's ID-number.
                  *
-                 * @type {Simplified.Observable.String}
+                 * @type {RbC.Ko.String}
                  */
                 me.govId = ko.observable('');
 
                 /**
                  * The customers phone number.
                  *
-                 * @type {Simplified.Observable.String}
+                 * @type {RbC.Ko.String}
                  */
                 me.phoneNumber = ko.observable('');
 
                 /**
                  * The selected customer type.
                  *
-                 * @type {Simplified.Observable.String}
+                 * @type {RbC.Ko.String}
                  */
                 me.selectedCustomerType = ko.observable(
                     CheckoutModel.isCompany() ?
@@ -164,7 +146,7 @@ define(
                 /**
                  * Whether a request can be sent to fetch an address.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.isFetchingEnabled = ko.computed(function () {
                     return !me.isAddressApplied() && !me.isFetchingAddress()
@@ -173,7 +155,7 @@ define(
                 /**
                  * Whether the ID-number input should be disabled.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.disableIdInput = ko.computed(function () {
                     return !me.isFetchingEnabled();
@@ -182,7 +164,7 @@ define(
                 /**
                  * Whether the ID-number input should be disabled.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.disableIdInput = ko.computed(function () {
                     return !me.isFetchingEnabled();
@@ -191,7 +173,7 @@ define(
                 /**
                  * Whether the phone number input should be disabled.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.disablePhoneInput = ko.computed(function () {
                     return !me.isFetchingEnabled();
@@ -200,7 +182,7 @@ define(
                 /**
                  * Whether the customer selection inputs should be disabled.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.disableCustomerTypeSelection = ko.computed(function () {
                     return me.isFetchingAddress() || me.isAddressApplied();
@@ -209,7 +191,7 @@ define(
                 /**
                  * Whether the customer is a company or not.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.isCompanyCustomer = ko.computed(function () {
                     return me.selectedCustomerType() === CUSTOMER_TYPE_COMPANY;
@@ -218,7 +200,7 @@ define(
                 /**
                  * Whether default country is Sweden.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.isSweden = function () {
                     return CheckoutConfig.getDefaultCountryId() === 'SE';
@@ -227,7 +209,7 @@ define(
                 /**
                  * Whether default country is Norway.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.isNorway = function () {
                     return CheckoutConfig.getDefaultCountryId() === 'NO';
@@ -236,7 +218,7 @@ define(
                 /**
                  * Whether default country is Finland.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.isFinland = function () {
                     return CheckoutConfig.getDefaultCountryId() === 'FI';
@@ -245,7 +227,7 @@ define(
                 /**
                  * Whether default country is Denmark.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.isDenmark = function () {
                     return CheckoutConfig.getDefaultCountryId() === 'DK';
@@ -254,7 +236,7 @@ define(
                 /**
                  * Whether the component should be displayed.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.showComponent = ko.computed(function () {
                     return me.isSweden() || me.isNorway() || me.isFinland();
@@ -264,7 +246,7 @@ define(
                  * Whether the component has an error. Necessary to apply the
                  * correct CSS classes to the component's HTML.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.hasError = ko.computed(function () {
                     return me.failedToFetchAddressError() !== '';

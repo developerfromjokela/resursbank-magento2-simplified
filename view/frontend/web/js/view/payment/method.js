@@ -22,6 +22,7 @@ define(
         'Magento_Checkout/js/model/totals',
         'Magento_Checkout/js/checkout-data',
         'Magento_Ui/js/lib/validation/validator',
+        'Resursbank_Core/js/lib/read-more',
         'Resursbank_Simplified/js/lib/checkout-config',
         'Resursbank_Simplified/js/lib/credentials',
         'Resursbank_Simplified/js/lib/session',
@@ -37,20 +38,20 @@ define(
      * @param uiRegistry
      * @param translate
      * @param url
-     * @param layout
+     * @param Layout
      * @param Quote
      * @param Component
      * @param redirectOnSuccessAction
      * @param totals
      * @param CheckoutData
      * @param validator
+     * @param {RbC.Lib.ReadMore} ReadMoreLib
      * @param {Simplified.Lib.CheckoutConfig} CheckoutConfigLib
      * @param {Simplified.Lib.Credentials} CredentialsLib
      * @param {Simplified.Lib.Session} SessionLib
      * @param {Simplified.Model.Checkout} CheckoutModel
      * @param {Simplified.Action.Checkout} CheckoutAction
      * @param {Simplified.Storage.Checkout} CheckoutStorage
-     * @param {Simplified.Observable.MethodRenderList} MethodRenderList
      * @returns {*}
      */
     function (
@@ -59,20 +60,20 @@ define(
         uiRegistry,
         translate,
         url,
-        layout,
+        Layout,
         Quote,
         Component,
         redirectOnSuccessAction,
         totals,
         CheckoutData,
         validator,
+        ReadMoreLib,
         CheckoutConfigLib,
         CredentialsLib,
         SessionLib,
         CheckoutModel,
         CheckoutAction,
-        CheckoutStorage,
-        MethodRenderList
+        CheckoutStorage
     ) {
         'use strict';
 
@@ -264,6 +265,20 @@ define(
             );
         }
 
+        /**
+         * Whether the method has a "Legal information link" attached to it.
+         *
+         * @param {string} code
+         * @returns {boolean}
+         */
+        function hasLegalInfoLink(code) {
+            var method = CheckoutConfigLib.getPaymentMethod(code);
+
+            return method.specificType === 'PART_PAYMENT' ||
+                method.specificType === 'REVOLVING_CREDIT' ||
+                method.specificType === 'INVOICE';
+        }
+
         return Component.extend({
             defaults: {
                 redirectAfterPlaceOrder: true,
@@ -278,7 +293,7 @@ define(
                 var storageGovId = CheckoutStorage.getGovId();
 
                 CheckoutAction.setGovId(
-                    typeof storageGovId === 'string' ? 
+                    typeof storageGovId === 'string' ?
                         storageGovId :
                         ''
                 );
@@ -288,7 +303,7 @@ define(
                 /**
                  * Whether this payment method is from Resurs Bank.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.isResursInternalMethod = ko.observable(
                     isResursInternalMethod(this.getCode())
@@ -347,7 +362,7 @@ define(
                 /**
                  * The id number that the customer has entered, if any.
                  *
-                 * @type {Simplified.Observable.String}
+                 * @type {RbC.Ko.String}
                  */
                 me.govId = ko.computed({
                     read: function () {
@@ -362,7 +377,7 @@ define(
                 /**
                  * Whether the given id number is invalid.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.invalidGovId = ko.computed(function () {
                     var address = getRelevantQuoteAddress();
@@ -377,7 +392,7 @@ define(
                 /**
                  * Whether the id number input should be disabled.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.disableGovId = ko.computed(function () {
                     return false;
@@ -386,7 +401,7 @@ define(
                 /**
                  * Whether the customer is a company or not.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.isCompanyCustomer = ko.computed(function() {
                     return CheckoutModel.isCompany();
@@ -395,14 +410,14 @@ define(
                 /**
                  * The contact id that the customer has entered.
                  *
-                 * @type {Simplified.Observable.String}
+                 * @type {RbC.Ko.String}
                  */
                 me.contactId = ko.observable('');
 
                 /**
                  * Whether the contact id input should be disabled.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.disableContactId = ko.computed(function () {
                     return false;
@@ -414,7 +429,7 @@ define(
                  * NOTE: contact id's are always private SSN numbers, never
                  * org. numbers.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.invalidContactId = ko.computed(function() {
                     var address = getRelevantQuoteAddress();
@@ -436,14 +451,14 @@ define(
                 /**
                  * The value of the payment method's card input.
                  *
-                 * @type {Simplified.Observable.String}
+                 * @type {RbC.Ko.String}
                  */
                 me.cardNumber = ko.observable('');
 
                 /**
                  * Whether the card number is invalid .
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.invalidCardNumber = ko.computed(function() {
                     return typeof me.cardNumber() !== 'string' ||
@@ -461,7 +476,7 @@ define(
                 /**
                  * The amount the card should be worth.
                  *
-                 * @type {Simplified.Observable.Number}
+                 * @type {RbC.Ko.Number}
                  */
                 me.cardAmount = ko.observable(0);
 
@@ -475,7 +490,7 @@ define(
                 /**
                  * The availability status of the payment method.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.isAvailable = ko.observable(isAvailable(me.getCode()));
 
@@ -516,7 +531,7 @@ define(
                 /**
                  * Whether all requirements for an order placement has been met.
                  *
-                 * @type {Simplified.Observable.Boolean}
+                 * @type {RbC.Ko.Boolean}
                  */
                 me.canPlaceOrder = ko.computed(function () {
                     var idResult =
@@ -628,24 +643,36 @@ define(
                 }
 
                 (function init() {
-                    // Initialize components that wants to add themselves to
-                    // this payment method. Components will be rendered in the
-                    // "displayArea" they have specified.
-                    layout(MethodRenderList().some(function (component) {
-                        if (me.getCode() === component.methodCode) {
-                            layout([{
-                                parent: me.name,
-                                name: me.name + '.' + component.name,
-                                displayArea: component.displayArea,
-                                component: component.component,
-                                config: {
-                                    methodCode: component.methodCode
-                                }
-                            }]);
+                    if (hasLegalInfoLink(me.getCode())) {
+                        Layout([{
+                            parent: me.name,
+                            name: me.name + '.legal-info',
+                            displayArea: 'legal-info-link',
+                            component: 'Resursbank_Core/js/view/read-more',
+                            config: {
+                                modalComponent: 'Resursbank_Core/js/view/remodal-checkout',
+                                methodCode: me.getCode(),
+                                modalTitle: '',
+                                requestFn: function () {
+                                    var method = Quote.paymentMethod();
+                                    var gt = parseFloat(
+                                        Quote.totals().base_grand_total
+                                    );
+                                    var result;
 
-                            return true;
-                        }
-                    }));
+                                    if (method !== null && !Number.isNaN(gt)) {
+                                        result = ReadMoreLib.getCostOfPurchase(
+                                            gt,
+                                            method.method,
+                                            CheckoutConfigLib.getFormKey()
+                                        );
+                                    }
+
+                                    return result;
+                                }
+                            }
+                        }]);
+                    }
 
                     // Subscriber to change the availability status of the
                     // payment method when the customer type changes.

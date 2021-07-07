@@ -7,6 +7,10 @@
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <head>
+        <css src="Resursbank_Core::css/remodal.css" />
+        <css src="Resursbank_Core::css/remodal-default-theme.css" />
+        <css src="Resursbank_Core::css/remodal-custom.css" />
+        <css src="Resursbank_Core::css/read-more.css" />
         <css src="Resursbank_Simplified::css/fetch-address.css" />
         <css src="Resursbank_Simplified::css/payment-method.css" />
     </head>
