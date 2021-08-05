@@ -239,7 +239,7 @@ define(
          * @param {string} code
          * @returns {boolean}
          */
-        function doesRequireCardNumber(code) {
+        function hasCardNumber(code) {
             var method = CheckoutConfigLib.getPaymentMethod(code);
 
             return typeof method !== 'undefined' &&
@@ -446,7 +446,7 @@ define(
                  *
                  * @type {boolean}
                  */
-                me.requiresCardNumber = doesRequireCardNumber(this.getCode());
+                me.hasCardNumber = hasCardNumber(this.getCode());
 
                 /**
                  * The value of the payment method's card input.
@@ -539,8 +539,8 @@ define(
                         (me.govId() !== '' && !me.invalidGovId());
 
                     var cardNumberResult =
-                        !me.requiresCardNumber ||
-                        (me.cardNumber() !== '' && !me.invalidCardNumber());
+                        me.cardNumber() === '' ||
+                        !me.invalidCardNumber();
 
                     var companyResult =
                         !me.isCompanyCustomer() ||
@@ -578,7 +578,7 @@ define(
                                     null,
 
                             card_number:
-                                me.requiresCardNumber ?
+                                me.hasCardNumber ?
                                     me.cardNumber() :
                                     null,
 
