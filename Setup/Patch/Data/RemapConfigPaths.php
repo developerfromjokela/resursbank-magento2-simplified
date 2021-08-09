@@ -16,6 +16,10 @@ use Resursbank\Core\Setup\Patch\Data\RemapConfigPaths as Core;
 class RemapConfigPaths extends Core
 {
     /**
+     * NOTE: The paths appear the same but the base section has changed. We
+     * must define these values to convert the base section from
+     * 'resursbank_checkout' to 'resursbank'.
+     *
      * @inheridoc
      * @noinspection PhpMissingParentCallCommonInspection
      */
