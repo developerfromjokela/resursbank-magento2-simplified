@@ -269,7 +269,7 @@ class Request extends AbstractHelper
     {
         $result = $this->request->getParam('card_number');
 
-        if (is_string($result) && !$this->validateCard->validate($result)) {
+        if (is_string($result) && !$this->validateCard->validate($result, true)) {
             throw new InvalidDataException(__('Invalid card number.'));
         }
 
