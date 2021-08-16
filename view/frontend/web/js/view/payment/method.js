@@ -78,18 +78,6 @@ define(
         'use strict';
 
         /**
-         * @typedef {object} Simplified.Method.CardOption
-         * @property {(string|number)} value
-         * @property {(string|number)} text
-         */
-
-        /**
-         * @callback Simplified.Method.CardOptions
-         * @param {Array<Simplified.Method.CardOption>} [value]
-         * @return {Array<Simplified.Method.CardOption>}
-         */
-
-        /**
          * Get applied billing address (fallback to shipping address).
          *
          * @returns {object}
@@ -162,88 +150,6 @@ define(
                         );
                 }
             );
-        }
-
-        /**
-         * Checks whether a payment method has card amount options.
-         *
-         * @param {string} code
-         * @returns {boolean}
-         */
-        function hasCardAmount(code) {
-            var method = CheckoutConfigLib.getPaymentMethod(code);
-            var maxOrderTotal = parseFloat(String(method.maxOrderTotal));
-
-            return typeof method !== 'undefined' &&
-                method.type === 'REVOLVING_CREDIT' &&
-                method.specificType === 'REVOLVING_CREDIT' &&
-                !isNaN(maxOrderTotal) && maxOrderTotal > 0;
-        }
-
-        /**
-         * Takes the code of a payment method and returns an array of credit
-         * limit intervals for the corresponding payment method.
-         *
-         * @param {string} code
-         * @returns {Array<Simplified.Method.CardOption>}
-         */
-        function getCardAmountOptions(code) {
-            var i;
-            var grandTotal;
-            var interval;
-            var result = [];
-            var method = CheckoutConfigLib.getPaymentMethod(code);
-            var maxOrderTotal = parseFloat(
-                String(method.maxOrderTotal)
-            );
-
-            if (typeof method !== 'undefined' &&
-                !isNaN(maxOrderTotal)
-            ) {
-                grandTotal = Math.ceil(Quote.totals().base_grand_total);
-                interval = CheckoutModel.cardAmountInterval;
-                i = grandTotal + interval - grandTotal % interval;
-
-                result.push(createCardAmountOption(grandTotal, grandTotal));
-
-                for (i; i <= maxOrderTotal; i += interval) {
-                    result.push(createCardAmountOption(i, i));
-                }
-            }
-
-            return result;
-        }
-
-        /**
-         * Creates and returns an object that represents a card amount option
-         * in a <select> element.
-         *
-         * @param {string|number} value
-         * @param {string|number} text
-         * @returns {Simplified.Method.CardOption}
-         */
-        function createCardAmountOption(
-            value,
-            text
-        ) {
-            return {
-                value: value,
-                text: text
-            }
-        }
-
-        /**
-         * Takes a payment method code and checks whether the payment method
-         * requires a card number.
-         *
-         * @param {string} code
-         * @returns {boolean}
-         */
-        function hasCardNumber(code) {
-            var method = CheckoutConfigLib.getPaymentMethod(code);
-
-            return typeof method !== 'undefined' &&
-                method.type === 'CARD'
         }
 
         /**
@@ -440,53 +346,7 @@ define(
                         CheckoutModel.isCompany()
                     );
                 });
-
-                /**
-                 * Checks if payment method requires a card number.
-                 *
-                 * @type {boolean}
-                 */
-                me.hasCardNumber = hasCardNumber(this.getCode());
-
-                /**
-                 * The value of the payment method's card input.
-                 *
-                 * @type {RbC.Ko.String}
-                 */
-                me.cardNumber = ko.observable('');
-
-                /**
-                 * Whether the card number is invalid .
-                 *
-                 * @type {RbC.Ko.Boolean}
-                 */
-                me.invalidCardNumber = ko.computed(function() {
-                    return typeof me.cardNumber() !== 'string' ||
-                        !CredentialsLib.validateCard(me.cardNumber());
-                });
-
-                /**
-                 * Whether this payment method has a field for selecting the
-                 * card amount.
-                 *
-                 * @type {boolean}
-                 */
-                me.hasCardAmount = hasCardAmount(me.getCode());
-
-                /**
-                 * The amount the card should be worth.
-                 *
-                 * @type {RbC.Ko.Number}
-                 */
-                me.cardAmount = ko.observable(0);
-
-                /**
-                 * List of available amount options for the card.
-                 *
-                 * @type {Simplified.Method.CardOptions}
-                 */
-                me.cardAmountOptions = ko.observable([]);
-
+                
                 /**
                  * The availability status of the payment method.
                  *
@@ -538,17 +398,12 @@ define(
                         !me.hasSsnField ||
                         (me.govId() !== '' && !me.invalidGovId());
 
-                    var cardNumberResult =
-                        me.cardNumber() === '' ||
-                        !me.invalidCardNumber();
-
                     var companyResult =
                         !me.isCompanyCustomer() ||
                         (me.contactId() !== '' && !me.invalidContactId());
 
                     return me.isAvailable() &&
                         idResult &&
-                        cardNumberResult &&
                         companyResult &&
                         me.isPlaceOrderActionAllowed();
                 });
@@ -575,16 +430,6 @@ define(
                             contact_gov_id:
                                 me.isCompanyCustomer() ?
                                     me.contactId() :
-                                    null,
-
-                            card_number:
-                                me.hasCardNumber ?
-                                    me.cardNumber() :
-                                    null,
-
-                            card_amount:
-                                me.hasCardAmount ?
-                                    me.cardAmount() :
                                     null
                         }).done(function (response) {
                             onSetSessionDataDone(response, data, event);
@@ -618,28 +463,6 @@ define(
                             message: response.error.message
                         });
                     }
-                }
-
-                if (me.hasCardAmount) {
-                    me.cardAmount(Quote.totals().base_grand_total);
-                    me.cardAmountOptions(getCardAmountOptions(this.getCode()));
-
-                    // If totals change we want to update the card amount
-                    // options for this payment method.
-                    Quote.totals.subscribe(function (value) {
-                        var paymentMethod =
-                            CheckoutData.getSelectedPaymentMethod();
-
-                        if (paymentMethod === me.getCode()) {
-                            me.cardAmountOptions(
-                                getCardAmountOptions(me.getCode())
-                            );
-                            me.cardAmount(value.base_grand_total);
-                        } else if (me.cardAmount() !== 0) {
-                            me.cardAmount(0);
-                            me.cardAmountOptions([]);
-                        }
-                    });
                 }
 
                 (function init() {

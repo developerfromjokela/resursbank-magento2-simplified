@@ -151,16 +151,6 @@ define(
                 return result;
             },
 
-            /**
-             * Validates a card number.
-             *
-             * @param {string} num
-             * @returns {boolean}
-             */
-            validateCard: function (num) {
-                return num === '' ||
-                    /^([1-9][0-9]{3}[ ]{0,1}[0-9]{4}[ ]{0,1}[0-9]{4}[ ]{0,1}[0-9]{4})$/.test(num);
-            },
 
             /**
              * Validates a phone number based on a country.

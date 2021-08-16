@@ -23,12 +23,6 @@ define(
          */
 
         /**
-         * @callback Simplified.Model.Checkout.cardAmountInterval
-         * @param {number} [value]
-         * @return {number}
-         */
-
-        /**
          * @constant
          * @type {object}
          */
@@ -49,11 +43,6 @@ define(
          * @constant
          */
         var EXPORT = {
-            /**
-             * @type {number}
-             */
-            cardAmountInterval: 5000,
-
             /**
              * @type {Simplified.Model.Checkout.isCompany}
              */

@@ -48,11 +48,6 @@ class Request extends AbstractHelper
     private $validateGovId;
 
     /**
-     * @var ValidateCard
-     */
-    private $validateCard;
-
-    /**
      * @var CoreConfig
      */
     private $config;
@@ -73,7 +68,6 @@ class Request extends AbstractHelper
      * @param Log $log
      * @param RequestInterface $request
      * @param ValidateGovId $validateGovId
-     * @param ValidateCard $validateCard
      * @param ValidatePhoneNumber $validatePhoneNumber
      * @param CoreConfig $config
      * @param StoreManagerInterface $storeManager
@@ -84,7 +78,6 @@ class Request extends AbstractHelper
         Log $log,
         RequestInterface $request,
         ValidateGovId $validateGovId,
-        ValidateCard $validateCard,
         ValidatePhoneNumber $validatePhoneNumber,
         CoreConfig $config,
         StoreManagerInterface $storeManager
@@ -93,7 +86,6 @@ class Request extends AbstractHelper
         $this->log = $log;
         $this->request = $request;
         $this->validateGovId = $validateGovId;
-        $this->validateCard = $validateCard;
         $this->config = $config;
         $this->storeManager = $storeManager;
         $this->validatePhoneNumber = $validatePhoneNumber;
@@ -257,42 +249,6 @@ class Request extends AbstractHelper
         }
 
         return $result;
-    }
-
-    /**
-     * Validates and returns "card_number" request parameter, if any.
-     *
-     * @return string|null - Null if the request parameter wasn't set.
-     * @throws InvalidDataException
-     */
-    public function getCardNumber(): ?string
-    {
-        $result = $this->request->getParam('card_number');
-
-        if (is_string($result) && !$this->validateCard->validate($result, true)) {
-            throw new InvalidDataException(__('Invalid card number.'));
-        }
-
-        return is_string($result) ? $result : null;
-    }
-
-    /**
-     * Converts and returns the "card_amount" request parameter as a float, if
-     * possible.
-     *
-     * @return float|null - Null if the parameter can't be converted, or if it
-     * wasn't set.
-     * @throws InvalidDataException
-     */
-    public function getCardAmount(): ?float
-    {
-        $result = $this->request->getParam('card_amount');
-
-        if ($result !== null && !is_numeric($result)) {
-            throw new InvalidDataException(__('Invalid card amount.'));
-        }
-
-        return $result !== null ? (float) $result : null;
     }
 
     /**
