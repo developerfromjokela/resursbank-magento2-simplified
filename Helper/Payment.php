@@ -146,29 +146,6 @@ class Payment extends AbstractHelper
     }
 
     /**
-     * Append card data to API payload.
-     *
-     * @param ResursBank $connection
-     * @return self
-     */
-    public function setCardData(
-        ResursBank $connection
-    ): self {
-        $cardNumber = $this->session->getCardNumber();
-        $cardAmount = $this->session->getCardAmount();
-
-        if ($cardNumber !== null || $cardAmount !== null) {
-            /** @phpstan-ignore-next-line */
-            $connection->setCardData(
-                $cardNumber,
-                $cardAmount
-            );
-        }
-
-        return $this;
-    }
-
-    /**
      * Append billing address information to API payload.
      *
      * @param OrderInterface $order

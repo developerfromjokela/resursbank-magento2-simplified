@@ -52,21 +52,6 @@ class Session extends AbstractHelper
     public const KEY_IS_COMPANY = self::KEY_PREFIX . 'is_company';
 
     /**
-     * Key to store and retrieve the selected Resurs Bank card amount.
-     *
-     * @var string
-     */
-    public const KEY_CARD_AMOUNT = self::KEY_PREFIX . 'card_amount';
-
-    /**
-     * Key to store and retrieve the Resurs Bank card number (not to be confused
-     * with CC number).
-     *
-     * @var string
-     */
-    public const KEY_CARD_NUMBER = self::KEY_PREFIX . 'card_number';
-
-    /**
      * Key to store and retrieve the payment's signing URL. The URL is utilised
      * to redirect the customer to the payment gateway. The URL is obtained
      * after a payment session has been created at Resurs Bank through the API.
@@ -90,22 +75,14 @@ class Session extends AbstractHelper
     private $checkoutSession;
 
     /**
-     * @var ValidateCard
-     */
-    private $validateCard;
-
-    /**
      * @param Context $context
      * @param CheckoutSession $sessionManager
-     * @param ValidateCard $validateCard
      */
     public function __construct(
         Context $context,
-        CheckoutSession $sessionManager,
-        ValidateCard $validateCard
+        CheckoutSession $sessionManager
     ) {
         $this->checkoutSession = $sessionManager;
-        $this->validateCard = $validateCard;
 
         parent::__construct($context);
     }
@@ -223,83 +200,6 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Stores Resurs Bank card number in the session.
-     *
-     * @param string $cardNum - Must be a valid card number.
-     * @return self
-     * @throws InvalidDataException
-     * @noinspection PhpUndefinedMethodInspection
-     */
-    public function setCardNumber(
-        string $cardNum
-    ): self {
-        if (!$this->validateCard->validate($cardNum, true)) {
-            throw new InvalidDataException(__('Invalid card number.'));
-        }
-
-        /** @phpstan-ignore-next-line */
-        $this->checkoutSession->setData(self::KEY_CARD_NUMBER, $cardNum);
-
-        return $this;
-    }
-
-    /**
-     * @return string|null - Null if a value cannot be found.
-     */
-    public function getCardNumber(): ?string
-    {
-        return $this->checkoutSession->getData(self::KEY_CARD_NUMBER);
-    }
-
-    /**
-     * @return self
-     * @noinspection PhpUndefinedMethodInspection
-     */
-    public function unsetCardNumber(): self
-    {
-        /** @phpstan-ignore-next-line */
-        $this->checkoutSession->unsetData(self::KEY_CARD_NUMBER);
-
-        return $this;
-    }
-
-    /**
-     * Stores selected Resurs Bank card amount in session.
-     *
-     * @param float $cardAmount
-     * @return self
-     * @noinspection PhpUndefinedMethodInspection
-     */
-    public function setCardAmount(
-        float $cardAmount
-    ): self {
-        /** @phpstan-ignore-next-line */
-        $this->checkoutSession->setData(self::KEY_CARD_AMOUNT, $cardAmount);
-
-        return $this;
-    }
-
-    /**
-     * @return float|null - Null if a value cannot be found.
-     */
-    public function getCardAmount(): ?float
-    {
-        return $this->checkoutSession->getData(self::KEY_CARD_AMOUNT);
-    }
-
-    /**
-     * @return self
-     * @noinspection PhpUndefinedMethodInspection
-     */
-    public function unsetCardAmount(): self
-    {
-        /** @phpstan-ignore-next-line */
-        $this->checkoutSession->unsetData(self::KEY_CARD_AMOUNT);
-
-        return $this;
-    }
-
-    /**
      * Stores payment signing (gateway) URL in session. Redirect URL at order
      * placement to perform payment.
      *
@@ -379,8 +279,7 @@ class Session extends AbstractHelper
     }
 
     /**
-     * Unsets all of the customer's personal information related to government
-     * ID, customer type & card information from the session.
+     * Unset all the customer's personal information stored in session.
      *
      * Note that any information regarding the payment (if one has been created)
      * is not removed when using this method.
@@ -389,9 +288,7 @@ class Session extends AbstractHelper
      */
     public function unsetCustomerInfo(): self
     {
-        return $this->unsetCardAmount()
-            ->unsetCardNumber()
-            ->unsetContactGovId()
+        return $this->unsetContactGovId()
             ->unsetIsCompany()
             ->unsetGovId();
     }

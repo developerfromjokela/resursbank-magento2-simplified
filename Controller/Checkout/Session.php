@@ -89,8 +89,6 @@ class Session implements HttpPostActionInterface
         /** @noinspection BadExceptionsProcessingInspection */
         try {
             $isCompany = $this->requestHelper->isCompany();
-            $cardAmount = $this->requestHelper->getCardAmount();
-            $cardNumber = $this->requestHelper->getCardNumber();
             $methodCode = $this->requestHelper->getMethodCode();
 
             if (is_string($methodCode) &&
@@ -112,18 +110,6 @@ class Session implements HttpPostActionInterface
                 $this->session->setContactGovId(
                     $this->requestHelper->getContactGovId()
                 );
-            }
-
-            if ($cardNumber !== null) {
-                $this->session->setCardNumber($cardNumber);
-            } else {
-                $this->session->unsetCardNumber();
-            }
-
-            if ($cardAmount !== null) {
-                $this->session->setCardAmount($cardAmount);
-            } else {
-                $this->session->unsetCardAmount();
             }
         } catch (Exception $e) {
             $this->log->exception($e);

@@ -85,52 +85,6 @@
         </div>
         <!-- /ko -->
 
-        <!-- ko if: hasCardAmount -->
-        <div class="resursbank-simplified-payment-method-card-amount resursbank-simplified-payment-method-input">
-            <label class="label"
-                   data-bind="attr: {for: getCode() + '-card-amount'}">
-                <span data-bind="i18n: 'Preferred credit limit'"></span>
-            </label>
-            <select
-                data-bind="
-                foreach: cardAmountOptions,
-                value: cardAmount,
-                attr: {
-                id: getCode() + '-card-amount'
-                }">
-                <option data-bind="text: text, value: value"></option>
-            </select>
-        </div>
-        <!-- /ko -->
-
-        <!-- ko if: hasCardNumber -->
-        <div
-            class="resursbank-simplified-payment-method-card-number resursbank-simplified-payment-method-input field required"
-            data-bind="css: {_error: invalidCardNumber}">
-            <label
-                class="label"
-                data-bind="attr: {for: getCode() + '-card-number'}">
-                <span data-bind="i18n: 'Card Number'"></span>
-            </label>
-            <div class="control">
-                <input type="text"
-                    class="input-text"
-                    name="payment[card_num]"
-                    data-bind="attr: {
-                    id: getCode() + '-card-number'
-                    },
-                    value: cardNumber,
-                    valueUpdate: 'input'">
-
-                <!-- ko if: invalidCardNumber() -->
-                <div class="field-error">
-                    <span data-bind="i18n: 'Invalid card number.'"></span>
-                </div>
-                <!-- /ko -->
-            </div>
-        </div>
-        <!-- /ko -->
-
         <div class="resursbank-read-more">
             <!-- ko foreach: getRegion('legal-info-link') -->
                 <!-- ko template: getTemplate() --><!-- /ko -->

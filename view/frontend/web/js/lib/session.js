@@ -29,8 +29,6 @@ define(
          * @property {boolean} is_company
          * @property {string} method_code
          * @property {(string|null)} contact_gov_id
-         * @property {(string|null)} card_number
-         * @property {(number|null)} card_amount
          */
 
         /**
@@ -40,8 +38,6 @@ define(
          * @property {string} form_key
          * @property {string} method_code
          * @property {string} [contact_gov_id]
-         * @property {string} [card_number]
-         * @property {number} [card_amount]
          */
 
         /**
@@ -97,14 +93,6 @@ define(
 
                 if (typeof data.contact_gov_id === 'string') {
                     requestData.contact_gov_id = data.contact_gov_id;
-                }
-
-                if (typeof data.card_number === 'string') {
-                    requestData.card_number = data.card_number;
-                }
-
-                if (typeof data.card_amount === 'number') {
-                    requestData.card_amount = data.card_amount;
                 }
 
                 if (typeof data.method_code === 'string') {

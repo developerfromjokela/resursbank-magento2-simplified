@@ -193,7 +193,6 @@ class Authorize
         try {
             $this->paymentHelper
                 ->setCustomer($order, $connection)
-                ->setCardData($connection)
                 ->setBillingAddress($order, $connection)
                 ->setShippingAddress($order, $connection)
                 ->addOrderLines($connection)
