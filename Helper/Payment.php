@@ -41,37 +41,37 @@ class Payment extends AbstractHelper
     /**
      * @var Session
      */
-    private $session;
+    private Session $session;
 
     /**
      * @var ConfigHelper
      */
-    private $configHelper;
+    private ConfigHelper $configHelper;
 
     /**
      * @var QuoteConverter
      */
-    private $quoteConverter;
+    private QuoteConverter $quoteConverter;
 
     /**
      * @var PaymentMethodRepository
      */
-    private $paymentMethodRepo;
+    private PaymentMethodRepository $paymentMethodRepo;
 
     /**
      * @var CoreApi
      */
-    public $coreApi;
+    public CoreApi $coreApi;
 
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @var Url
      */
-    private $url;
+    private Url $url;
 
     /**
      * @var OrderHelper

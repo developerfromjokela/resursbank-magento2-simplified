@@ -21,7 +21,7 @@ use function strpos;
  * if the module has been disabled.
  *
  * This plugin is necessary to ensure different API flows may be applied
- * individually in each store. Otherwise the extending checkout_index_index.xml
+ * individually in each store. Otherwise, the extending checkout_index_index.xml
  * files might conflict with each other.
  */
 class Collector
@@ -29,17 +29,17 @@ class Collector
     /**
      * @var Config
      */
-    private $config;
+    private Config $config;
 
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @var Log
      */
-    private $log;
+    private Log $log;
 
     /**
      * @param Config $config

@@ -42,22 +42,22 @@ class Address extends AbstractHelper
     /**
      * @var Credentials
      */
-    public $credentials;
+    public Credentials $credentials;
 
     /**
      * @var CoreApi
      */
-    public $coreApi;
+    public CoreApi $coreApi;
 
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @var CoreConfig
      */
-    private $config;
+    private CoreConfig $config;
 
     /**
      * @param Context $context

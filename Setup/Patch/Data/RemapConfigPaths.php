@@ -21,7 +21,7 @@ class RemapConfigPaths extends Core
      * 'resursbank_checkout' to 'resursbank'.
      *
      * @inheridoc
-     * @noinspection PhpMissingParentCallCommonInspection
+     * @return array<string, string>
      */
     protected function getKeys(): array
     {

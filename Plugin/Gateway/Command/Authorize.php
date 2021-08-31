@@ -39,37 +39,37 @@ class Authorize
     /**
      * @var Log
      */
-    private $log;
+    private Log $log;
 
     /**
      * @var Api
      */
-    private $api;
+    private Api $api;
 
     /**
      * @var Credentials
      */
-    private $credentials;
+    private Credentials $credentials;
 
     /**
      * @var CheckoutSession
      */
-    private $session;
+    private CheckoutSession $session;
 
     /**
      * @var PaymentHelper
      */
-    private $paymentHelper;
+    private PaymentHelper $paymentHelper;
 
     /**
      * @var Config
      */
-    private $config;
+    private Config $config;
 
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @param Log $log

@@ -30,27 +30,27 @@ class Session implements HttpPostActionInterface
     /**
      * @var Log
      */
-    private $log;
+    private Log $log;
 
     /**
      * @var CheckoutSession
      */
-    private $session;
+    private CheckoutSession $session;
 
     /**
      * @var Request
      */
-    private $requestHelper;
+    private Request $requestHelper;
 
     /**
      * @var PaymentMethodRepository
      */
-    private $paymentMethodRepo;
+    private PaymentMethodRepository $paymentMethodRepo;
 
     /**
      * @var PaymentMethods
      */
-    private $paymentMethods;
+    private PaymentMethods $paymentMethods;
 
     /**
      * @param Log $log
@@ -76,7 +76,6 @@ class Session implements HttpPostActionInterface
     /**
      * @throws Exception
      * @return ResultInterface
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
      */
     public function execute(): ResultInterface
     {
@@ -86,7 +85,6 @@ class Session implements HttpPostActionInterface
             ]
         ];
 
-        /** @noinspection BadExceptionsProcessingInspection */
         try {
             $isCompany = $this->requestHelper->isCompany();
             $methodCode = $this->requestHelper->getMethodCode();

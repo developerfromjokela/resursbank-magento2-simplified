@@ -35,52 +35,52 @@ class BookSignedPayment
     /**
      * @var Request
      */
-    private $request;
+    private Request $request;
 
     /**
      * @var Log
      */
-    private $log;
+    private Log $log;
 
     /**
      * @var Payment
      */
-    private $payment;
+    private Payment $payment;
 
     /**
      * @var Order
      */
-    private $order;
+    private Order $order;
 
     /**
      * @var Config
      */
-    private $config;
+    private Config $config;
 
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @var UrlInterface
      */
-    private $url;
+    private UrlInterface $url;
 
     /**
      * @var OrderRepositoryInterface
      */
-    private $orderRepository;
+    private OrderRepositoryInterface $orderRepository;
 
     /**
      * @var Session
      */
-    private $session;
+    private Session $session;
 
     /**
      * @var PaymentMethods
      */
-    private $paymentMethods;
+    private PaymentMethods $paymentMethods;
 
     /**
      * @param Log $log
@@ -93,7 +93,6 @@ class BookSignedPayment
      * @param OrderRepositoryInterface $orderRepository
      * @param Session $session
      * @param PaymentMethods $paymentMethods
-     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         Log $log,
@@ -148,7 +147,10 @@ class BookSignedPayment
             $this->cancelOrder();
 
             // Because the message bag is not rendered on the failure page.
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             * @phpstan-ignore-next-line
+             */
             $this->session->setErrorMessage(__(
                 'Something went wrong when completing your payment. Your ' .
                 'order has been canceled. We apologize for this ' .

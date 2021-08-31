@@ -30,37 +30,37 @@ class Request extends AbstractHelper
     /**
      * @var ResultFactory
      */
-    private $resultFactory;
+    private ResultFactory $resultFactory;
 
     /**
      * @var Log
      */
-    private $log;
+    private Log $log;
 
     /**
      * @var RequestInterface
      */
-    private $request;
+    private RequestInterface $request;
 
     /**
      * @var ValidateGovId
      */
-    private $validateGovId;
+    private ValidateGovId $validateGovId;
 
     /**
      * @var CoreConfig
      */
-    private $config;
+    private CoreConfig $config;
 
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @var ValidatePhoneNumber
      */
-    private $validatePhoneNumber;
+    private ValidatePhoneNumber $validatePhoneNumber;
 
     /**
      * @param Context $context

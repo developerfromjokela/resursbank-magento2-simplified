@@ -23,17 +23,17 @@ class Redirect implements HttpGetActionInterface
     /**
      * @var RedirectFactory
      */
-    private $redirectFactory;
+    private RedirectFactory $redirectFactory;
 
     /**
      * @var Session
      */
-    private $session;
+    private Session $session;
 
     /**
      * @var Log
      */
-    private $log;
+    private Log $log;
 
     /**
      * @param RedirectFactory $redirectFactory

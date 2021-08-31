@@ -25,17 +25,17 @@ class ConfigProvider implements ConfigProviderInterface
     /**
      * @var Log
      */
-    private $log;
+    private Log $log;
 
     /**
      * @var PaymentMethods
      */
-    private $helper;
+    private PaymentMethods $helper;
 
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @param Log $log

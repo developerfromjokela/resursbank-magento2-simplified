@@ -22,7 +22,7 @@ class FetchAddress implements ArgumentInterface
     /**
      * @var FormKey
      */
-    private $formKey;
+    private FormKey $formKey;
 
     /**
      * @param FormKey $formKey
