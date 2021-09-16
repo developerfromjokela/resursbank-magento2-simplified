@@ -12,13 +12,18 @@
                 <group id="advanced">
                     <group id="simplified" type="text" sortOrder="1" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Two step Magento Checkout with Resurs payment methods</label>
-                        <field id="wait_for_fraud_control" type="select" sortOrder="0" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <field id="swish_max_order_total" type="text" sortOrder="0" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Swish Maximum Order Total</label>
+                            <config_path>resursbank/advanced/swish_max_order_total</config_path>
+                            <comment>Maximum cart value allowed for Swish transactions. An empty value, or 0, will result in the utilisation of the value provided by the API.</comment>
+                        </field>
+                        <field id="wait_for_fraud_control" type="select" sortOrder="1" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Wait for fraud control</label>
                             <comment>Perform fraud controls before booking payments. Consult Resurs Bank before activating.</comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>resursbank/advanced/wait_for_fraud_control</config_path>
                         </field>
-                        <field id="annul_if_frozen" type="select" sortOrder="1" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <field id="annul_if_frozen" type="select" sortOrder="2" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Cancel automatically</label>
                             <comment>When the payment is assigned status FROZEN. Consult Resurs Bank before activating.</comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -27,7 +32,7 @@
                                 <field id="wait_for_fraud_control">1</field>
                             </depends>
                         </field>
-                        <field id="finalize_if_booked" type="select" sortOrder="2" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <field id="finalize_if_booked" type="select" sortOrder="3" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Debit automatically</label>
                             <comment>When the payment has been booked. Consult Resurs Bank before activating.</comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
