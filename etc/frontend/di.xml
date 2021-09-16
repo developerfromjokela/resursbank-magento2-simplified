@@ -41,7 +41,6 @@
             sortOrder="111"/>
     </type>
 
-
     <!-- Clear session data after order placement failure. -->
     <type name="Magento\Checkout\Controller\Onepage\Failure">
         <plugin
