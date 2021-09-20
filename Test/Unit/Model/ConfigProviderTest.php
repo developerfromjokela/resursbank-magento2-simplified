@@ -9,14 +9,8 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Test\Unit\Model;
 
 use JsonException;
-use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Exception\ValidatorException;
-use Magento\Framework\Model\Context;
-use Magento\Framework\Model\ResourceModel\AbstractResource;
-use Magento\Framework\Registry;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
-use Magento\Store\Api\Data\StoreInterface;
-use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
@@ -25,50 +19,40 @@ use ReflectionObject;
 use Resursbank\Core\Api\Data\PaymentMethodInterface;
 use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Core\Model\PaymentMethod;
-use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Model\ConfigProvider;
 
 class ConfigProviderTest extends TestCase
 {
     /**
+     * @var ObjectManager
+     */
+    private $objectManager;
+
+    /**
      * @var ConfigProvider
      */
-    private ConfigProvider $configProvider;
+    private $configProvider;
 
     /**
-     * @var PaymentMethods|MockObject
+     * @var MockObject
      */
-    private $paymentMethodHelperMock;
-
-    /**
-     * @var PaymentMethodInterface|MockObject
-     */
-    private $paymentMethodMock;
+    private $helper;
 
     /**
      * @inheritDoc
      */
     protected function setUp(): void
     {
+        $this->objectManager = new ObjectManager($this);
 
-        $this->paymentMethodHelperMock = $this->createMock(PaymentMethods::class);
-        $this->paymentMethodMock = $this->createMock(PaymentMethodInterface::class);
-        $logMock = $this->createMock(Log::class);
-        $storeManagerInterfaceMock = $this->createMock(StoreManagerInterface::class);
+        $this->helper = $this->getMockBuilder(PaymentMethods::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getMethodsByCredentials'])
+            ->getMock();
 
-        $storeMock = $this->createMock(StoreInterface::class);
-        $storeManagerInterfaceMock->expects(self::any())
-            ->method('getStore')
-            ->willReturn($storeMock);
-        $storeMock->expects(self::any())
-            ->method('getCode')
-            ->willReturn('SE');
-
-        $this->configProvider = new ConfigProvider(
-            $logMock,
-            $this->paymentMethodHelperMock,
-            $storeManagerInterfaceMock
-        );
+        /** @phpstan-ignore-next-line */
+        $this->configProvider = $this->objectManager
+            ->getObject(ConfigProvider::class, ['helper' => $this->helper]);
     }
 
     /**
@@ -85,36 +69,23 @@ class ConfigProviderTest extends TestCase
         $expected = [
             'code' => 'invoice',
             'title' => 'Faktura',
-            'maxOrderTotal' => 505.12,
-            'sortOrder' => 10,
-            'type' => 'card',
-            'specificType' => 'visa',
-            'customerType' => []
+            'maxOrderTotal' => 505.12
         ];
 
-        $this->paymentMethodHelperMock->expects(self::once())
-            ->method('getRaw')
-            ->willReturn($raw);
+        /** @var PaymentMethodInterface $method */
+        $method = $this->objectManager->getObject(PaymentMethod::class);
 
-        $this->paymentMethodMock->expects(self::once())
-            ->method('getCode')
-            ->willReturn($expected['code']);
-        $this->paymentMethodMock->expects(self::once())
-            ->method('getTitle')
-            ->willReturn($expected['title']);
-        $this->paymentMethodMock->expects(self::once())
-            ->method('getMaxOrderTotal')
-            ->willReturn($expected['maxOrderTotal']);
-        $this->paymentMethodMock->expects(self::once())
-            ->method('getSortOrder')
-            ->willReturn(10);
+        $method->setCode($expected['code'])
+            ->setTitle($expected['title'])
+            ->setMaxOrderTotal($expected['maxOrderTotal'])
+            ->setRaw(json_encode($raw, JSON_THROW_ON_ERROR));
 
         $actual = $this->getMapPaymentMethodMethod()->invoke(
             $this->configProvider,
-            $this->paymentMethodMock
+            $method
         );
 
-        static::assertSame($expected, $actual);
+        static::assertSame(array_merge($expected, $raw), $actual);
     }
 
     /**
@@ -130,31 +101,56 @@ class ConfigProviderTest extends TestCase
             'code' => 'partpayment_nisse_1',
             'title' => 'Great partpayment',
             'maxOrderTotal' => 34534.00,
-            'sortOrder' => 10,
             'type' => '',
-            'specificType' => '',
-            'customerType' => []
+            'specificType' => ''
         ];
 
-        $this->paymentMethodMock->expects(self::once())
-            ->method('getCode')
-            ->willReturn($expected['code']);
-        $this->paymentMethodMock->expects(self::once())
-            ->method('getTitle')
-            ->willReturn($expected['title']);
-        $this->paymentMethodMock->expects(self::once())
-            ->method('getMaxOrderTotal')
-            ->willReturn($expected['maxOrderTotal']);
-        $this->paymentMethodMock->expects(self::once())
-            ->method('getSortOrder')
-            ->willReturn(10);
+        /** @var PaymentMethodInterface $method */
+        $method = $this->objectManager->getObject(PaymentMethod::class);
+
+        $method->setCode($expected['code'])
+            ->setTitle($expected['title'])
+            ->setMaxOrderTotal($expected['maxOrderTotal']);
 
         $actual = $this->getMapPaymentMethodMethod()->invoke(
             $this->configProvider,
-            $this->paymentMethodMock
+            $method
         );
 
         static::assertSame($expected, $actual);
+    }
+
+    /**
+     * Assert that mapPaymentMethod throws and instance of JsonException when
+     * provided with an object instance containing corrupt raw data.
+     *
+     * @return void
+     * @throws ReflectionException
+     */
+    public function testMapPaymentMethodThrowsWithCorruptRawData(): void
+    {
+        $this->expectException(JsonException::class);
+
+        $data = [
+            'code' => 'some_method',
+            'title' => 'Some method',
+            'maxOrderTotal' => 4664.00,
+            'type' => '',
+            'specificType' => ''
+        ];
+
+        /** @var PaymentMethodInterface $method */
+        $method = $this->objectManager->getObject(PaymentMethod::class);
+
+        $method->setCode($data['code'])
+            ->setTitle($data['title'])
+            ->setMaxOrderTotal($data['maxOrderTotal'])
+            ->setRaw('that does not take wooden nickels');
+
+        $this->getMapPaymentMethodMethod()->invoke(
+            $this->configProvider,
+            $method
+        );
     }
 
     /**
@@ -172,19 +168,15 @@ class ConfigProviderTest extends TestCase
                 'code' => 'partpayment',
                 'title' => 'Delbetalning',
                 'maxOrderTotal' => 543.00,
-                'sortOrder' => 12,
                 'type' => '',
-                'specificType' => '',
-                'customerType' => []
+                'specificType' => ''
             ],
             [
                 'code' => 'some_method_12314',
                 'title' => 'Some method',
                 'maxOrderTotal' => 6054.20,
-                'sortOrder' => 13,
                 'type' => 'resursCard',
-                'specificType' => 'internal',
-                'customerType' => []
+                'specificType' => 'internal'
             ]
         ];
 
@@ -197,50 +189,25 @@ class ConfigProviderTest extends TestCase
         ];
 
         // Create mocked PaymentMethod model instances, utilising $data.
-        $contextMock = $this->createMock(Context::class);
-        $registryMock = $this->createMock(Registry::class);
-        $resourceMock = $this->getMockBuilder(AbstractResource::class)
-            ->addMethods(['getIdFieldName'])
-            ->onlyMethods(['getConnection'])
-            ->disableOriginalConstructor()
-            ->getMockForAbstractClass();
-        $resourceCollectionMock = $this->createMock(AbstractDb::class);
+        /** @var PaymentMethod $method1 */
+        $method1 = $this->objectManager->getObject(PaymentMethod::class);
+        $method1->setData($data[0])
+            ->setMaxOrderTotal($data[0]['maxOrderTotal']);
 
-        $method1 = new PaymentMethod(
-            $contextMock,
-            $registryMock,
-            $resourceMock,
-            $resourceCollectionMock,
-            $data[0]
-        );
-        $method1->setMaxOrderTotal($data[0]['maxOrderTotal'])
-            ->setSortOrder($data[0]['sortOrder']);
-
-        $method2 = new PaymentMethod(
-            $contextMock,
-            $registryMock,
-            $resourceMock,
-            $resourceCollectionMock,
-            $data[1]
-        );
-        $method2
+        /** @var PaymentMethod $method2 */
+        $method2 = $this->objectManager->getObject(PaymentMethod::class);
+        $method2->setData($data[1])
             ->setMaxOrderTotal($data[1]['maxOrderTotal'])
-            ->setSortOrder($data[1]['sortOrder'])
             ->setRaw(json_encode(
                 ['type' => 'resursCard', 'specificType' => 'internal'],
                 JSON_THROW_ON_ERROR
             ));
 
         // Mock response from method that collects payment methods from DB.
-        $this->paymentMethodHelperMock
+        $this->helper
             ->expects(static::once())
             ->method('getMethodsByCredentials')
             ->willReturn([$method1, $method2]);
-
-        $this->paymentMethodHelperMock
-            ->expects(static::exactly(2))
-            ->method('getRaw')
-            ->willReturnOnConsecutiveCalls([],['type' => 'resursCard', 'specificType' => 'internal']);
 
         // Assert the value returned by getConfig matches out expectation.
         static::assertSame($expected, $this->configProvider->getConfig());
