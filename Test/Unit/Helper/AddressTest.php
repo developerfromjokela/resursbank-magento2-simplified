@@ -76,7 +76,7 @@ class AddressTest extends TestCase
     }
 
     /**
-     * Assert that getCustomerType returns correct values
+     * Assert that getCustomerType returns correct values.
      */
     public function testGetCustomerTypeReturnsCorrectValues(): void
     {
