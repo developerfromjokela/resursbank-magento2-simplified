@@ -8,13 +8,14 @@ declare(strict_types=1);
 
 namespace Resursbank\Simplified\Helper;
 
-use Magento\Checkout\Model\Session as CheckoutSession;
+//use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\View\Element\Block\ArgumentInterface;
 use Magento\Quote\Model\Quote;
+use Resursbank\Core\ViewModel\Session\Checkout as CheckoutSession;
 
 /**
  * This class implements ArgumentInterface (that's normally reserved for
@@ -97,12 +98,10 @@ class Session extends AbstractHelper implements ArgumentInterface
      *
      * @param string $govId - Must be a valid Swedish SSN/Org. number.
      * @return self
-     * @noinspection PhpUndefinedMethodInspection
      */
     public function setGovId(
         string $govId
     ): self {
-        /** @phpstan-ignore-next-line */
         $this->checkoutSession->setData(self::KEY_GOV_ID, $govId);
 
         return $this;
@@ -118,11 +117,9 @@ class Session extends AbstractHelper implements ArgumentInterface
 
     /**
      * @return self
-     * @noinspection PhpUndefinedMethodInspection
      */
     public function unsetGovId(): self
     {
-        /** @phpstan-ignore-next-line */
         $this->checkoutSession->unsetData(self::KEY_GOV_ID);
 
         return $this;
@@ -134,12 +131,10 @@ class Session extends AbstractHelper implements ArgumentInterface
      *
      * @param string $govId - Must be a valid SSN of a supported country.
      * @return self
-     * @noinspection PhpUndefinedMethodInspection
      */
     public function setContactGovId(
         string $govId
     ): self {
-        /** @phpstan-ignore-next-line */
         $this->checkoutSession->setData(
             self::KEY_CONTACT_GOV_ID,
             $govId
@@ -158,11 +153,9 @@ class Session extends AbstractHelper implements ArgumentInterface
 
     /**
      * @return self
-     * @noinspection PhpUndefinedMethodInspection
      */
     public function unsetContactGovId(): self
     {
-        /** @phpstan-ignore-next-line */
         $this->checkoutSession->unsetData(self::KEY_CONTACT_GOV_ID);
 
         return $this;
@@ -173,12 +166,10 @@ class Session extends AbstractHelper implements ArgumentInterface
      *
      * @param bool $isCompany
      * @return self
-     * @noinspection PhpUndefinedMethodInspection
      */
     public function setIsCompany(
         bool $isCompany
     ): self {
-        /** @phpstan-ignore-next-line */
         $this->checkoutSession->setData(self::KEY_IS_COMPANY, $isCompany);
 
         return $this;
@@ -194,11 +185,9 @@ class Session extends AbstractHelper implements ArgumentInterface
 
     /**
      * @return self
-     * @noinspection PhpUndefinedMethodInspection
      */
     public function unsetIsCompany(): self
     {
-        /** @phpstan-ignore-next-line */
         $this->checkoutSession->unsetData(self::KEY_IS_COMPANY);
 
         return $this;
@@ -210,12 +199,10 @@ class Session extends AbstractHelper implements ArgumentInterface
      *
      * @param string $url
      * @return self
-     * @noinspection PhpUndefinedMethodInspection
      */
     public function setPaymentSigningUrl(
         string $url
     ): self {
-        /** @phpstan-ignore-next-line */
         $this->checkoutSession->setData(self::KEY_PAYMENT_SIGNING_URL, $url);
 
         return $this;
@@ -234,10 +221,6 @@ class Session extends AbstractHelper implements ArgumentInterface
      */
     public function unsetPaymentSigningUrl(): self
     {
-        /**
-         * @phpstan-ignore-next-line
-         * @noinspection PhpUndefinedMethodInspection
-         */
         $this->checkoutSession->unsetData(self::KEY_PAYMENT_SIGNING_URL);
 
         return $this;
@@ -252,10 +235,6 @@ class Session extends AbstractHelper implements ArgumentInterface
     public function setPaymentId(
         string $paymentId
     ): self {
-        /**
-         * @phpstan-ignore-next-line
-         * @noinspection PhpUndefinedMethodInspection
-         */
         $this->checkoutSession->setData(self::KEY_PAYMENT_ID, $paymentId);
 
         return $this;
@@ -274,10 +253,6 @@ class Session extends AbstractHelper implements ArgumentInterface
      */
     public function unsetPaymentId(): self
     {
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         * @phpstan-ignore-next-line
-         */
         $this->checkoutSession->unsetData(self::KEY_PAYMENT_ID);
 
         return $this;

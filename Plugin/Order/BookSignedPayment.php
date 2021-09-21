@@ -93,6 +93,7 @@ class BookSignedPayment
      * @param OrderRepositoryInterface $orderRepository
      * @param Session $session
      * @param PaymentMethods $paymentMethods
+     * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
         Log $log,

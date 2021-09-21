@@ -99,7 +99,7 @@ class ConfigProvider implements ConfigProviderInterface
         return [
             'code' => $method->getCode(),
             'title' => $method->getTitle(),
-            'maxOrderTotal' => $method->getMaxOrderTotal(),
+            'maxOrderTotal' => $method->maxOrderTotal(),
             'sortOrder' => $method->getSortOrder(0),
             'type' => $data['type'] ?? '',
             'specificType' => $data['specificType'] ?? '',

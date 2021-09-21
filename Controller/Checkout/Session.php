@@ -137,7 +137,7 @@ class Session implements HttpPostActionInterface
         $method = $this->paymentMethodRepo->getByCode($methodCode);
 
         return (
-            $method->getActive(false) &&
+            $method->active(false) &&
             in_array(
                 ($isCompany ? 'LEGAL' : 'NATURAL'),
                 $this->paymentMethods->getCustomerTypes($method),
