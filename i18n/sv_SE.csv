@@ -24,3 +24,5 @@
 "Invalid phone number.","Felaktigt telefonnummer."
 "Invalid government ID.","Felaktigt personnummer."
 "Your credit application was denied, please select a different payment method.","Din kreditansökan kunde inte beviljas, vänligen välj ett annat betalsätt."
+"Swish Maximum Order Total","Swish max ordersumma"
+"Maximum cart value allowed for Swish transactions. An empty value, or 0, will result in the utilisation of the value provided by the API.","Maximalt varukorgsvärde för att tillåta Swish transaktioner. Ett tomt värde, eller 0, kommer resultera i nyttjandet av värdet från API:et."
