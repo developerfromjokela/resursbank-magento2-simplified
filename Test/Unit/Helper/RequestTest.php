@@ -25,13 +25,15 @@ use Resursbank\Simplified\Helper\ValidateGovId;
 use Resursbank\Simplified\Helper\ValidatePhoneNumber;
 
 /**
+ * @SuppressWarnings(PHPMD.LongVariable)
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
 class RequestTest extends TestCase
 {
     /**
-     * @var MockObject
+     * @var RequestInterface|MockObject
      */
     private $requestMock;
 
@@ -71,19 +73,11 @@ class RequestTest extends TestCase
             $storeManagerInterfaceMock
         );
 
+        $storeManagerInterfaceMock->method('getStore')->willReturn($storeMock);
 
-        $storeManagerInterfaceMock->expects(self::any())
-            ->method("getStore")
-            ->willReturn($storeMock);
+        $storeMock->method('getCode')->willReturn('SE');
 
-        $storeMock->expects(self::any())
-            ->method("getCode")
-            ->willReturn("SE");
-
-        $coreConfigMock->expects(self::any())
-            ->method('getDefaultCountry')
-            ->with("SE")
-            ->willReturn("SE");
+        $coreConfigMock->method('getDefaultCountry')->with('SE')->willReturn('SE');
     }
 
     /**
@@ -192,8 +186,8 @@ class RequestTest extends TestCase
             ->willReturn('198001010001');
 
         $this->validateGovIdMock->expects(self::once())
-            ->method("validate")
-            ->with('198001010001', false, "SE")
+            ->method('validate')
+            ->with('198001010001', false, 'SE')
             ->willReturn(true);
 
         static::assertSame(
@@ -216,8 +210,8 @@ class RequestTest extends TestCase
             ->willReturn('169468958195');
 
         $this->validateGovIdMock->expects(self::once())
-            ->method("validate")
-            ->with('169468958195', true, "SE")
+            ->method('validate')
+            ->with('169468958195', true, 'SE')
             ->willReturn(true);
 
         static::assertSame(
@@ -242,8 +236,8 @@ class RequestTest extends TestCase
             ->willReturn('198001010001');
 
         $this->validateGovIdMock->expects(self::once())
-            ->method("validate")
-            ->with('198001010001', true, "SE")
+            ->method('validate')
+            ->with('198001010001', true, 'SE')
             ->willReturn(true);
 
         static::assertSame(
@@ -336,8 +330,8 @@ class RequestTest extends TestCase
             ->willReturn('198001010001');
 
         $this->validateGovIdMock->expects(self::once())
-            ->method("validate")
-            ->with('198001010001', false, "SE")
+            ->method('validate')
+            ->with('198001010001', false, 'SE')
             ->willReturn(true);
 
         static::assertSame(

@@ -16,6 +16,10 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Resursbank\Simplified\Helper\Config;
 
+/**
+ * @SuppressWarnings(PHPMD.LongVariable)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ */
 class ConfigTest extends TestCase
 {
     /**
@@ -51,200 +55,203 @@ class ConfigTest extends TestCase
     }
 
     /**
-     * Assert that isActive return the correct value
+     * Assert that isActive return the correct value.
      */
-    public function testIsActive()
+    public function testIsActive(): void
     {
-        $this->coreConfigMock->method('getFlow')->with('', ScopeInterface::SCOPE_STORES)->willReturn(Config::API_FLOW_OPTION);
-
-        self::assertTrue($this->config->isActive(""));
-    }
-
-    /**
-     * Assert that isActive returns true on store specific store if enabled
-     */
-    public function testIsActiveReturnsTrueForSpecificStore()
-    {
-        $this->coreConfigMock->method('getFlow')
-            ->with('en',ScopeInterface::SCOPE_STORES)
+        $this->coreConfigMock
+            ->method('getFlow')
+            ->with('', ScopeInterface::SCOPE_STORES)
             ->willReturn(Config::API_FLOW_OPTION);
 
-        self::assertTrue($this->config->isActive("en"));
+        self::assertTrue($this->config->isActive(''));
     }
 
     /**
-     * Assert that isActive returns false if disabled on specific store
+     * Assert that isActive returns true on store specific store if enabled.
      */
-    public function testIsActiveReturnsFalseForSpecificStore()
+    public function testIsActiveReturnsTrueForSpecificStore(): void
     {
         $this->coreConfigMock->method('getFlow')
-            ->with("se",ScopeInterface::SCOPE_STORES)
-            ->willReturn("something else");
+            ->with('en', ScopeInterface::SCOPE_STORES)
+            ->willReturn(Config::API_FLOW_OPTION);
 
-        self::assertFalse($this->config->isActive("se"));
+        self::assertTrue($this->config->isActive('en'));
     }
 
     /**
-     * Assert that isActive returns true for specific store if disabled on other
+     * Assert that isActive returns false if disabled on specific store.
      */
-    public function testIsActiveReturnsFalseForSpecificStoreIfEnableOnOther()
+    public function testIsActiveReturnsFalseForSpecificStore(): void
+    {
+        $this->coreConfigMock->method('getFlow')
+            ->with('se', ScopeInterface::SCOPE_STORES)
+            ->willReturn('something else');
+
+        self::assertFalse($this->config->isActive('se'));
+    }
+
+    /**
+     * Assert that isActive returns true for specific store if disabled on others.
+     */
+    public function testIsActiveReturnsFalseForSpecificStoreIfEnableOnOther(): void
     {
         $this->coreConfigMock->method('getFlow')->withConsecutive(
-            ["en", ScopeInterface::SCOPE_STORES],
-            ["se", ScopeInterface::SCOPE_STORES],
-        )->willReturnOnConsecutiveCalls(Config::API_FLOW_OPTION, "something else");
+            ['en', ScopeInterface::SCOPE_STORES],
+            ['se', ScopeInterface::SCOPE_STORES],
+        )->willReturnOnConsecutiveCalls(Config::API_FLOW_OPTION, 'something else');
 
-        self::assertTrue($this->config->isActive("en"));
-        self::assertFalse($this->config->isActive("se"));
+        self::assertTrue($this->config->isActive('en'));
+        self::assertFalse($this->config->isActive('se'));
     }
 
     /**
-     * Assert that isWaitingForFraudControl return the correct value
+     * Assert that isWaitingForFraudControl return the correct value.
      */
-    public function testIsWaitingForFraudControl()
+    public function testIsWaitingForFraudControl(): void
     {
         $this->scopeConfigInterfaceMock->method('isSetFlag')
             ->with('resursbank/advanced/wait_for_fraud_control', ScopeInterface::SCOPE_STORES)
             ->willReturn(true);
 
-        self::assertTrue($this->config->isWaitingForFraudControl(""));
+        self::assertTrue($this->config->isWaitingForFraudControl(''));
     }
 
     /**
-     * Assert that isWaitingForFraudControl returns true on store specific store if enabled
+     * Assert that isWaitingForFraudControl returns true on store specific store if enabled.
      */
-    public function testIsWaitingForFraudControlReturnsTrueForSpecificStore()
+    public function testIsWaitingForFraudControlReturnsTrueForSpecificStore(): void
     {
         $this->scopeConfigInterfaceMock->method('isSetFlag')
             ->with('resursbank/advanced/wait_for_fraud_control', ScopeInterface::SCOPE_STORES, 'en')
             ->willReturn(true);
 
-        self::assertTrue($this->config->isWaitingForFraudControl("en"));
+        self::assertTrue($this->config->isWaitingForFraudControl('en'));
     }
 
     /**
-     * Assert that isWaitingForFraudControl returns false if disabled on specific store
+     * Assert that isWaitingForFraudControl returns false if disabled on specific store.
      */
-    public function testIsWaitingForFraudControlReturnsFalseForSpecificStore()
+    public function testIsWaitingForFraudControlReturnsFalseForSpecificStore(): void
     {
         $this->scopeConfigInterfaceMock->method('isSetFlag')
             ->with('resursbank/advanced/wait_for_fraud_control', ScopeInterface::SCOPE_STORES, 'se')
             ->willReturn(false);
 
-        self::assertFalse($this->config->isWaitingForFraudControl("se"));
+        self::assertFalse($this->config->isWaitingForFraudControl('se'));
     }
 
     /**
-     * Assert that isWaitingForFraudControl returns true for specific store if disabled on other
+     * Assert that isWaitingForFraudControl returns true for specific store if disabled on others.
      */
-    public function testIsWaitingForFraudControlReturnsFalseForSpecificStoreIfEnableOnOther()
+    public function testIsWaitingForFraudControlReturnsFalseForSpecificStoreIfEnableOnOther(): void
     {
         $this->scopeConfigInterfaceMock->method('isSetFlag')->withConsecutive(
             ['resursbank/advanced/wait_for_fraud_control', ScopeInterface::SCOPE_STORES, 'en'],
             ['resursbank/advanced/wait_for_fraud_control', ScopeInterface::SCOPE_STORES, 'se'],
         )->willReturnOnConsecutiveCalls(true, false);
 
-        self::assertTrue($this->config->isWaitingForFraudControl("en"));
-        self::assertFalse($this->config->isWaitingForFraudControl("se"));
+        self::assertTrue($this->config->isWaitingForFraudControl('en'));
+        self::assertFalse($this->config->isWaitingForFraudControl('se'));
     }
 
     /**
-     * Assert that isAnnulIfFrozen return the correct value
+     * Assert that isAnnulIfFrozen return the correct value.
      */
-    public function tesIsAnnulIfFrozen()
+    public function tesIsAnnulIfFrozen(): void
     {
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/annul_if_frozen', ScopeInterface::SCOPE_STORES)
             ->willReturn(true);
 
-        self::assertTrue($this->config->isAnnulIfFrozen(""));
+        self::assertTrue($this->config->isAnnulIfFrozen(''));
     }
 
     /**
-     * Assert that isAnnulIfFrozen returns true on store specific store if enabled
+     * Assert that isAnnulIfFrozen returns true on store specific store if enabled.
      */
-    public function tesIsAnnulIfFrozenReturnsTrueForSpecificStore()
+    public function tesIsAnnulIfFrozenReturnsTrueForSpecificStore(): void
     {
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/annul_if_frozen', ScopeInterface::SCOPE_STORES, 'en')
             ->willReturn(true);
 
-        self::assertTrue($this->config->isAnnulIfFrozen("en"));
+        self::assertTrue($this->config->isAnnulIfFrozen('en'));
     }
 
     /**
-     * Assert that isAnnulIfFrozen returns false if disabled on specific store
+     * Assert that isAnnulIfFrozen returns false if disabled on specific store.
      */
-    public function tesIsAnnulIfFrozenReturnsFalseForSpecificStore()
+    public function tesIsAnnulIfFrozenReturnsFalseForSpecificStore(): void
     {
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/annul_if_frozen', ScopeInterface::SCOPE_STORE, 'se')
             ->willReturn(false);
 
-        self::assertFalse($this->config->isAnnulIfFrozen("se"));
+        self::assertFalse($this->config->isAnnulIfFrozen('se'));
     }
 
     /**
-     * Assert that isAnnulIfFrozen returns true for specific store if disabled on other
+     * Assert that isAnnulIfFrozen returns true for specific store if disabled on others.
      */
-    public function tesIsAnnulIfFrozenReturnsFalseForSpecificStoreIfEnableOnOther()
+    public function tesIsAnnulIfFrozenReturnsFalseForSpecificStoreIfEnableOnOther(): void
     {
         $this->coreConfigMock->method('isSetFlag')->withConsecutive(
             ['resursbank/advanced/annul_if_frozen', ScopeInterface::SCOPE_STORES, 'en'],
             ['resursbank/advanced/annul_if_frozen', ScopeInterface::SCOPE_STORES, 'se'],
         )->willReturnOnConsecutiveCalls(true, false);
 
-        self::assertTrue($this->config->isAnnulIfFrozen("en"));
-        self::assertFalse($this->config->isAnnulIfFrozen("se"));
+        self::assertTrue($this->config->isAnnulIfFrozen('en'));
+        self::assertFalse($this->config->isAnnulIfFrozen('se'));
     }
 
     /**
-     * Assert that isFinalizeIfBooked return the correct value
+     * Assert that isFinalizeIfBooked return the correct value.
      */
-    public function tesIsFinalizeIfBooked()
+    public function tesIsFinalizeIfBooked(): void
     {
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/finalize_if_booked', ScopeInterface::SCOPE_STORES)
             ->willReturn(true);
 
-        self::assertTrue($this->config->isFinalizeIfBooked(""));
+        self::assertTrue($this->config->isFinalizeIfBooked(''));
     }
 
     /**
-     * Assert that isFinalizeIfBooked returns true on store specific store if enabled
+     * Assert that isFinalizeIfBooked returns true on store specific store if enabled.
      */
-    public function tesIsFinalizeIfBookedReturnsTrueForSpecificStore()
+    public function tesIsFinalizeIfBookedReturnsTrueForSpecificStore(): void
     {
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/finalize_if_booked', ScopeInterface::SCOPE_STORES, 'en')
             ->willReturn(true);
 
-        self::assertTrue($this->config->isFinalizeIfBooked("en"));
+        self::assertTrue($this->config->isFinalizeIfBooked('en'));
     }
 
     /**
-     * Assert that isFinalizeIfBooked returns false if disabled on specific store
+     * Assert that isFinalizeIfBooked returns false if disabled on specific store.
      */
-    public function tesIsFinalizeIfBookedReturnsFalseForSpecificStore()
+    public function tesIsFinalizeIfBookedReturnsFalseForSpecificStore(): void
     {
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/finalize_if_booked', ScopeInterface::SCOPE_STORES, 'se')
             ->willReturn(false);
 
-        self::assertFalse($this->config->isFinalizeIfBooked("se"));
+        self::assertFalse($this->config->isFinalizeIfBooked('se'));
     }
 
     /**
-     * Assert that isFinalizeIfBooked returns true for specific store if disabled on other
+     * Assert that isFinalizeIfBooked returns true for specific store if disabled on others.
      */
-    public function tesIsFinalizeIfBookedReturnsFalseForSpecificStoreIfEnableOnOther()
+    public function tesIsFinalizeIfBookedReturnsFalseForSpecificStoreIfEnableOnOther(): void
     {
         $this->coreConfigMock->method('isSetFlag')->withConsecutive(
             ['resursbank/advanced/finalize_if_booked', ScopeInterface::SCOPE_STORES, 'en'],
             ['resursbank/advanced/finalize_if_booked', ScopeInterface::SCOPE_STORES, 'se'],
         )->willReturnOnConsecutiveCalls(true, false);
 
-        self::assertTrue($this->config->isFinalizeIfBooked("en"));
-        self::assertFalse($this->config->isFinalizeIfBooked("se"));
+        self::assertTrue($this->config->isFinalizeIfBooked('en'));
+        self::assertFalse($this->config->isFinalizeIfBooked('se'));
     }
 }

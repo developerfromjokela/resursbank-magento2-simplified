@@ -14,9 +14,11 @@ use PHPUnit\Framework\TestCase;
 use Resursbank\Core\Exception\ApiDataException;
 use Resursbank\Simplified\Model\CheckoutAddress;
 
+/**
+ * @SuppressWarnings(PHPMD.LongVariable)
+ */
 class CheckoutAddressTest extends TestCase
 {
-
     /**
      * @var CheckoutAddress
      */
@@ -25,16 +27,16 @@ class CheckoutAddressTest extends TestCase
     /**
      * @var string[]
      */
-    private $checkoutOutAddressData = [
-        "firstname" => "Göran",
-        "lastname" => "Göransson",
-        "city" => "Ankeborg",
-        "postcode" => "125  97",
-        "country" => "SE",
-        "street0" => "Street 1",
-        "street1" => "",
-        "company" => "Some company",
-        "telephone" => "0720456789",
+    private array $checkoutOutAddressData = [
+        'firstname' => 'Göran',
+        'lastname' => 'Göransson',
+        'city' => 'Ankeborg',
+        'postcode' => '125  97',
+        'country' => 'SE',
+        'street0' => 'Street 1',
+        'street1' => '',
+        'company' => 'Some company',
+        'telephone' => '0720456789',
     ];
 
     /**
@@ -43,78 +45,78 @@ class CheckoutAddressTest extends TestCase
     public function setUp(): void
     {
         $this->checkoutAddress = new CheckoutAddress(
-            "Göran",
-            "Göransson",
-            "Ankeborg",
-            "125 97",
-            "SE",
-            "Street 1",
+            'Göran',
+            'Göransson',
+            'Ankeborg',
+            '125 97',
+            'SE',
+            'Street 1',
             '',
-            "Some company",
-            "0720456789"
+            'Some company',
+            '0720456789'
         );
     }
 
     /**
-     * Assert that toArray returns a correct array
+     * Assert that toArray returns a correct array.
      */
-    public function testToArrayMatchesExpectedValues()
+    public function testToArrayMatchesExpectedValues(): void
     {
         self::assertEquals($this->checkoutOutAddressData, $this->checkoutAddress->toArray());
     }
 
     /**
-     * Assert that getCountry returns a correct value
+     * Assert that getCountry returns a correct value.
      */
-    public function testGetCountryReturnsCorrectValue()
+    public function testGetCountryReturnsCorrectValue(): void
     {
         self::assertEquals($this->checkoutOutAddressData['country'], $this->checkoutAddress->getCountry());
     }
 
     /**
-     * Assert that getPostcode returns a correct value
+     * Assert that getPostcode returns a correct value.
      */
-    public function testGetPostCodeReturnsCorrectValue()
+    public function testGetPostCodeReturnsCorrectValue(): void
     {
         self::assertEquals($this->checkoutOutAddressData['postcode'], $this->checkoutAddress->getPostcode());
     }
 
     /**
-     * Assert that setCountry sets a new value
+     * Assert that setCountry sets a new value.
      * @throws ApiDataException
      */
-    public function testSetCountrySetsNewValue()
+    public function testSetCountrySetsNewValue(): void
     {
         $this->checkoutAddress->setCountry('NO');
         self::assertEquals('NO', $this->checkoutAddress->getCountry());
     }
 
     /**
-     * Assert that setCountry throws exception on invalid country
+     * Assert that setCountry throws exception on invalid country.
      * @throws ApiDataException
      */
-    public function testSetCountryThrowsExceptionOnInvalidCountry()
+    public function testSetCountryThrowsExceptionOnInvalidCountry(): void
     {
         $this->expectException(ApiDataException::class);
-        $this->expectErrorMessage("US is not a valid country.");
+        $this->expectErrorMessage('US is not a valid country.');
         $this->checkoutAddress->setCountry('US');
     }
 
     /**
-     * Assert that setPostcode sets a new value
+     * Assert that setPostcode sets a new value.
      */
-    public function testSetPostCodeSetsNewValue()
+    public function testSetPostCodeSetsNewValue(): void
     {
-        $this->checkoutAddress->setPostcode('654987','NO');
+        $this->checkoutAddress->setPostcode('654987', 'NO');
         self::assertEquals('654987', $this->checkoutAddress->getPostcode());
     }
 
     /**
-     * Assert that setPostcode reformat invalid Swedish Postcode
+     * Assert that setPostcode reformat invalid Swedish Postcode.
      */
-    public function testSetPostCodeThrowsExceptionOnInvalidSwedishPostcode()
+    public function testSetPostCodeThrowsExceptionOnInvalidSwedishPostcode(): void
     {
-        $this->checkoutAddress->setPostcode('12345','SE');
+        $this->checkoutAddress->setPostcode('12345', 'SE');
         self::assertEquals('123 45', $this->checkoutAddress->getPostcode());
     }
 }

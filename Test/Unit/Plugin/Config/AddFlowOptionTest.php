@@ -15,11 +15,10 @@ use Resursbank\Simplified\Plugin\Config\AddFlowOption;
 
 class AddFlowOptionTest extends TestCase
 {
-
     /**
      * @var AddFlowOption
      */
-    private $addFlowOption;
+    private AddFlowOption $addFlowOption;
 
     /**
      * @inheriDoc
@@ -30,13 +29,16 @@ class AddFlowOptionTest extends TestCase
         $this->addFlowOption = new AddFlowOption();
     }
 
-    public function testAfterToArrayAddsValueToArray()
+    /**
+     * Assert that the Plugin adds the required field and value to array.
+     */
+    public function testAfterToArrayAddsValueToArray(): void
     {
         $inData = [
-            "key" => "value"
+            'key' => __('value')
         ];
         $expected = [
-            "key" => "value",
+            'key' => 'value',
             Config::API_FLOW_OPTION => __(
                 'Two step Magento Checkout with Resurs payment methods'
             ),

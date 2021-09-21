@@ -9,16 +9,11 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Test\Unit\Helper;
 
 use Magento\Framework\App\Helper\Context;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Resursbank\Simplified\Helper\ValidatePhoneNumber;
 
-/**
- * @covers \Resursbank\Simplified\Helper\ValidatePhoneNumber
- */
 class ValidatePhoneNumberTest extends TestCase
 {
-
     /**
      * @var ValidatePhoneNumber
      */
@@ -34,9 +29,9 @@ class ValidatePhoneNumberTest extends TestCase
     }
 
     /**
-     * Assert that the validation of a valid norwegian phone number returns true
+     * Assert that the validation of a valid norwegian phone number returns true.
      */
-    public function testNorwayReturnsTrueOnValidPhoneNumbers()
+    public function testNorwayReturnsTrueOnValidPhoneNumbers(): void
     {
         self::assertTrue($this->validatePhoneNumber->norway('0047-32 45 78 97'));
         self::assertTrue($this->validatePhoneNumber->norway('004761 45 78 97'));
@@ -50,9 +45,9 @@ class ValidatePhoneNumberTest extends TestCase
     }
 
     /**
-     * Assert that the validation of an invalid norwegian phone number returns false
+     * Assert that the validation of an invalid norwegian phone number returns false.
      */
-    public function testNorwayReturnsFalseOnInvalidPhoneNumbers()
+    public function testNorwayReturnsFalseOnInvalidPhoneNumbers(): void
     {
         self::assertFalse($this->validatePhoneNumber->norway('12 45 78 97'));
         self::assertFalse($this->validatePhoneNumber->norway('004711 45 78 97'));

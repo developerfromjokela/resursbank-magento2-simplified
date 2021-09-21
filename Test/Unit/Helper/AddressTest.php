@@ -20,7 +20,6 @@ use Resursbank\Simplified\Model\CheckoutAddress;
 
 class AddressTest extends TestCase
 {
-
     /**
      * @var Address
      */
@@ -52,7 +51,7 @@ class AddressTest extends TestCase
         $this->testApiAddress = new \Resursbank\Core\Model\Api\Address(
             false,
             'Göran Göransson',
-           'Göran',
+            'Göran',
             'Göransson',
             'Storagatan 1B',
             '',
@@ -64,34 +63,24 @@ class AddressTest extends TestCase
     }
 
     /**
-     * Assert that toCheckoutAddress returns the correct Class
+     * Assert that toCheckoutAddress throws exception on invalid country.
      *
      * @throws ApiDataException
      */
-    public function testToCheckoutAddressReturnsCorrectClass()
-    {
-        self::assertInstanceOf(CheckoutAddress ::class, $this->address->toCheckoutAddress($this->testApiAddress));
-    }
-
-    /**
-     * Assert that toCheckoutAddress returns the correct Class
-     *
-     * @throws ApiDataException
-     */
-    public function testToCheckoutAddressTrowsExceptionOnInvalidCountry()
+    public function testToCheckoutAddressTrowsExceptionOnInvalidCountry(): void
     {
         $this->expectException(ApiDataException::class);
         $this->expectErrorMessage('EN is not a valid country');
-        $this->testApiAddress->setCountry("EN");
-        self::assertInstanceOf(CheckoutAddress ::class, $this->address->toCheckoutAddress($this->testApiAddress));
+        $this->testApiAddress->setCountry('EN');
+        $this->address->toCheckoutAddress($this->testApiAddress);
     }
 
     /**
      * Assert that getCustomerType returns correct values
      */
-    public function testGetCustomerTypeReturnsCorrectValues()
+    public function testGetCustomerTypeReturnsCorrectValues(): void
     {
-        self::assertEquals(Address::CUSTOMER_TYPE_COMPANY,$this->address->getCustomerType(true));
-        self::assertEquals(Address::CUSTOMER_TYPE_PRIVATE,$this->address->getCustomerType(false));
+        self::assertEquals(Address::CUSTOMER_TYPE_COMPANY, $this->address->getCustomerType(true));
+        self::assertEquals(Address::CUSTOMER_TYPE_PRIVATE, $this->address->getCustomerType(false));
     }
 }

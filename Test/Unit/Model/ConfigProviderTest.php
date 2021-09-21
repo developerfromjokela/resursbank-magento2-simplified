@@ -14,7 +14,6 @@ use Magento\Framework\Exception\ValidatorException;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 use Magento\Store\Api\Data\StoreInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -28,6 +27,10 @@ use Resursbank\Core\Model\PaymentMethod;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Model\ConfigProvider;
 
+/**
+ * @SuppressWarnings(PHPMD.LongVariable)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class ConfigProviderTest extends TestCase
 {
     /**
@@ -57,12 +60,8 @@ class ConfigProviderTest extends TestCase
         $storeManagerInterfaceMock = $this->createMock(StoreManagerInterface::class);
 
         $storeMock = $this->createMock(StoreInterface::class);
-        $storeManagerInterfaceMock->expects(self::any())
-            ->method('getStore')
-            ->willReturn($storeMock);
-        $storeMock->expects(self::any())
-            ->method('getCode')
-            ->willReturn('SE');
+        $storeManagerInterfaceMock->method('getStore')->willReturn($storeMock);
+        $storeMock->method('getCode')->willReturn('SE');
 
         $this->configProvider = new ConfigProvider(
             $logMock,
@@ -240,7 +239,7 @@ class ConfigProviderTest extends TestCase
         $this->paymentMethodHelperMock
             ->expects(static::exactly(2))
             ->method('getRaw')
-            ->willReturnOnConsecutiveCalls([],['type' => 'resursCard', 'specificType' => 'internal']);
+            ->willReturnOnConsecutiveCalls([], ['type' => 'resursCard', 'specificType' => 'internal']);
 
         // Assert the value returned by getConfig matches out expectation.
         static::assertSame($expected, $this->configProvider->getConfig());

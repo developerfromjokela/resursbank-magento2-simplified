@@ -36,15 +36,15 @@ class ApiTest extends TestCase
     }
 
     /**
-     * Assert that afterGetUserAgent return the correct string
+     * Assert that afterGetUserAgent return the correct string.
      */
-    public function testAfterGetUserAgent()
+    public function testAfterGetUserAgent(): void
     {
         $this->version
             ->expects(self::once())
-            ->method("getComposerVersion")
+            ->method('getComposerVersion')
             ->with('Resursbank_Simplified')
-            ->willReturn("1.0.0");
+            ->willReturn('1.0.0');
         $coreApiMock = $this->createMock(CoreApi::class);
         $this->assertEquals(
             'Magento 2 | Resursbank_Core 1.0.0 | Resursbank_Simplified 1.0.0',

@@ -29,7 +29,10 @@ class UrlTest extends TestCase
         $this->url = new Url();
     }
 
-    public function testAfterGetCheckoutRebuildRedirectUrlAddsRequiredText()
+    /**
+     * Assert that the correct URL suffix is added.
+     */
+    public function testAfterGetCheckoutRebuildRedirectUrlAddsRequiredText(): void
     {
         $urlMock = $this->createMock(\Resursbank\Core\Helper\Url::class);
         self::assertEquals(
