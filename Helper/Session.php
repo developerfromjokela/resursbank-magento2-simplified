@@ -8,7 +8,6 @@ declare(strict_types=1);
 
 namespace Resursbank\Simplified\Helper;
 
-//use Magento\Checkout\Model\Session as CheckoutSession;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\LocalizedException;
