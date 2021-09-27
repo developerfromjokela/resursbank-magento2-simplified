@@ -88,6 +88,7 @@ class RequestTest extends TestCase
      */
     public function testIsCompanyResolvesStringTrueAsBool(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('is_company')
@@ -104,6 +105,7 @@ class RequestTest extends TestCase
      */
     public function testIsCompanyResolvesStringFalseAsBool(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('is_company')
@@ -132,6 +134,7 @@ class RequestTest extends TestCase
     {
         $this->expectException(MissingRequestParameterException::class);
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('is_company')
@@ -148,6 +151,7 @@ class RequestTest extends TestCase
      */
     public function testIsCompanyReturnsTrue(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('is_company')
@@ -164,6 +168,7 @@ class RequestTest extends TestCase
      */
     public function testIsCompanyReturnsFalse(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('is_company')
@@ -180,11 +185,13 @@ class RequestTest extends TestCase
      */
     public function testGetGovIdReturnsValidNatural(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('gov_id')
             ->willReturn('198001010001');
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->validateGovIdMock->expects(self::once())
             ->method('validate')
             ->with('198001010001', false, 'SE')
@@ -204,11 +211,13 @@ class RequestTest extends TestCase
      */
     public function testGetGovIdReturnsValidLegal(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('gov_id')
             ->willReturn('169468958195');
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->validateGovIdMock->expects(self::once())
             ->method('validate')
             ->with('169468958195', true, 'SE')
@@ -230,11 +239,13 @@ class RequestTest extends TestCase
      */
     public function testGetGovIdAcceptsNaturalAsLegal(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('gov_id')
             ->willReturn('198001010001');
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->validateGovIdMock->expects(self::once())
             ->method('validate')
             ->with('198001010001', true, 'SE')
@@ -257,6 +268,7 @@ class RequestTest extends TestCase
     {
         $this->expectException(MissingRequestParameterException::class);
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('gov_id')
@@ -288,6 +300,7 @@ class RequestTest extends TestCase
     {
         $this->expectException(InvalidDataException::class);
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('gov_id')
@@ -307,6 +320,7 @@ class RequestTest extends TestCase
     {
         $this->expectException(InvalidDataException::class);
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('gov_id')
@@ -324,11 +338,13 @@ class RequestTest extends TestCase
      */
     public function testGetContactGovIdReturnsValidValue(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('contact_gov_id')
             ->willReturn('198001010001');
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->validateGovIdMock->expects(self::once())
             ->method('validate')
             ->with('198001010001', false, 'SE')
@@ -350,6 +366,7 @@ class RequestTest extends TestCase
     {
         $this->expectException(InvalidDataException::class);
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('contact_gov_id')
@@ -369,6 +386,7 @@ class RequestTest extends TestCase
     {
         $this->expectException(MissingRequestParameterException::class);
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('contact_gov_id')
@@ -401,6 +419,7 @@ class RequestTest extends TestCase
     {
         $this->expectException(InvalidDataException::class);
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->requestMock->expects(static::once())
             ->method('getParam')
             ->with('contact_gov_id')

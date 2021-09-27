@@ -91,19 +91,24 @@ class ConfigProviderTest extends TestCase
             'customerType' => []
         ];
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->paymentMethodHelperMock->expects(self::once())
             ->method('getRaw')
             ->willReturn($raw);
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->paymentMethodMock->expects(self::once())
             ->method('getCode')
             ->willReturn($expected['code']);
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->paymentMethodMock->expects(self::once())
             ->method('getTitle')
             ->willReturn($expected['title']);
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->paymentMethodMock->expects(self::once())
             ->method('getMaxOrderTotal')
             ->willReturn($expected['maxOrderTotal']);
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->paymentMethodMock->expects(self::once())
             ->method('getSortOrder')
             ->willReturn(10);
@@ -135,15 +140,19 @@ class ConfigProviderTest extends TestCase
             'customerType' => []
         ];
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->paymentMethodMock->expects(self::once())
             ->method('getCode')
             ->willReturn($expected['code']);
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->paymentMethodMock->expects(self::once())
             ->method('getTitle')
             ->willReturn($expected['title']);
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->paymentMethodMock->expects(self::once())
             ->method('getMaxOrderTotal')
             ->willReturn($expected['maxOrderTotal']);
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->paymentMethodMock->expects(self::once())
             ->method('getSortOrder')
             ->willReturn(10);
@@ -231,11 +240,13 @@ class ConfigProviderTest extends TestCase
             ));
 
         // Mock response from method that collects payment methods from DB.
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->paymentMethodHelperMock
             ->expects(static::once())
             ->method('getMethodsByCredentials')
             ->willReturn([$method1, $method2]);
 
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->paymentMethodHelperMock
             ->expects(static::exactly(2))
             ->method('getRaw')

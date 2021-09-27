@@ -59,6 +59,7 @@ class ConfigTest extends TestCase
      */
     public function testIsActive(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock
             ->method('getFlow')
             ->with('', ScopeInterface::SCOPE_STORES)
@@ -72,6 +73,7 @@ class ConfigTest extends TestCase
      */
     public function testIsActiveReturnsTrueForSpecificStore(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock->method('getFlow')
             ->with('en', ScopeInterface::SCOPE_STORES)
             ->willReturn(Config::API_FLOW_OPTION);
@@ -84,6 +86,7 @@ class ConfigTest extends TestCase
      */
     public function testIsActiveReturnsFalseForSpecificStore(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock->method('getFlow')
             ->with('se', ScopeInterface::SCOPE_STORES)
             ->willReturn('something else');
@@ -96,6 +99,7 @@ class ConfigTest extends TestCase
      */
     public function testIsActiveReturnsFalseForSpecificStoreIfEnableOnOther(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock->method('getFlow')->withConsecutive(
             ['en', ScopeInterface::SCOPE_STORES],
             ['se', ScopeInterface::SCOPE_STORES],
@@ -110,6 +114,7 @@ class ConfigTest extends TestCase
      */
     public function testIsWaitingForFraudControl(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->scopeConfigInterfaceMock->method('isSetFlag')
             ->with('resursbank/advanced/wait_for_fraud_control', ScopeInterface::SCOPE_STORES)
             ->willReturn(true);
@@ -122,6 +127,7 @@ class ConfigTest extends TestCase
      */
     public function testIsWaitingForFraudControlReturnsTrueForSpecificStore(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->scopeConfigInterfaceMock->method('isSetFlag')
             ->with('resursbank/advanced/wait_for_fraud_control', ScopeInterface::SCOPE_STORES, 'en')
             ->willReturn(true);
@@ -134,6 +140,7 @@ class ConfigTest extends TestCase
      */
     public function testIsWaitingForFraudControlReturnsFalseForSpecificStore(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->scopeConfigInterfaceMock->method('isSetFlag')
             ->with('resursbank/advanced/wait_for_fraud_control', ScopeInterface::SCOPE_STORES, 'se')
             ->willReturn(false);
@@ -146,6 +153,7 @@ class ConfigTest extends TestCase
      */
     public function testIsWaitingForFraudControlReturnsFalseForSpecificStoreIfEnableOnOther(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->scopeConfigInterfaceMock->method('isSetFlag')->withConsecutive(
             ['resursbank/advanced/wait_for_fraud_control', ScopeInterface::SCOPE_STORES, 'en'],
             ['resursbank/advanced/wait_for_fraud_control', ScopeInterface::SCOPE_STORES, 'se'],
@@ -160,6 +168,7 @@ class ConfigTest extends TestCase
      */
     public function tesIsAnnulIfFrozen(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/annul_if_frozen', ScopeInterface::SCOPE_STORES)
             ->willReturn(true);
@@ -172,6 +181,7 @@ class ConfigTest extends TestCase
      */
     public function tesIsAnnulIfFrozenReturnsTrueForSpecificStore(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/annul_if_frozen', ScopeInterface::SCOPE_STORES, 'en')
             ->willReturn(true);
@@ -184,6 +194,7 @@ class ConfigTest extends TestCase
      */
     public function tesIsAnnulIfFrozenReturnsFalseForSpecificStore(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/annul_if_frozen', ScopeInterface::SCOPE_STORE, 'se')
             ->willReturn(false);
@@ -196,6 +207,7 @@ class ConfigTest extends TestCase
      */
     public function tesIsAnnulIfFrozenReturnsFalseForSpecificStoreIfEnableOnOther(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock->method('isSetFlag')->withConsecutive(
             ['resursbank/advanced/annul_if_frozen', ScopeInterface::SCOPE_STORES, 'en'],
             ['resursbank/advanced/annul_if_frozen', ScopeInterface::SCOPE_STORES, 'se'],
@@ -210,6 +222,7 @@ class ConfigTest extends TestCase
      */
     public function tesIsFinalizeIfBooked(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/finalize_if_booked', ScopeInterface::SCOPE_STORES)
             ->willReturn(true);
@@ -222,6 +235,7 @@ class ConfigTest extends TestCase
      */
     public function tesIsFinalizeIfBookedReturnsTrueForSpecificStore(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/finalize_if_booked', ScopeInterface::SCOPE_STORES, 'en')
             ->willReturn(true);
@@ -234,6 +248,7 @@ class ConfigTest extends TestCase
      */
     public function tesIsFinalizeIfBookedReturnsFalseForSpecificStore(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock->method('isSetFlag')
             ->with('resursbank/advanced/finalize_if_booked', ScopeInterface::SCOPE_STORES, 'se')
             ->willReturn(false);
@@ -246,6 +261,7 @@ class ConfigTest extends TestCase
      */
     public function tesIsFinalizeIfBookedReturnsFalseForSpecificStoreIfEnableOnOther(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->coreConfigMock->method('isSetFlag')->withConsecutive(
             ['resursbank/advanced/finalize_if_booked', ScopeInterface::SCOPE_STORES, 'en'],
             ['resursbank/advanced/finalize_if_booked', ScopeInterface::SCOPE_STORES, 'se'],
