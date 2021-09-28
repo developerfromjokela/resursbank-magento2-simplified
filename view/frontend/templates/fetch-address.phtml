@@ -13,23 +13,26 @@ use Resursbank\Simplified\ViewModel\FetchAddress;
 /** @var Template $block */
 /** @var FetchAddress $viewModel */
 /** @var Escaper $escaper */
-/** @noinspection PhpUndefinedMethodInspection */
-/** @phpstan-ignore-next-line */
-$viewModel = $block->getViewModel();
+if (isset($block)) {
+    /** @noinspection PhpPossiblePolymorphicInvocationInspection */
+    $viewModel = $block->getViewModel();
+}
 ?>
 
-<!--suppress JSUnusedLocalSymbols -->
-<script>
-    require([
-        // Add initialization module here.
-    ], function(
-        // Add initialization module here.
-    ) {
-        var initializationData = {
-            privateCustomerType:
-                '<?= $escaper->escapeHtml($viewModel->getPrivateCustomerType()) ?>',
-            companyCustomerType:
-                '<?= $escaper->escapeHtml($viewModel->getCompanyCustomerType()) ?>',
-        }
-    });
-</script>
+<?php if (isset($escaper, $viewModel)): ?>
+    <!--suppress JSUnusedLocalSymbols -->
+    <script>
+        require([
+            // Add initialization module here.
+        ], function(
+            // Add initialization module here.
+        ) {
+            var initializationData = {
+                privateCustomerType:
+                    '<?= $escaper->escapeHtml($viewModel->getPrivateCustomerType()) ?>',
+                companyCustomerType:
+                    '<?= $escaper->escapeHtml($viewModel->getCompanyCustomerType()) ?>'
+            }
+        });
+    </script>
+<?php endif; ?>

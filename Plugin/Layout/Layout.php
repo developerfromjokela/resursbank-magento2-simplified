@@ -9,7 +9,7 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Plugin\Layout;
 
 use Exception;
-use Magento\Checkout\Block\Checkout\LayoutProcessor\Interceptor;
+use Magento\Checkout\Block\Checkout\LayoutProcessor;
 use Magento\Store\Model\ScopeInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\InvalidDataException;
@@ -29,17 +29,17 @@ class Layout
     /**
      * @var Log
      */
-    private $log;
+    private Log $log;
 
     /**
      * @var PaymentMethods
      */
-    private $helper;
+    private PaymentMethods $helper;
 
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @param Log $log
@@ -57,7 +57,7 @@ class Layout
     }
 
     /**
-     * @param Interceptor $subject
+     * @param LayoutProcessor $subject
      * @param array<mixed> $result
      * @return array<int, array>
      * @throws Exception
@@ -65,7 +65,7 @@ class Layout
      * @noinspection PhpUnusedParameterInspection
      */
     public function beforeProcess(
-        Interceptor $subject,
+        LayoutProcessor $subject,
         array $result
     ): array {
         try {

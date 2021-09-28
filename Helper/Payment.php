@@ -41,37 +41,37 @@ class Payment extends AbstractHelper
     /**
      * @var Session
      */
-    private $session;
+    private Session $session;
 
     /**
      * @var ConfigHelper
      */
-    private $configHelper;
+    private ConfigHelper $configHelper;
 
     /**
      * @var QuoteConverter
      */
-    private $quoteConverter;
+    private QuoteConverter $quoteConverter;
 
     /**
      * @var PaymentMethodRepository
      */
-    private $paymentMethodRepo;
+    private PaymentMethodRepository $paymentMethodRepo;
 
     /**
      * @var CoreApi
      */
-    public $coreApi;
+    public CoreApi $coreApi;
 
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @var Url
      */
-    private $url;
+    private Url $url;
 
     /**
      * @var OrderHelper
@@ -236,7 +236,6 @@ class Payment extends AbstractHelper
         $items = $this->quoteConverter->convert($this->session->getQuote());
 
         foreach ($items as $item) {
-            /** @phpstan-ignore-next-line */
             $connection->addOrderLine(
                 $item->getArtNo(),
                 $item->getDescription(),
@@ -252,9 +251,9 @@ class Payment extends AbstractHelper
     }
 
     /**
-     * Apply desired payment reference in API payload (ie. this is the reference
-     * the payment will be created with at Resurs Bank, instead of a unique,
-     * random, value which would otherwise be utilised).
+     * Apply desired payment reference in API payload (i.e. this is the
+     * reference the payment will be created with at Resurs Bank, instead of a
+     * unique, random, value which would otherwise be utilised).
      *
      * @param OrderInterface $order
      * @param ResursBank $connection
@@ -270,8 +269,9 @@ class Payment extends AbstractHelper
     }
 
     /**
-     * Apply URL:s to be utilised when signing succeeds / fails (ie. these URL:s
-     * will be triggered by the gateway after the client performs the payment).
+     * Apply URL:s to be utilised when signing succeeds / fails (i.e. these
+     * URLs will be triggered by the gateway after the client performs the
+     * payment).
      *
      * @param ResursBank $connection
      * @param Quote $quote

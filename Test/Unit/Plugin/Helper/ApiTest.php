@@ -40,6 +40,7 @@ class ApiTest extends TestCase
      */
     public function testAfterGetUserAgent(): void
     {
+        /** @phpstan-ignore-next-line Undefined method. */
         $this->version
             ->expects(self::once())
             ->method('getComposerVersion')

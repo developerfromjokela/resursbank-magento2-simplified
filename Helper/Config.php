@@ -20,7 +20,7 @@ class Config extends AbstractConfig
     /**
      * @var CoreConfig
      */
-    private $coreConfig;
+    private CoreConfig $coreConfig;
 
     /**
      * API flow option appended by this module.

@@ -27,51 +27,51 @@ class CheckoutAddress
     /**
      * @var string
      */
-    public $firstName;
+    public string $firstName;
 
     /**
      * @var string
      */
-    public $lastName;
+    public string $lastName;
 
     /**
      * @var string
      */
-    public $city;
+    public string $city;
 
     /**
      * Expected to be formatted like: "123 45".
      *
      * @var string
      */
-    private $postcode;
+    private string $postcode;
 
     /**
      * Only valid countries are allowed.
      *
      * @var string
      */
-    private $country;
+    private string $country;
 
     /**
      * @var string
      */
-    public $street0;
+    public string $street0;
 
     /**
      * @var string
      */
-    public $street1;
+    public string $street1;
 
     /**
      * @var string
      */
-    public $company;
+    public string $company;
 
     /**
      * @var string
      */
-    public $telephone;
+    public string $telephone;
 
     /**
      * @param string $firstName
