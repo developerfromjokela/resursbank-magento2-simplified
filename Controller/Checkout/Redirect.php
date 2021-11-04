@@ -14,6 +14,7 @@ use Magento\Framework\Controller\Result\Redirect as RedirectResult;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Session;
+use Resursbank\Core\ViewModel\Session\Checkout as CheckoutSession;
 
 /**
  * Redirect to signing page at Resurs Bank.
@@ -23,17 +24,26 @@ class Redirect implements HttpGetActionInterface
     /**
      * @var RedirectFactory
      */
-    private $redirectFactory;
+    private RedirectFactory $redirectFactory;
 
     /**
      * @var Session
      */
-    private $session;
+    private Session $session;
+
+    /**
+     * @var CheckoutSession
+     */
+    private CheckoutSession $checkoutSession;
+    /**
+     * @var \Magento\Store\App\Response\Redirect
+     */
+    private \Magento\Store\App\Response\Redirect $redirectReponse;
 
     /**
      * @var Log
      */
-    private $log;
+    private Log $log;
 
     /**
      * @param RedirectFactory $redirectFactory
@@ -43,10 +53,14 @@ class Redirect implements HttpGetActionInterface
     public function __construct(
         RedirectFactory $redirectFactory,
         Session $session,
-        Log $log
+        Log $log,
+        CheckoutSession $checkoutSession,
+        \Magento\Store\App\Response\Redirect $redirectReponse
     ) {
         $this->redirectFactory = $redirectFactory;
         $this->session = $session;
+        $this->checkoutSession = $checkoutSession;
+        $this->redirectReponse = $redirectReponse;
         $this->log = $log;
     }
 
@@ -63,6 +77,8 @@ class Redirect implements HttpGetActionInterface
 
         try {
             $url = (string) $this->session->getPaymentSigningUrl();
+
+            $this->checkoutSession->setResursFailureRedirectUrl($this->redirectReponse->getRefererUrl());
 
             if ($url !== '') {
                 // Redirect to Resurs Bank signing page.

@@ -28,17 +28,17 @@ class FetchAddress implements HttpPostActionInterface
     /**
      * @var Log
      */
-    private $log;
+    private Log $log;
 
     /**
      * @var AddressHelper
      */
-    private $addressHelper;
+    private AddressHelper $addressHelper;
 
     /**
      * @var Request
      */
-    private $requestHelper;
+    private Request $requestHelper;
 
     /**
      * @param Log $log

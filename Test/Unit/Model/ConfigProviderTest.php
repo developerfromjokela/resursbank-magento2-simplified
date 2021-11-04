@@ -9,8 +9,13 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Test\Unit\Model;
 
 use JsonException;
+use Magento\Framework\Data\Collection\AbstractDb;
 use Magento\Framework\Exception\ValidatorException;
-use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
+use Magento\Store\Api\Data\StoreInterface;
+use Magento\Store\Model\StoreManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
@@ -19,40 +24,50 @@ use ReflectionObject;
 use Resursbank\Core\Api\Data\PaymentMethodInterface;
 use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Core\Model\PaymentMethod;
+use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Model\ConfigProvider;
 
+/**
+ * @SuppressWarnings(PHPMD.LongVariable)
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ */
 class ConfigProviderTest extends TestCase
 {
     /**
-     * @var ObjectManager
-     */
-    private $objectManager;
-
-    /**
      * @var ConfigProvider
      */
-    private $configProvider;
+    private ConfigProvider $configProvider;
 
     /**
-     * @var MockObject
+     * @var PaymentMethods|MockObject
      */
-    private $helper;
+    private $paymentMethodHelperMock;
+
+    /**
+     * @var PaymentMethodInterface|MockObject
+     */
+    private $paymentMethodMock;
 
     /**
      * @inheritDoc
      */
     protected function setUp(): void
     {
-        $this->objectManager = new ObjectManager($this);
 
-        $this->helper = $this->getMockBuilder(PaymentMethods::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getMethodsByCredentials'])
-            ->getMock();
+        $this->paymentMethodHelperMock = $this->createMock(PaymentMethods::class);
+        $this->paymentMethodMock = $this->createMock(PaymentMethodInterface::class);
+        $logMock = $this->createMock(Log::class);
+        $storeManagerInterfaceMock = $this->createMock(StoreManagerInterface::class);
 
-        /** @phpstan-ignore-next-line */
-        $this->configProvider = $this->objectManager
-            ->getObject(ConfigProvider::class, ['helper' => $this->helper]);
+        $storeMock = $this->createMock(StoreInterface::class);
+        $storeManagerInterfaceMock->method('getStore')->willReturn($storeMock);
+        $storeMock->method('getCode')->willReturn('SE');
+
+        $this->configProvider = new ConfigProvider(
+            $logMock,
+            $this->paymentMethodHelperMock,
+            $storeManagerInterfaceMock
+        );
     }
 
     /**
@@ -69,23 +84,41 @@ class ConfigProviderTest extends TestCase
         $expected = [
             'code' => 'invoice',
             'title' => 'Faktura',
-            'maxOrderTotal' => 505.12
+            'maxOrderTotal' => 505.12,
+            'sortOrder' => 10,
+            'type' => 'card',
+            'specificType' => 'visa',
+            'customerType' => []
         ];
 
-        /** @var PaymentMethodInterface $method */
-        $method = $this->objectManager->getObject(PaymentMethod::class);
+        /** @phpstan-ignore-next-line Undefined method. */
+        $this->paymentMethodHelperMock->expects(self::once())
+            ->method('getRaw')
+            ->willReturn($raw);
 
-        $method->setCode($expected['code'])
-            ->setTitle($expected['title'])
-            ->setMaxOrderTotal($expected['maxOrderTotal'])
-            ->setRaw(json_encode($raw, JSON_THROW_ON_ERROR));
+        /** @phpstan-ignore-next-line Undefined method. */
+        $this->paymentMethodMock->expects(self::once())
+            ->method('getCode')
+            ->willReturn($expected['code']);
+        /** @phpstan-ignore-next-line Undefined method. */
+        $this->paymentMethodMock->expects(self::once())
+            ->method('getTitle')
+            ->willReturn($expected['title']);
+        /** @phpstan-ignore-next-line Undefined method. */
+        $this->paymentMethodMock->expects(self::once())
+            ->method('getMaxOrderTotal')
+            ->willReturn($expected['maxOrderTotal']);
+        /** @phpstan-ignore-next-line Undefined method. */
+        $this->paymentMethodMock->expects(self::once())
+            ->method('getSortOrder')
+            ->willReturn(10);
 
         $actual = $this->getMapPaymentMethodMethod()->invoke(
             $this->configProvider,
-            $method
+            $this->paymentMethodMock
         );
 
-        static::assertSame(array_merge($expected, $raw), $actual);
+        static::assertSame($expected, $actual);
     }
 
     /**
@@ -101,56 +134,35 @@ class ConfigProviderTest extends TestCase
             'code' => 'partpayment_nisse_1',
             'title' => 'Great partpayment',
             'maxOrderTotal' => 34534.00,
+            'sortOrder' => 10,
             'type' => '',
-            'specificType' => ''
+            'specificType' => '',
+            'customerType' => []
         ];
 
-        /** @var PaymentMethodInterface $method */
-        $method = $this->objectManager->getObject(PaymentMethod::class);
-
-        $method->setCode($expected['code'])
-            ->setTitle($expected['title'])
-            ->setMaxOrderTotal($expected['maxOrderTotal']);
+        /** @phpstan-ignore-next-line Undefined method. */
+        $this->paymentMethodMock->expects(self::once())
+            ->method('getCode')
+            ->willReturn($expected['code']);
+        /** @phpstan-ignore-next-line Undefined method. */
+        $this->paymentMethodMock->expects(self::once())
+            ->method('getTitle')
+            ->willReturn($expected['title']);
+        /** @phpstan-ignore-next-line Undefined method. */
+        $this->paymentMethodMock->expects(self::once())
+            ->method('getMaxOrderTotal')
+            ->willReturn($expected['maxOrderTotal']);
+        /** @phpstan-ignore-next-line Undefined method. */
+        $this->paymentMethodMock->expects(self::once())
+            ->method('getSortOrder')
+            ->willReturn(10);
 
         $actual = $this->getMapPaymentMethodMethod()->invoke(
             $this->configProvider,
-            $method
+            $this->paymentMethodMock
         );
 
         static::assertSame($expected, $actual);
-    }
-
-    /**
-     * Assert that mapPaymentMethod throws and instance of JsonException when
-     * provided with an object instance containing corrupt raw data.
-     *
-     * @return void
-     * @throws ReflectionException
-     */
-    public function testMapPaymentMethodThrowsWithCorruptRawData(): void
-    {
-        $this->expectException(JsonException::class);
-
-        $data = [
-            'code' => 'some_method',
-            'title' => 'Some method',
-            'maxOrderTotal' => 4664.00,
-            'type' => '',
-            'specificType' => ''
-        ];
-
-        /** @var PaymentMethodInterface $method */
-        $method = $this->objectManager->getObject(PaymentMethod::class);
-
-        $method->setCode($data['code'])
-            ->setTitle($data['title'])
-            ->setMaxOrderTotal($data['maxOrderTotal'])
-            ->setRaw('that does not take wooden nickels');
-
-        $this->getMapPaymentMethodMethod()->invoke(
-            $this->configProvider,
-            $method
-        );
     }
 
     /**
@@ -168,15 +180,19 @@ class ConfigProviderTest extends TestCase
                 'code' => 'partpayment',
                 'title' => 'Delbetalning',
                 'maxOrderTotal' => 543.00,
+                'sortOrder' => 12,
                 'type' => '',
-                'specificType' => ''
+                'specificType' => '',
+                'customerType' => []
             ],
             [
                 'code' => 'some_method_12314',
                 'title' => 'Some method',
                 'maxOrderTotal' => 6054.20,
+                'sortOrder' => 13,
                 'type' => 'resursCard',
-                'specificType' => 'internal'
+                'specificType' => 'internal',
+                'customerType' => []
             ]
         ];
 
@@ -189,25 +205,52 @@ class ConfigProviderTest extends TestCase
         ];
 
         // Create mocked PaymentMethod model instances, utilising $data.
-        /** @var PaymentMethod $method1 */
-        $method1 = $this->objectManager->getObject(PaymentMethod::class);
-        $method1->setData($data[0])
-            ->setMaxOrderTotal($data[0]['maxOrderTotal']);
+        $contextMock = $this->createMock(Context::class);
+        $registryMock = $this->createMock(Registry::class);
+        $resourceMock = $this->getMockBuilder(AbstractResource::class)
+            ->addMethods(['getIdFieldName'])
+            ->onlyMethods(['getConnection'])
+            ->disableOriginalConstructor()
+            ->getMockForAbstractClass();
+        $resourceCollectionMock = $this->createMock(AbstractDb::class);
 
-        /** @var PaymentMethod $method2 */
-        $method2 = $this->objectManager->getObject(PaymentMethod::class);
-        $method2->setData($data[1])
+        $method1 = new PaymentMethod(
+            $contextMock,
+            $registryMock,
+            $resourceMock,
+            $resourceCollectionMock,
+            $data[0]
+        );
+        $method1->setMaxOrderTotal($data[0]['maxOrderTotal'])
+            ->setSortOrder($data[0]['sortOrder']);
+
+        $method2 = new PaymentMethod(
+            $contextMock,
+            $registryMock,
+            $resourceMock,
+            $resourceCollectionMock,
+            $data[1]
+        );
+        $method2
             ->setMaxOrderTotal($data[1]['maxOrderTotal'])
+            ->setSortOrder($data[1]['sortOrder'])
             ->setRaw(json_encode(
                 ['type' => 'resursCard', 'specificType' => 'internal'],
                 JSON_THROW_ON_ERROR
             ));
 
         // Mock response from method that collects payment methods from DB.
-        $this->helper
+        /** @phpstan-ignore-next-line Undefined method. */
+        $this->paymentMethodHelperMock
             ->expects(static::once())
             ->method('getMethodsByCredentials')
             ->willReturn([$method1, $method2]);
+
+        /** @phpstan-ignore-next-line Undefined method. */
+        $this->paymentMethodHelperMock
+            ->expects(static::exactly(2))
+            ->method('getRaw')
+            ->willReturnOnConsecutiveCalls([], ['type' => 'resursCard', 'specificType' => 'internal']);
 
         // Assert the value returned by getConfig matches out expectation.
         static::assertSame($expected, $this->configProvider->getConfig());

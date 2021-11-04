@@ -28,22 +28,22 @@ class ClearSession
     /**
      * @var Log
      */
-    private $log;
+    private Log $log;
 
     /**
      * @var SessionHelper
      */
-    private $sessionHelper;
+    private SessionHelper $sessionHelper;
 
     /**
      * @var Config
      */
-    private $config;
+    private Config $config;
 
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    private StoreManagerInterface $storeManager;
 
     /**
      * @param Log $log
