@@ -5,8 +5,8 @@
 
 // phpcs:ignoreFile
 define(
-    [],
-    function () {
+    ['libphonenumber'],
+    function (libphonenumber) {
         'use strict';
 
         /**
@@ -160,59 +160,25 @@ define(
              * @returns {boolean}
              */
             validatePhone: function (num, country) {
-                return (
-                    EXPORT.isSweden(country) &&
-                    EXPORT.validatePhoneSweden(num)
-                ) || (
-                    EXPORT.isNorway(country) &&
-                    EXPORT.validatePhoneNorway(num)
-                ) || (
-                    EXPORT.isFinland(country) &&
-                    EXPORT.validatePhoneFinland(num)
-                ) || (
-                    EXPORT.isDenmark(country) &&
-                    EXPORT.validatePhoneDenmark(num)
-                );
-            },
+                let phoneutil = libphonenumber.PhoneNumberUtil.getInstance()
+                try {
+                    return (
+                        EXPORT.isSweden(country) &&
+                        phoneutil.isValidNumberForRegion(phoneutil.parse(num, 'SE'), 'SE')
+                    ) || (
+                        EXPORT.isNorway(country) &&
+                        phoneutil.isValidNumberForRegion(phoneutil.parse(num, 'NO'), 'NO')
+                    ) || (
+                        EXPORT.isFinland(country) &&
+                        phoneutil.isValidNumberForRegion(phoneutil.parse(num, 'FI'), 'FI')
+                    ) || (
+                        EXPORT.isDenmark(country) &&
+                        phoneutil.isValidNumberForRegion(phoneutil.parse(num, 'DK'), 'DK')
+                    );
+                } catch (e) {
 
-            /**
-             * Validates a Swedish phone number.
-             *
-             * @param {string} num
-             * @returns {boolean}
-             */
-            validatePhoneSweden: function (num) {
-                return /^(0|\+46|0046)[ |-]?(200|20|70|73|76|74|[1-9][0-9]{0,2})([ |-]?[0-9]){5,8}$/.test(num);
-            },
-
-            /**
-             * Validates a Norwegian phone number.
-             *
-             * @param {string} num
-             * @returns {boolean}
-             */
-            validatePhoneNorway: function (num) {
-                return /^(\+47|0047|)?[ |-]?[2-9]([ |-]?[0-9]){7,7}$/.test(num);
-            },
-
-            /**
-             * Validates a Finnish phone number.
-             *
-             * @param {string} num
-             * @returns {boolean}
-             */
-            validatePhoneFinland: function (num) {
-                return /^((\+358|00358|0)[-| ]?(1[1-9]|[2-9]|[1][0][1-9]|201|2021|[2][0][2][4-9]|[2][0][3-8]|29|[3][0][1-9]|71|73|[7][5][0][0][3-9]|[7][5][3][0][3-9]|[7][5][3][2][3-9]|[7][5][7][5][3-9]|[7][5][9][8][3-9]|[5][0][0-9]{0,2}|[4][0-9]{1,3})([-| ]?[0-9]){3,10})?$/.test(num);
-            },
-
-            /**
-             * Validates a Danish phone number.
-             *
-             * @param {string} num
-             * @returns {boolean}
-             */
-            validatePhoneDenmark: function (num) {
-                return /^(\+45|0045|)?[ |-]?[2-9]([ |-]?[0-9]){7,7}$/.test(num);
+                }
+                return false
             }
         };
 
