@@ -14,11 +14,10 @@ use Magento\Checkout\Model\Session;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\Order as OrderModel;
 use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Helper\Order;
+use Resursbank\Core\Helper\Order as OrderHelper;
 use Resursbank\Core\Helper\Request;
 use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Simplified\Helper\Config;
@@ -68,11 +67,6 @@ class BookSignedPayment
     private UrlInterface $url;
 
     /**
-     * @var OrderRepositoryInterface
-     */
-    private OrderRepositoryInterface $orderRepository;
-
-    /**
      * @var Session
      */
     private Session $session;
@@ -83,6 +77,11 @@ class BookSignedPayment
     private PaymentMethods $paymentMethods;
 
     /**
+     * @var OrderHelper
+     */
+    private OrderHelper $orderHelper;
+
+    /**
      * @param Log $log
      * @param Payment $payment
      * @param Request $request
@@ -90,9 +89,9 @@ class BookSignedPayment
      * @param Config $config
      * @param StoreManagerInterface $storeManager
      * @param UrlInterface $url
-     * @param OrderRepositoryInterface $orderRepository
      * @param Session $session
      * @param PaymentMethods $paymentMethods
+     * @param OrderHelper $orderHelper
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -103,9 +102,9 @@ class BookSignedPayment
         Config $config,
         StoreManagerInterface $storeManager,
         UrlInterface $url,
-        OrderRepositoryInterface $orderRepository,
         Session $session,
-        PaymentMethods $paymentMethods
+        PaymentMethods $paymentMethods,
+        OrderHelper $orderHelper
     ) {
         $this->log = $log;
         $this->payment = $payment;
@@ -114,9 +113,9 @@ class BookSignedPayment
         $this->config = $config;
         $this->storeManager = $storeManager;
         $this->url = $url;
-        $this->orderRepository = $orderRepository;
         $this->session = $session;
         $this->paymentMethods = $paymentMethods;
+        $this->orderHelper = $orderHelper;
     }
 
     /**
@@ -125,6 +124,7 @@ class BookSignedPayment
      * @return ResultInterface
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection
+     * @throws Exception
      */
     public function afterExecute(
         Success $subject,
@@ -144,7 +144,6 @@ class BookSignedPayment
         } catch (Exception $e) {
             $this->log->exception($e);
 
-            // Cancel to order (so it won't be left as pending / processing).
             $this->cancelOrder();
 
             // Because the message bag is not rendered on the failure page.
@@ -179,15 +178,7 @@ class BookSignedPayment
     private function cancelOrder(): void
     {
         try {
-            $order = $this->getOrder();
-
-            if (!($order instanceof OrderModel)) {
-                throw new InvalidDataException(
-                    __('Unexpected Order instance.')
-                );
-            }
-
-            $this->orderRepository->save($order->cancel());
+            $this->orderHelper->cancelOrder($this->getOrder());
         } catch (Exception $e) {
             $this->log->exception($e);
         }
