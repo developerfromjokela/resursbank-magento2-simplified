@@ -13,13 +13,8 @@ use Magento\Checkout\Controller\Onepage\Success;
 use Magento\Checkout\Model\Session;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\UrlInterface;
-use Magento\Sales\Api\Data\OrderInterface;
-use Magento\Sales\Api\OrderRepositoryInterface;
-use Magento\Sales\Model\Order as OrderModel;
 use Magento\Store\Model\StoreManagerInterface;
-use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Helper\Order;
-use Resursbank\Core\Helper\Request;
 use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Simplified\Helper\Config;
 use Resursbank\Simplified\Helper\Log;
@@ -32,11 +27,6 @@ use Resursbank\Simplified\Helper\Payment;
  */
 class BookSignedPayment
 {
-    /**
-     * @var Request
-     */
-    private Request $request;
-
     /**
      * @var Log
      */
@@ -68,11 +58,6 @@ class BookSignedPayment
     private UrlInterface $url;
 
     /**
-     * @var OrderRepositoryInterface
-     */
-    private OrderRepositoryInterface $orderRepository;
-
-    /**
      * @var Session
      */
     private Session $session;
@@ -85,12 +70,10 @@ class BookSignedPayment
     /**
      * @param Log $log
      * @param Payment $payment
-     * @param Request $request
      * @param Order $order
      * @param Config $config
      * @param StoreManagerInterface $storeManager
      * @param UrlInterface $url
-     * @param OrderRepositoryInterface $orderRepository
      * @param Session $session
      * @param PaymentMethods $paymentMethods
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
@@ -98,25 +81,21 @@ class BookSignedPayment
     public function __construct(
         Log $log,
         Payment $payment,
-        Request $request,
         Order $order,
         Config $config,
         StoreManagerInterface $storeManager,
         UrlInterface $url,
-        OrderRepositoryInterface $orderRepository,
         Session $session,
         PaymentMethods $paymentMethods
     ) {
         $this->log = $log;
         $this->payment = $payment;
-        $this->request = $request;
-        $this->order = $order;
         $this->config = $config;
         $this->storeManager = $storeManager;
         $this->url = $url;
-        $this->orderRepository = $orderRepository;
         $this->session = $session;
         $this->paymentMethods = $paymentMethods;
+        $this->order = $order;
     }
 
     /**
@@ -132,7 +111,7 @@ class BookSignedPayment
     ): ResultInterface {
         try {
             $storeCode = $this->storeManager->getStore()->getCode();
-            $order = $this->getOrder();
+            $order = $this->order->resolveOrderFromRequest();
             $payment = $order->getPayment();
 
             if ($payment !== null &&
@@ -179,46 +158,11 @@ class BookSignedPayment
     private function cancelOrder(): void
     {
         try {
-            $order = $this->getOrder();
-
-            if (!($order instanceof OrderModel)) {
-                throw new InvalidDataException(
-                    __('Unexpected Order instance.')
-                );
-            }
-
-            $this->orderRepository->save($order->cancel());
+            $this->order->cancelOrder(
+                $this->order->resolveOrderFromRequest()
+            );
         } catch (Exception $e) {
             $this->log->exception($e);
         }
-    }
-
-    /**
-     * @return OrderInterface
-     * @throws InvalidDataException
-     */
-    private function getOrder(): OrderInterface
-    {
-        return $this->hasQuoteId() ?
-            $this->order->getOrderByQuoteId(
-                $this->request->getQuoteId()
-            ) :
-            $this->session->getLastRealOrder();
-    }
-
-    /**
-     * @return bool
-     */
-    private function hasQuoteId(): bool
-    {
-        $result = true;
-
-        try {
-            $this->request->getQuoteId();
-        } catch (Exception $e) {
-            $result = false;
-        }
-
-        return $result;
     }
 }
