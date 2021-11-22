@@ -30,6 +30,9 @@
         <!-- ko if: isResursInternalMethod -->
         <img data-bind="attr: { src: resursBankLogo }">
         <!-- /ko -->
+        <!-- ko if: isTrustlyMethod -->
+        <img data-bind="attr: { src: trustlyLogo }">
+        <!-- /ko -->
     </div>
     <div class="payment-method-content">
         <!-- ko if: hasSsnField -->
