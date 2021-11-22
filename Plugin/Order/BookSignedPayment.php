@@ -104,6 +104,7 @@ class BookSignedPayment
      * @return ResultInterface
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection
+     * @throws Exception
      */
     public function afterExecute(
         Success $subject,
@@ -123,7 +124,6 @@ class BookSignedPayment
         } catch (Exception $e) {
             $this->log->exception($e);
 
-            // Cancel to order (so it won't be left as pending / processing).
             $this->cancelOrder();
 
             // Because the message bag is not rendered on the failure page.
