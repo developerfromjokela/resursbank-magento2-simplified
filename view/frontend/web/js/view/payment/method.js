@@ -153,6 +153,23 @@ define(
         }
 
         /**
+         * Checks whether a payment method is a Trustly payment method.
+         *
+         * @param {string} code
+         * @returns {boolean}
+         */
+        function isTrustlyMethod(code) {
+            return CheckoutConfigLib.getPaymentMethods().some(
+                function(method) {
+                    return method.code === code
+                        && method.type === 'PAYMENT_PROVIDER'
+                        && method.title === 'Trustly'
+                        && method.specificType === 'INTERNET';
+                }
+            );
+        }
+
+        /**
          * Whether the payment method is available for the chosen customer
          * type.
          *
@@ -257,6 +274,22 @@ define(
                 );
 
                 /**
+                 * Whether this is a Trustly payment method.
+                 *
+                 * @type {boolean}
+                 */
+                me.isTrustlyMethod = isTrustlyMethod(this.getCode());
+
+                /**
+                 * Path to the logo of a Trustly payment method.
+                 *
+                 * @type {string}
+                 */
+                me.trustlyLogo = require.toUrl(
+                    'Resursbank_Simplified/images/trustly.svg'
+                );
+
+                /**
                  * Whether the payment method has an SSN field. Some methods
                  * require the customer to specify their SSN before checking
                  * out.
@@ -346,7 +379,7 @@ define(
                         CheckoutModel.isCompany()
                     );
                 });
-                
+
                 /**
                  * The availability status of the payment method.
                  *
