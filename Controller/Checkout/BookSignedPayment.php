@@ -9,17 +9,19 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Plugin\Order;
 
 use Exception;
-use Magento\Checkout\Model\Session;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Core\Helper\Order;
 use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Simplified\Helper\Config;
 use Resursbank\Simplified\Helper\Log;
+use Resursbank\Core\Helper\Url;
 use Resursbank\Simplified\Helper\Payment;
 
 /**
@@ -60,11 +62,6 @@ class BookSignedPayment implements HttpPostActionInterface
     private UrlInterface $url;
 
     /**
-     * @var Session
-     */
-    private Session $session;
-
-    /**
      * @var PaymentMethods
      */
     private PaymentMethods $paymentMethods;
@@ -75,15 +72,20 @@ class BookSignedPayment implements HttpPostActionInterface
     private RedirectFactory $redirectFactory;
 
     /**
+     * @var Url
+     */
+    private Url $urlHelper;
+
+    /**
      * @param Log $log
      * @param Payment $payment
      * @param Order $order
      * @param Config $config
      * @param StoreManagerInterface $storeManager
      * @param UrlInterface $url
-     * @param Session $session
      * @param PaymentMethods $paymentMethods
      * @param RedirectFactory $redirectFactory
+     * @param Url $urlHelper
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -93,19 +95,19 @@ class BookSignedPayment implements HttpPostActionInterface
         Config $config,
         StoreManagerInterface $storeManager,
         UrlInterface $url,
-        Session $session,
         PaymentMethods $paymentMethods,
-        RedirectFactory $redirectFactory
+        RedirectFactory $redirectFactory,
+        Url $urlHelper
     ) {
         $this->log = $log;
         $this->payment = $payment;
         $this->config = $config;
         $this->storeManager = $storeManager;
         $this->url = $url;
-        $this->session = $session;
         $this->paymentMethods = $paymentMethods;
         $this->order = $order;
         $this->redirectFactory = $redirectFactory;
+        $this->urlHelper = $urlHelper;
     }
 
     /**
@@ -115,58 +117,48 @@ class BookSignedPayment implements HttpPostActionInterface
     public function execute(): ResultInterface
     {
         $redirect = $this->redirectFactory->create();
-        $status = '';
+        $quoteId = $this->order->getQuoteId();
 
+        /** @noinspection BadExceptionsProcessingInspection */
         try {
-            $storeCode = $this->storeManager->getStore()->getCode();
             $order = $this->order->resolveOrderFromRequest();
-            $payment = $order->getPayment();
 
-            if ($payment === null ||
-                !$this->config->isActive($storeCode) ||
-                !$this->paymentMethods->isResursBankMethod($payment->getMethod())
-            ) {
-                throw new PaymentDataException(__(
-                    'Payment was missing or was invalid when tried to book ' .
-                    'signed payment.'
-                ));
+            if (!$this->validate($order))  {
+                throw new PaymentDataException(__('Invalid payment.'));
             }
 
             $bookedPayment = $this->payment->bookPaymentSession($order);
-            $status = $bookedPayment->getBookPaymentStatus();
 
-            // Reject denied / failed payment.
-            switch ($status) {
+            switch ($bookedPayment->getBookPaymentStatus()) {
                 case 'DENIED':
+                    // Cancel order, mark it as denied.
                     $this->order->setCreditDeniedStatus($order);
                     throw new PaymentDataException(__(
                         'Your credit application was denied, please select a ' .
                         'different payment method.'
                     ));
                 case 'SIGNING':
+                    // Redirect client back to signing page.
                     $redirect->setUrl(
-                        $this->url->getUrl('checkout/checkout/redirect')
+                        $this->url->getUrl(
+                            'resursbank_simplified/checkout/redirect'
+                        )
                     );
             }
+
+            // Redirect to success page if status from bookPaymentResponse is
+            // 'FROZEN', 'BOOKED' or 'FINALIZED'.
+            $redirect->setUrl($this->urlHelper->getSuccessUrl($quoteId));
         } catch (Exception $e) {
             $this->log->exception($e);
+
+            /* Make sure the order is cancelled, in case of an Exception
+            occurring before or during the API call. */
             $this->cancelOrder();
 
-            // Because the message bag is not rendered on the failure page.
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             * @phpstan-ignore-next-line
-             */
-            $this->session->setErrorMessage(__(
-                'Something went wrong when completing your payment. Your ' .
-                'order has been canceled. We apologize for this ' .
-                'inconvenience, please try again.'
-            ));
-
-            // Redirect to failure page.
-            $redirect->setUrl(
-                $this->url->getUrl('checkout/onepage/failure')
-            );
+            /* Redirect us to the failure page, which in turn will rebuild our
+            shopping cart and redirect us to the checkout again. */
+            $redirect->setUrl($this->urlHelper->getFailureUrl($quoteId));
         }
 
         return $redirect;
@@ -184,5 +176,23 @@ class BookSignedPayment implements HttpPostActionInterface
         } catch (Exception $e) {
             $this->log->exception($e);
         }
+    }
+
+    /**
+     * Make sure the payment associated with the supplied order utilises a
+     * payment method from Resurs Bank, and that Simplified Flow is the
+     * configured API.
+     *
+     * @throws NoSuchEntityException
+     */
+    private function validate(
+        OrderInterface $order
+    ): bool {
+        $payment = $order->getPayment();
+
+        return ($payment !== null &&
+            $this->paymentMethods->isResursBankMethod($payment->getMethod()) &&
+            $this->config->isActive($this->storeManager->getStore()->getCode())
+        );
     }
 }

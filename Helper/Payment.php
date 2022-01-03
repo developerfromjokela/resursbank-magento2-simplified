@@ -426,7 +426,7 @@ class Payment extends AbstractHelper
         int $quoteId
     ): string {
         return $this->url->getUrl(
-            'checkout/checkout/bookSignedPayment',
+            'resursbank_simplified/checkout/bookSignedPayment',
             ['quote_id' => $quoteId]
         );
     }
