@@ -41,7 +41,7 @@
             type="Resursbank\Simplified\Plugin\Helper\Api" />
     </type>
 
-    <!-- Redirect clients to step two of the checkout process on faiulure. -->
+    <!-- Redirect clients to step two of the checkout process on failure. -->
     <type name="Resursbank\Core\Helper\Url">
         <plugin
             name="resursbank_simplified_url"

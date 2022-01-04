@@ -10,6 +10,7 @@ namespace Resursbank\Simplified\Helper;
 
 use Exception;
 use InvalidArgumentException;
+use Magento\Framework\UrlInterface;
 use function is_string;
 use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
@@ -27,7 +28,6 @@ use Resursbank\Core\Helper\Url;
 use Resursbank\Core\Model\Api\Payment as PaymentModel;
 use Resursbank\Core\Model\Api\Payment\Converter\QuoteConverter;
 use Resursbank\Core\Model\PaymentMethodRepository;
-use Resursbank\Core\Helper\Order as OrderHelper;
 use Resursbank\RBEcomPHP\ResursBank;
 use Resursbank\Simplified\Helper\Config as ConfigHelper;
 use stdClass;
@@ -71,12 +71,12 @@ class Payment extends AbstractHelper
     /**
      * @var Url
      */
-    private Url $url;
+    private Url $coreUrl;
 
     /**
-     * @var OrderHelper
+     * @var UrlInterface
      */
-    private OrderHelper $orderHelper;
+    private UrlInterface $url;
 
     /**
      * @param Context $context
@@ -86,8 +86,8 @@ class Payment extends AbstractHelper
      * @param CoreApi $coreApi
      * @param Config $configHelper
      * @param StoreManagerInterface $storeManager
-     * @param Url $url
-     * @param OrderHelper $orderHelper
+     * @param Url $coreUrl
+     * @param UrlInterface $url
      */
     public function __construct(
         Context $context,
@@ -97,8 +97,8 @@ class Payment extends AbstractHelper
         CoreApi $coreApi,
         ConfigHelper $configHelper,
         StoreManagerInterface $storeManager,
-        Url $url,
-        OrderHelper $orderHelper
+        Url $coreUrl,
+        UrlInterface $url
     ) {
         $this->session = $session;
         $this->quoteConverter = $quoteConverter;
@@ -106,8 +106,8 @@ class Payment extends AbstractHelper
         $this->coreApi = $coreApi;
         $this->configHelper = $configHelper;
         $this->storeManager = $storeManager;
+        $this->coreUrl = $coreUrl;
         $this->url = $url;
-        $this->orderHelper = $orderHelper;
 
         parent::__construct($context);
     }
@@ -283,8 +283,8 @@ class Payment extends AbstractHelper
         Quote $quote
     ): self {
         $connection->setSigning(
-            $this->url->getSuccessUrl((int) $quote->getId()),
-            $this->url->getFailureUrl((int) $quote->getId())
+            $this->getSuccessUrl((int) $quote->getId()),
+            $this->coreUrl->getFailureUrl((int) $quote->getId())
         );
 
         return $this;
@@ -413,18 +413,21 @@ class Payment extends AbstractHelper
             $connection->bookSignedPayment($orderId)
         );
 
-        // Reject denied / failed payment.
-        switch ($payment->getBookPaymentStatus()) {
-            case 'DENIED':
-                $this->orderHelper->setCreditDeniedStatus($order);
-                throw new PaymentDataException(__(
-                    'Your credit application was denied, please select a ' .
-                    'different payment method.'
-                ));
-            case 'SIGNING':
-                throw new PaymentDataException(__('Payment failed.'));
-        }
+        $this->prepareRedirect($payment);
 
         return $payment;
+    }
+
+    /**
+     * @param int $quoteId
+     * @return string
+     */
+    public function getSuccessUrl(
+        int $quoteId
+    ): string {
+        return $this->url->getUrl(
+            'resursbank_simplified/checkout/bookSignedPayment',
+            ['quote_id' => $quoteId]
+        );
     }
 }

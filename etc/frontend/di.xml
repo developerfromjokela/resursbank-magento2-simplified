@@ -19,7 +19,7 @@
         </arguments>
     </type>
 
-    <!-- Events occruing after successful order placement. -->
+    <!-- Events occurring after successful order placement. -->
     <type name="Magento\Checkout\Controller\Onepage\Success">
         <!-- Clear session data after order placement. -->
         <plugin
