@@ -12,6 +12,7 @@ use Exception;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Controller\ResultInterface;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Api\Data\OrderInterface;
@@ -77,6 +78,11 @@ class BookSignedPayment implements HttpPostActionInterface
     private Url $urlHelper;
 
     /**
+     * @var ManagerInterface
+     */
+    private ManagerInterface $eventManager;
+
+    /**
      * @param Log $log
      * @param Payment $payment
      * @param Order $order
@@ -86,6 +92,7 @@ class BookSignedPayment implements HttpPostActionInterface
      * @param PaymentMethods $paymentMethods
      * @param RedirectFactory $redirectFactory
      * @param Url $urlHelper
+     * @param ManagerInterface $eventManager
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
@@ -97,7 +104,8 @@ class BookSignedPayment implements HttpPostActionInterface
         UrlInterface $url,
         PaymentMethods $paymentMethods,
         RedirectFactory $redirectFactory,
-        Url $urlHelper
+        Url $urlHelper,
+        ManagerInterface $eventManager
     ) {
         $this->log = $log;
         $this->payment = $payment;
@@ -108,6 +116,7 @@ class BookSignedPayment implements HttpPostActionInterface
         $this->order = $order;
         $this->redirectFactory = $redirectFactory;
         $this->urlHelper = $urlHelper;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -123,11 +132,24 @@ class BookSignedPayment implements HttpPostActionInterface
         try {
             $order = $this->order->resolveOrderFromRequest();
 
-            if (!$this->validate($order))  {
+            if (!$this->validate($order)) {
                 throw new PaymentDataException(__('Invalid payment.'));
             }
 
+            $this->eventManager->dispatch(
+                'resursbank_book_signed_payment_before',
+                ['order' => $order]
+            );
+
             $bookedPayment = $this->payment->bookPaymentSession($order);
+
+            $this->eventManager->dispatch(
+                'resursbank_book_signed_payment_after',
+                [
+                    'order' => $order,
+                    'paymentSession' => $bookedPayment,
+                ]
+            );
 
             switch ($bookedPayment->getBookPaymentStatus()) {
                 case 'DENIED':
