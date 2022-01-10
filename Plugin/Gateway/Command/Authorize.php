@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Plugin\Gateway\Command;
 
 use Exception;
+use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\PaymentException;
 use Magento\Framework\Exception\ValidatorException;
@@ -72,6 +73,11 @@ class Authorize
     private StoreManagerInterface $storeManager;
 
     /**
+     * @var ManagerInterface
+     */
+    private ManagerInterface $eventManager;
+
+    /**
      * @param Log $log
      * @param Api $api
      * @param Credentials $credentials
@@ -79,6 +85,7 @@ class Authorize
      * @param PaymentHelper $paymentHelper
      * @param Config $config
      * @param StoreManagerInterface $storeManager
+     * @param ManagerInterface $eventManager
      */
     public function __construct(
         Log $log,
@@ -87,7 +94,8 @@ class Authorize
         CheckoutSession $session,
         PaymentHelper $paymentHelper,
         Config $config,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        ManagerInterface $eventManager
     ) {
         $this->api = $api;
         $this->log = $log;
@@ -96,6 +104,7 @@ class Authorize
         $this->paymentHelper = $paymentHelper;
         $this->config = $config;
         $this->storeManager = $storeManager;
+        $this->eventManager = $eventManager;
     }
 
     /**
@@ -118,6 +127,11 @@ class Authorize
 
                 if ($payment instanceof Payment) {
                     $order = $payment->getOrder();
+
+                    $this->eventManager->dispatch(
+                        'resursbank_create_payment_before',
+                        ['order' => $order]
+                    );
 
                     // Establish API connection.
                     $connection = $this->getConnection($order);
@@ -227,6 +241,14 @@ class Authorize
             $payment = $this->paymentHelper->createPaymentSession(
                 $order,
                 $connection
+            );
+
+            $this->eventManager->dispatch(
+                'resursbank_create_payment_after',
+                [
+                    'order' => $order,
+                    'paymentSession' => $payment,
+                ]
             );
 
             // Reject denied payment.
