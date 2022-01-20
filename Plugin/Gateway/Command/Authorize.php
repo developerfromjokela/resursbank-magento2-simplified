@@ -128,11 +128,6 @@ class Authorize
                 if ($payment instanceof Payment) {
                     $order = $payment->getOrder();
 
-                    $this->eventManager->dispatch(
-                        'resursbank_create_payment_before',
-                        ['order' => $order]
-                    );
-
                     // Establish API connection.
                     $connection = $this->getConnection($order);
 
@@ -241,14 +236,6 @@ class Authorize
             $payment = $this->paymentHelper->createPaymentSession(
                 $order,
                 $connection
-            );
-
-            $this->eventManager->dispatch(
-                'resursbank_create_payment_after',
-                [
-                    'order' => $order,
-                    'paymentSession' => $payment,
-                ]
             );
 
             // Reject denied payment.
