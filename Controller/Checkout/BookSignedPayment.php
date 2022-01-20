@@ -123,7 +123,7 @@ class BookSignedPayment implements HttpGetActionInterface
         try {
             $order = $this->order->resolveOrderFromRequest();
 
-            if (!$this->validate($order))  {
+            if (!$this->validate($order)) {
                 throw new PaymentDataException(__('Invalid payment.'));
             }
 
