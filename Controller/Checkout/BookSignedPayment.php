@@ -6,10 +6,10 @@
 
 declare(strict_types=1);
 
-namespace Resursbank\Simplified\Plugin\Order;
+namespace Resursbank\Simplified\Controller\Checkout;
 
 use Exception;
-use Magento\Framework\App\Action\HttpPostActionInterface;
+use Magento\Framework\App\Action\HttpGetActionInterface;
 use Magento\Framework\Controller\Result\RedirectFactory;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
@@ -29,7 +29,7 @@ use Resursbank\Simplified\Helper\Payment;
  *
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class BookSignedPayment implements HttpPostActionInterface
+class BookSignedPayment implements HttpGetActionInterface
 {
     /**
      * @var Log
