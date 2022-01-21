@@ -22,7 +22,7 @@ use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Core\Gateway\Command\Authorize as Subject;
 use Resursbank\Core\Helper\Api;
 use Resursbank\Core\Helper\Api\Credentials;
-use Resursbank\RBEcomPHP\RESURS_FLOW_TYPES;
+use Resursbank\Ecommerce\Types\CheckoutType;
 use Resursbank\RBEcomPHP\ResursBank;
 use Resursbank\Simplified\Helper\Config;
 use Resursbank\Simplified\Helper\Log;
@@ -128,11 +128,6 @@ class Authorize
                 if ($payment instanceof Payment) {
                     $order = $payment->getOrder();
 
-                    $this->eventManager->dispatch(
-                        'resursbank_create_payment_before',
-                        ['order' => $order]
-                    );
-
                     // Establish API connection.
                     $connection = $this->getConnection($order);
 
@@ -180,7 +175,7 @@ class Authorize
             );
 
             $connection->setPreferredPaymentFlowService(
-                RESURS_FLOW_TYPES::SIMPLIFIED_FLOW
+                CheckoutType::SIMPLIFIED_FLOW
             );
         } catch (Exception $e) {
             // NOTE: Actual Exception is logged upstream.
@@ -241,14 +236,6 @@ class Authorize
             $payment = $this->paymentHelper->createPaymentSession(
                 $order,
                 $connection
-            );
-
-            $this->eventManager->dispatch(
-                'resursbank_create_payment_after',
-                [
-                    'order' => $order,
-                    'paymentSession' => $payment,
-                ]
             );
 
             // Reject denied payment.
