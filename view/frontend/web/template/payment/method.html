@@ -25,7 +25,10 @@
         <img data-bind="attr: { src: swishLogo }">
         <!-- /ko -->
         <!-- ko if: isCreditCardMethod -->
-        <img data-bind="attr: { src: creditCardLogo }">
+        <img
+            class="resursbank-simplified-credit-card-logo"
+            data-bind="attr: { src: creditCardLogo }"
+        >
         <!-- /ko -->
         <!-- ko if: isResursInternalMethod -->
         <img data-bind="attr: { src: resursBankLogo }">
