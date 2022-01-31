@@ -163,7 +163,6 @@ define(
                 function(method) {
                     return method.code === code
                         && method.type === 'PAYMENT_PROVIDER'
-                        && method.title === 'Trustly'
                         && method.specificType === 'INTERNET';
                 }
             );
