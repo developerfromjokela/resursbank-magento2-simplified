@@ -19,6 +19,11 @@
     float: right;
 }
 
+.payment-method > .payment-method-title > img.resursbank-simplified-credit-card-logo {
+    width: 4%;
+    height: 4%;
+}
+
 /*
     Targets the input container for SSN, contact ID etc.
 */

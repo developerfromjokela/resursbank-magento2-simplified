@@ -270,7 +270,7 @@ define(
                  * @type {string}
                  */
                 me.creditCardLogo = require.toUrl(
-                    'Resursbank_Simplified/images/credit-card-x2.png'
+                    'Resursbank_Simplified/images/card.svg'
                 );
 
                 /**
