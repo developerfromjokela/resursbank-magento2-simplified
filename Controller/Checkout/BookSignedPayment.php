@@ -174,30 +174,12 @@ class BookSignedPayment implements HttpGetActionInterface
         } catch (Exception $e) {
             $this->log->exception($e);
 
-            /* Make sure the order is cancelled, in case of an Exception
-            occurring before or during the API call. */
-            $this->cancelOrder();
-
             /* Redirect us to the failure page, which in turn will rebuild our
             shopping cart and redirect us to the checkout again. */
             $redirect->setUrl($this->urlHelper->getFailureUrl($quoteId));
         }
 
         return $redirect;
-    }
-
-    /**
-     * @return void
-     */
-    private function cancelOrder(): void
-    {
-        try {
-            $this->order->cancelOrder(
-                $this->order->resolveOrderFromRequest()
-            );
-        } catch (Exception $e) {
-            $this->log->exception($e);
-        }
     }
 
     /**
