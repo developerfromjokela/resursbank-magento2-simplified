@@ -15,3 +15,8 @@ Simplified Flow API implementation for Magento 2 module.
 #### 1.2.1
 
 * Updated composer metadata.
+
+#### 1.5.2
+
+* Replaced logotypes.
+* Added PHP 8.1 support.
