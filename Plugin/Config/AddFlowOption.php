@@ -28,7 +28,7 @@ class AddFlowOption
         array $result
     ): array {
         $result[Config::API_FLOW_OPTION] = __(
-            'Two step Magento Checkout with Resurs payment methods'
+            'Two step Magento Checkout with Resurs payment methods (deprecated)'
         );
 
         return $result;

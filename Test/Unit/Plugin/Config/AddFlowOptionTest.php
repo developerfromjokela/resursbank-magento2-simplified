@@ -40,7 +40,7 @@ class AddFlowOptionTest extends TestCase
         $expected = [
             'key' => 'value',
             Config::API_FLOW_OPTION => __(
-                'Two step Magento Checkout with Resurs payment methods'
+                'Two step Magento Checkout with Resurs payment methods (deprecated)'
             ),
         ];
         $flowMock = $this->createMock(Flow::class);

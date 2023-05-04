@@ -11,7 +11,7 @@
             <group id="resursbank_section">
                 <group id="advanced">
                     <group id="simplified" type="text" sortOrder="1" translate="label" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Two step Magento Checkout with Resurs payment methods</label>
+                        <label>Two step Magento Checkout with Resurs payment methods (deprecated)</label>
                         <field id="swish_max_order_total" type="text" sortOrder="0" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Swish maximum order total</label>
                             <config_path>resursbank/advanced/swish_max_order_total</config_path>
