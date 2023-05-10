@@ -9,13 +9,18 @@ declare(strict_types=1);
 namespace Resursbank\Simplified\Controller\Checkout;
 
 use Exception;
+use Resursbank\Core\Helper\Scope;
 use Magento\Framework\App\Action\HttpPostActionInterface;
 use Magento\Framework\Controller\ResultInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Exception\ValidatorException;
+use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\ApiDataException;
 use Resursbank\Core\Exception\InvalidDataException;
 use Resursbank\Core\Exception\MissingRequestParameterException;
+use Resursbank\Core\Helper\Config;
+use Resursbank\Ecom\Lib\Order\CustomerType;
+use Resursbank\Ecom\Module\Customer\Repository;
 use Resursbank\Simplified\Helper\Address as AddressHelper;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Helper\Request;
@@ -26,33 +31,21 @@ use Resursbank\Simplified\Helper\Request;
 class FetchAddress implements HttpPostActionInterface
 {
     /**
-     * @var Log
-     */
-    private Log $log;
-
-    /**
-     * @var AddressHelper
-     */
-    private AddressHelper $addressHelper;
-
-    /**
-     * @var Request
-     */
-    private Request $requestHelper;
-
-    /**
      * @param Log $log
-     * @param AddressHelper $fetchAddressHelper
+     * @param AddressHelper $addressHelper
      * @param Request $request
+     * @param Config $config
+     * @param StoreManagerInterface $storeManager
      */
     public function __construct(
-        Log $log,
-        AddressHelper $fetchAddressHelper,
-        Request $request
+        private Log $log,
+        private AddressHelper $addressHelper,
+        private Request $request,
+        private Config $config,
+        private StoreManagerInterface $storeManager,
+        private Scope $scope,
+        private Request $requestHelper,
     ) {
-        $this->log = $log;
-        $this->addressHelper = $fetchAddressHelper;
-        $this->requestHelper = $request;
     }
 
     /**
@@ -96,13 +89,41 @@ class FetchAddress implements HttpPostActionInterface
     {
         $isCompany = $this->requestHelper->isCompany();
 
-        return $this->addressHelper
-            ->toCheckoutAddress(
-                $this->addressHelper->fetch(
-                    $this->requestHelper->getIdentifier($isCompany),
-                    $isCompany
+        if ($this->config->isMapiActive(
+            scopeCode: $this->scope->getId(),
+            scopeType: $this->scope->getType()
+        )) {
+            // Fetch address here
+            $searchResult = Repository::getAddress(
+                storeId: $this->config->getStore(
+                    scopeCode: $this->scope->getId(),
+                    scopeType: $this->scope->getType()
+                ),
+                customerType: ($isCompany ? CustomerType::LEGAL : CustomerType::NATURAL),
+                governmentId: $this->requestHelper->getIdentifier($isCompany)
+            );
+            $response = [
+                'firstname' => $searchResult->firstName,
+                'lastname' => $searchResult->lastName,
+                'city' => $searchResult->postalArea,
+                'postcode' => $searchResult->postalCode,
+                'country' => $searchResult->countryCode->value,
+                'street0' => $searchResult->addressRow1,
+                'street1' => $searchResult->addressRow2,
+                'company' => '',
+                'telephone' => ''
+            ];
+        } else {
+            $response = $this->addressHelper
+                ->toCheckoutAddress(
+                    $this->addressHelper->fetch(
+                        $this->requestHelper->getIdentifier($isCompany),
+                        $isCompany
+                    )
                 )
-            )
-            ->toArray();
+                ->toArray();
+        }
+
+        return $response;
     }
 }
