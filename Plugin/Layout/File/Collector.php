@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright © Resurs Bank AB. All rights reserved.
  * See LICENSE for license details.
@@ -13,7 +14,9 @@ use Magento\Framework\View\File;
 use Magento\Framework\View\Layout\File\Collector\Aggregated;
 use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Simplified\Helper\Config;
+use Resursbank\Core\Helper\Config as CoreConfig;
 use Resursbank\Simplified\Helper\Log;
+
 use function strpos;
 
 /**
@@ -27,33 +30,17 @@ use function strpos;
 class Collector
 {
     /**
-     * @var Config
-     */
-    private Config $config;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private StoreManagerInterface $storeManager;
-
-    /**
-     * @var Log
-     */
-    private Log $log;
-
-    /**
      * @param Config $config
+     * @param CoreConfig $coreConfig
      * @param StoreManagerInterface $storeManager
      * @param Log $log
      */
     public function __construct(
-        Config $config,
-        StoreManagerInterface $storeManager,
-        Log $log
+        private Config $config,
+        private CoreConfig $coreConfig,
+        private StoreManagerInterface $storeManager,
+        private Log $log
     ) {
-        $this->config = $config;
-        $this->storeManager = $storeManager;
-        $this->log = $log;
     }
 
     /**
@@ -73,9 +60,9 @@ class Collector
         try {
             $storeCode = $this->storeManager->getStore()->getCode();
 
-            if (!$this->config->isActive($storeCode)) {
+            if (!$this->isEnabled(storeCode: $storeCode)) {
                 foreach ($result as $key => $file) {
-                    if ($this->isOurLayoutFile($file)) {
+                    if ($this->isOurLayoutFile(file: $file)) {
                         unset($result[$key]);
                     }
                 }
@@ -101,5 +88,15 @@ class Collector
             $file->getModule() === 'Resursbank_Simplified' &&
             strpos($file->getFileIdentifier(), 'checkout_index_index.xml')
         );
+    }
+
+    /**
+     * @param string $storeCode
+     * @return bool
+     */
+    private function isEnabled(string $storeCode): bool
+    {
+        return $this->config->isActive(scopeCode: $storeCode) ||
+            $this->coreConfig->isMapiActive(scopeCode: $storeCode);
     }
 }
