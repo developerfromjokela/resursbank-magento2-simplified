@@ -108,11 +108,10 @@ class FetchAddress implements HttpPostActionInterface
     {
         $isCompany = $this->requestHelper->isCompany();
 
-        if (
-            $this->config->isMapiActive(
-                scopeCode: $this->scope->getId(),
-                scopeType: $this->scope->getType()
-            )
+        if ($this->config->isMapiActive(
+            scopeCode: $this->scope->getId(),
+            scopeType: $this->scope->getType()
+        )
         ) {
             $searchResult = Repository::getAddress(
                 storeId: $this->config->getStore(
