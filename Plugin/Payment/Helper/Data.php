@@ -19,41 +19,17 @@ use Resursbank\Simplified\Helper\Log;
 class Data
 {
     /**
-     * @var Log
-     */
-    private $log;
-
-    /**
-     * @var Config
-     */
-    private Config $config;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private StoreManagerInterface $storeManager;
-
-    /**
-     * @var CoreConfig
-     */
-    private CoreConfig $coreConfig;
-
-    /**
      * @param Log $log
      * @param Config $config
      * @param StoreManagerInterface $storeManager
      * @param CoreConfig $coreConfig
      */
     public function __construct(
-        Log $log,
-        Config $config,
-        StoreManagerInterface $storeManager,
-        CoreConfig $coreConfig,
+        private readonly Log $log,
+        private readonly Config $config,
+        private readonly StoreManagerInterface $storeManager,
+        private readonly \Resursbank\Core\Helper\Config $coreConfig
     ) {
-        $this->log = $log;
-        $this->config = $config;
-        $this->storeManager = $storeManager;
-        $this->coreConfig = $coreConfig;
     }
 
     /**
@@ -74,14 +50,16 @@ class Data
                 $result->getSpecificType() === 'SWISH' &&
                 $this->isEnabled(storeCode: $store)
             ) {
-                $maxOrderTotal = $this->config->getSwishMaxOrderTotal($store);
+                $maxOrderTotal = $this->config->getSwishMaxOrderTotal(
+                    scopeCode: $store
+                );
 
                 if ($maxOrderTotal > 0) {
-                    $result->setMaxOrderTotal($maxOrderTotal);
+                    $result->setMaxOrderTotal(total: $maxOrderTotal);
                 }
             }
         } catch (Exception $e) {
-            $this->log->exception($e);
+            $this->log->exception(error: $e);
         }
 
         return $result;
