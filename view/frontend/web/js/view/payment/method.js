@@ -418,7 +418,29 @@ define(
                     return (typeof result === 'string' && result !== '') ?
                         result :
                         me._super();
-                }
+                };
+
+                /**
+                 * Retrieve configured USP for currently selected payment
+                 * method.
+                 *
+                 * @returns {string}
+                 */
+                me.getUsp = function () {
+                    var method = CheckoutConfigLib.getPaymentMethod(
+                        me.getCode()
+                    );
+
+                    var result = '';
+
+                    if (method) {
+                        result = method.usp;
+                    }
+
+                    return (typeof result === 'string' && result !== '') ?
+                        result :
+                        '';
+                };
 
                 /**
                  * Whether all requirements for an order placement has been met.

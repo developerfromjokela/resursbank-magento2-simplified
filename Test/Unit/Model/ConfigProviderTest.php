@@ -24,8 +24,10 @@ use ReflectionObject;
 use Resursbank\Core\Api\Data\PaymentMethodInterface;
 use Resursbank\Core\Helper\PaymentMethods;
 use Resursbank\Core\Model\PaymentMethod;
+use Resursbank\Core\Helper\Config;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Simplified\Model\ConfigProvider;
+use Resursbank\Core\ViewModel\Session\Checkout as CheckoutSession;
 
 /**
  * @SuppressWarnings(PHPMD.LongVariable)
@@ -63,10 +65,18 @@ class ConfigProviderTest extends TestCase
         $storeManagerInterfaceMock->method('getStore')->willReturn($storeMock);
         $storeMock->method('getCode')->willReturn('SE');
 
+        $configMock = $this->createMock(originalClassName: Config::class);
+        $configMock->method(constraint: 'isMapiActive')->willReturn(value: false);
+        $configMock->method(constraint: 'getStore')->willReturn(value: 0);
+
+        $sessionMock = $this->createMock(originalClassName: CheckoutSession::class);
+
         $this->configProvider = new ConfigProvider(
-            $logMock,
-            $this->paymentMethodHelperMock,
-            $storeManagerInterfaceMock
+            log: $logMock,
+            config: $configMock,
+            helper: $this->paymentMethodHelperMock,
+            storeManager: $storeManagerInterfaceMock,
+            session: $sessionMock
         );
     }
 
