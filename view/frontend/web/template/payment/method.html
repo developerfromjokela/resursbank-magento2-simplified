@@ -36,7 +36,7 @@
         <!-- ko if: isTrustlyMethod -->
         <img data-bind="attr: { src: trustlyLogo }">
         <!-- /ko -->
-        <br /><span class="resursbank-usp-color" data-bind="text: getUsp()"></span>
+        <br /><span class="resursbank-usp-color" data-bind="css: {'hide': !isResursInternalMethod()}, text: getUsp()"></span>
     </div>
     <div class="payment-method-content">
         <!-- ko if: hasSsnField -->

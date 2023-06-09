@@ -38,3 +38,11 @@
     margin-bottom: 10px;
     display: block;
 }
+
+.resursbank-usp-color.hide {
+    display: none;
+}
+
+.payment-method._active .resursbank-usp-color {
+    display: block !important;
+}
