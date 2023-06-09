@@ -78,8 +78,7 @@ class ConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * Maps a payment method for the config provider. Note that not all data
-     * from the payment method will be mapped in this process.
+     * Maps selective data from payment method to the config provider.
      *
      * @param PaymentMethodInterface $method
      * @return array<string, mixed>
@@ -98,8 +97,9 @@ class ConfigProvider implements ConfigProviderInterface
             'type' => $data['type'] ?? '',
             'specificType' => $data['specificType'] ?? '',
             'customerType' => $this->helper->getCustomerTypes(method: $method),
-            'usp' => $this->config->isMapiActive(scopeCode: $this->storeManager->getStore()->getCode()) ?
-                $this->getUspMessage(methodCode: $method->getCode()) : ''
+            'usp' => $this->config->isMapiActive(
+                scopeCode: $this->storeManager->getStore()->getCode()
+            ) ? $this->getUspMessage(methodCode: $method->getCode()) : ''
         ];
     }
 
@@ -132,14 +132,18 @@ class ConfigProvider implements ConfigProviderInterface
         string $methodCode
     ): ?PaymentMethod {
         if (!str_starts_with(haystack: $methodCode, needle: 'resursbank_')) {
-            throw new IllegalValueException(message: 'Method code unparsable');
+            throw new IllegalValueException(
+                message: 'Method code cannot be parsed.'
+            );
         }
 
         $paymentMethodId = substr(string: $methodCode, offset: 11);
 
         try {
             return PaymentMethodRepository::getById(
-                storeId: $this->config->getStore(scopeCode: $this->storeManager->getStore()->getCode()),
+                storeId: $this->config->getStore(
+                    scopeCode: $this->storeManager->getStore()->getCode()
+                ),
                 paymentMethodId: $paymentMethodId
             );
         } catch (Throwable) {
