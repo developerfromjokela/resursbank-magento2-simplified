@@ -198,6 +198,7 @@ define(
 
             return method.specificType === 'PART_PAYMENT' ||
                 method.specificType === 'REVOLVING_CREDIT' ||
+                method.specificType === 'CARD' ||
                 method.specificType === 'INVOICE';
         }
 
