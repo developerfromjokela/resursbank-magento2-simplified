@@ -38,3 +38,14 @@
     margin-bottom: 10px;
     display: block;
 }
+
+/*
+    For external payment methods we should only display USP when it's selected.
+ */
+.resursbank-usp-color.hide {
+    display: none;
+}
+
+.payment-method._active .resursbank-usp-color {
+    display: block !important;
+}
