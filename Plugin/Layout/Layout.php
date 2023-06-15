@@ -57,8 +57,15 @@ class Layout
     }
 
     /**
+     * Modify layout before rendering.
+     *
+     * Here we make billing address required for our dynamic payment methods,
+     * this cannot be deon statically through an XML file since we do not know
+     * what payment methods are available at any given moment until we render
+     * the actual checkout page.
+     *
      * @param LayoutProcessor $subject
-     * @param array<mixed> $result
+     * @param array $result
      * @return array<int, array>
      * @throws Exception
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)

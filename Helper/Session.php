@@ -107,6 +107,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Get gov id from checkout session.
+     *
      * @return string|null - Null if a value cannot be found.
      */
     public function getGovId(): ?string
@@ -115,6 +117,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Remove gov id from session.
+     *
      * @return self
      */
     public function unsetGovId(): self
@@ -125,8 +129,7 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
-     * Stores a customer's contact government ID in the session. Required for
-     * company customers, personal SSN of a company reference.
+     * Stores a customer's contact government ID in the session.
      *
      * @param string $govId - Must be a valid SSN of a supported country.
      * @return self
@@ -143,6 +146,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Get contact gov id from session.
+     *
      * @return string|null - Null if a value cannot be found.
      */
     public function getContactGovId(): ?string
@@ -151,6 +156,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Remove contact gov id from session.
+     *
      * @return self
      */
     public function unsetContactGovId(): self
@@ -175,6 +182,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Get flag defining whether client is a company from session,
+     *
      * @return bool|null - Null if a value cannot be found.
      */
     public function getIsCompany(): ?bool
@@ -183,6 +192,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Remove flag defining whether client is a company from session,
+     *
      * @return self
      */
     public function unsetIsCompany(): self
@@ -190,11 +201,10 @@ class Session extends AbstractHelper implements ArgumentInterface
         $this->checkoutSession->unsetData(self::KEY_IS_COMPANY);
 
         return $this;
-    }
+    }   
 
     /**
-     * Stores payment signing (gateway) URL in session. Redirect URL at order
-     * placement to perform payment.
+     * Stores payment signing (gateway) URL in session.
      *
      * @param string $url
      * @return self
@@ -208,6 +218,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Get redirect URL to sign payment after authorization.
+     *
      * @return string|null - Null if a value cannot be found.
      */
     public function getPaymentSigningUrl(): ?string
@@ -216,6 +228,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Remove signing URL from session.
+     *
      * @return self
      */
     public function unsetPaymentSigningUrl(): self
@@ -240,6 +254,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Get payment id (at Resurs Bank) from session.
+     *
      * @return string|null - Null if a value cannot be found.
      */
     public function getPaymentId(): ?string
@@ -248,6 +264,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Remove payment id (at Resurs Bank) from session.
+     *
      * @return self
      */
     public function unsetPaymentId(): self

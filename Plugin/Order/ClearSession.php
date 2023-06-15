@@ -64,6 +64,8 @@ class ClearSession
     }
 
     /**
+     * Delete all custom session data.
+     *
      * @param Success|Failure $subject
      * @param ResultInterface|Redirect|Page $result
      * @return ResultInterface|Redirect|Page

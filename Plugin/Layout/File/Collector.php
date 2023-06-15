@@ -44,11 +44,10 @@ class Collector
     }
 
     /**
-     * If this module is disabled, remove our checkout_index_index.xml file
-     * from the collection of XML files assembled by Magento.
+     * Disable checkout_index_index.xml file if this plugin is enabled.
      *
      * @param Aggregated $subject
-     * @param array<string, mixed> $result
+     * @param array $result
      * @return array<string, File>
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection
@@ -75,8 +74,7 @@ class Collector
     }
 
     /**
-     * Check if provided layout file is the extending checkout_index_index.xml
-     * file that belongs to this module.
+     * Check if $file is our layout file.
      *
      * @param File $file
      * @return bool
@@ -91,6 +89,8 @@ class Collector
     }
 
     /**
+     * Check whether this plugin should execute.
+     *
      * @param string $storeCode
      * @return bool
      */

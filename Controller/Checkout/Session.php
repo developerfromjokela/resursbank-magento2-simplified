@@ -74,6 +74,8 @@ class Session implements HttpPostActionInterface
     }
 
     /**
+     * Execute.
+     *
      * @throws Exception
      * @return ResultInterface
      */
@@ -122,8 +124,7 @@ class Session implements HttpPostActionInterface
     }
 
     /**
-     * Validates that a payment method is usable by the customer by comparing
-     * the customer type of the method to the type the customer has selected.
+     * Confirm selected customer type is eligible to utilize a payment method.
      *
      * @param string $methodCode
      * @param bool $isCompany

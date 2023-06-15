@@ -58,6 +58,8 @@ class FetchAddress implements HttpPostActionInterface
     }
 
     /**
+     * Execute.
+     *
      * @throws Exception
      * @return ResultInterface
      */
@@ -87,6 +89,8 @@ class FetchAddress implements HttpPostActionInterface
     }
 
     /**
+     * Get address data from API.
+     *
      * @return array
      * @throws ApiDataException
      * @throws InvalidDataException

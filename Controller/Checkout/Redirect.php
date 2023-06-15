@@ -60,8 +60,7 @@ class Redirect implements HttpGetActionInterface
     }
 
     /**
-     * Redirect to signing URL. If there is none, redirect straight to success
-     * page.
+     * Redirect to signing URL or success page.
      *
      * @return RedirectResult
      * @throws Exception

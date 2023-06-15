@@ -45,6 +45,8 @@ class Config extends AbstractConfig
     }
 
     /**
+     * Whether Simplified API Flow is selected in config.
+     *
      * @param string|null $scopeCode
      * @param string $scopeType
      * @return bool
@@ -58,6 +60,8 @@ class Config extends AbstractConfig
     }
 
     /**
+     * Whether "waiting for fraud control" flag is enabled.
+     *
      * @param string|null $scopeCode
      * @param string $scopeType
      * @return bool
@@ -75,6 +79,8 @@ class Config extends AbstractConfig
     }
 
     /**
+     * Whether "annul if frozen" flag is enabled.
+     *
      * @param string|null $scopeCode
      * @param string $scopeType
      * @return bool
@@ -92,6 +98,8 @@ class Config extends AbstractConfig
     }
 
     /**
+     * Whether "finalize if booked" flag is enabled.
+     *
      * @param null|string $scopeCode
      * @param string $scopeType
      * @return bool

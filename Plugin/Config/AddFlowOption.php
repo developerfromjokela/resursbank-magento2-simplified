@@ -18,7 +18,7 @@ class AddFlowOption
      * Add Simplified Flow to the list of available API flows in Core module.
      *
      * @param Subject $subject
-     * @param array<string, Phrase> $result
+     * @param array $result
      * @return array<string, Phrase>
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @noinspection PhpUnusedParameterInspection

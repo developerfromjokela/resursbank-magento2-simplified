@@ -33,6 +33,8 @@ class Data
     }
 
     /**
+     * Modify max_order_total value for Swish payment method.
+     *
      * @param Subject $subject
      * @param PaymentMethodInterface|null $result
      * @return PaymentMethodInterface|null
@@ -66,6 +68,8 @@ class Data
     }
 
     /**
+     * Check whether this plugin should execute.
+     *
      * @param string $storeCode
      * @return bool
      */

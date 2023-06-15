@@ -31,6 +31,8 @@ class Api
     }
 
     /**
+     * Append module information to user-agent submitted with API calls.
+     *
      * @param Subject $subject
      * @param string $result
      * @return string

@@ -18,6 +18,8 @@ use Resursbank\Core\Helper\Url as Subject;
 class Url
 {
     /**
+     * Append segment to URl utilised to rebuild cart.
+     *
      * @param Subject $subject
      * @param string $result
      * @return string
