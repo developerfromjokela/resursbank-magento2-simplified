@@ -108,6 +108,8 @@ class Authorize
     }
 
     /**
+     * Create payment at Resurs Bank before original authorization code.
+     *
      * @param Subject $subject
      * @param array<mixed> $data
      * @return void

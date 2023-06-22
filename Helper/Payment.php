@@ -419,6 +419,8 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Get signing URL client is sent to after payment authorization.
+     *
      * @param int $quoteId
      * @return string
      */

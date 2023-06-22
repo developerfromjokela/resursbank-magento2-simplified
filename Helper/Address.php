@@ -82,8 +82,7 @@ class Address extends AbstractHelper
     }
 
     /**
-     * Fetch address from the API using either government id (Sweden) or a phone
-     * number (Norway).
+     * Fetch address from the API (uses gov id in Sweden, phone in Norway).
      *
      * @param string $identifier
      * @param bool $isCompany
@@ -140,6 +139,8 @@ class Address extends AbstractHelper
     }
 
     /**
+     * Convert custom ApiAddress model instance to CheckoutAddress.
+     *
      * @param ApiAddress $address
      * @return CheckoutAddress
      * @throws ApiDataException
@@ -163,8 +164,7 @@ class Address extends AbstractHelper
     }
 
     /**
-     * Returns the customer type based on a boolean value which states what
-     * type you're looking for.
+     * Returns customer type identification string based on $isCompany.
      *
      * @param bool $isCompany
      * @return string

@@ -96,7 +96,7 @@ class Request extends AbstractHelper
     /**
      * Retrieve JSON response object.
      *
-     * @param array<string, mixed> $data
+     * @param array $data
      * @return Json
      * @throws Exception
      */
@@ -252,8 +252,7 @@ class Request extends AbstractHelper
     }
 
     /**
-     * Converts and returns the "method_code" request parameter as a string, if
-     * possible.
+     * Converts and returns the "method_code" request parameter as a string.
      *
      * @return string|null - Null if the parameter wasn't set.
      * @throws InvalidDataException

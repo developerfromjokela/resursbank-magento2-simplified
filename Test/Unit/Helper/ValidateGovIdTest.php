@@ -122,7 +122,6 @@ class ValidateGovIdTest extends TestCase
         self::assertFalse($this->validateGovId->validate('19801010001', true, 'DK'));
     }
 
-
     /**
      * Assert that a valid Swedish Ssn is accepted by validate.
      */
