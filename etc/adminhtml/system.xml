@@ -33,6 +33,9 @@
                             </depends>
                         </field>
                         <field id="finalize_if_booked" type="select" sortOrder="3" translate="label, comment" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <depends>
+                                <field id="*/resursbank_section/api/flow" separator=",">simplified,rco</field>
+                            </depends>
                             <label>Debit automatically</label>
                             <comment>When the payment has been booked. Consult Resurs Bank before activating.</comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
