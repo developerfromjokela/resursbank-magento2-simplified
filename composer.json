@@ -7,7 +7,7 @@
     "license": ["Apache-2.0"],
     "require": {
         "php": "^7.4.0 || ^8.1.0",
-        "resursbank/magento-core": "v1.7.2.x-dev"
+        "resursbank/magento-core": "1.7.2"
     },
     "autoload": {
         "files": [
