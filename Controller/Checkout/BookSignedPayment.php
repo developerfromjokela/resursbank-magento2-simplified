@@ -20,6 +20,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Resursbank\Core\Exception\PaymentDataException;
 use Resursbank\Core\Helper\Order;
 use Resursbank\Core\Helper\PaymentMethods;
+use Resursbank\Core\ViewModel\Session\Checkout;
 use Resursbank\Simplified\Helper\Config;
 use Resursbank\Simplified\Helper\Log;
 use Resursbank\Core\Helper\Url;
@@ -33,56 +34,6 @@ use Resursbank\Simplified\Helper\Payment;
 class BookSignedPayment implements HttpGetActionInterface
 {
     /**
-     * @var Log
-     */
-    private Log $log;
-
-    /**
-     * @var Payment
-     */
-    private Payment $payment;
-
-    /**
-     * @var Order
-     */
-    private Order $order;
-
-    /**
-     * @var Config
-     */
-    private Config $config;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private StoreManagerInterface $storeManager;
-
-    /**
-     * @var UrlInterface
-     */
-    private UrlInterface $url;
-
-    /**
-     * @var PaymentMethods
-     */
-    private PaymentMethods $paymentMethods;
-
-    /**
-     * @var RedirectFactory
-     */
-    private RedirectFactory $redirectFactory;
-
-    /**
-     * @var Url
-     */
-    private Url $urlHelper;
-
-    /**
-     * @var ManagerInterface
-     */
-    private ManagerInterface $eventManager;
-
-    /**
      * @param Log $log
      * @param Payment $payment
      * @param Order $order
@@ -93,30 +44,22 @@ class BookSignedPayment implements HttpGetActionInterface
      * @param RedirectFactory $redirectFactory
      * @param Url $urlHelper
      * @param ManagerInterface $eventManager
+     * @param Checkout $checkout
      * @SuppressWarnings(PHPMD.ExcessiveParameterList)
      */
     public function __construct(
-        Log $log,
-        Payment $payment,
-        Order $order,
-        Config $config,
-        StoreManagerInterface $storeManager,
-        UrlInterface $url,
-        PaymentMethods $paymentMethods,
-        RedirectFactory $redirectFactory,
-        Url $urlHelper,
-        ManagerInterface $eventManager
+        private readonly Log $log,
+        private readonly Payment $payment,
+        private readonly Order $order,
+        private readonly Config $config,
+        private readonly StoreManagerInterface $storeManager,
+        private readonly UrlInterface $url,
+        private readonly PaymentMethods $paymentMethods,
+        private readonly RedirectFactory $redirectFactory,
+        private readonly Url $urlHelper,
+        private readonly ManagerInterface $eventManager,
+        private readonly Checkout $checkout
     ) {
-        $this->log = $log;
-        $this->payment = $payment;
-        $this->config = $config;
-        $this->storeManager = $storeManager;
-        $this->url = $url;
-        $this->paymentMethods = $paymentMethods;
-        $this->order = $order;
-        $this->redirectFactory = $redirectFactory;
-        $this->urlHelper = $urlHelper;
-        $this->eventManager = $eventManager;
     }
 
     /**
@@ -130,7 +73,9 @@ class BookSignedPayment implements HttpGetActionInterface
 
         /** @noinspection BadExceptionsProcessingInspection */
         try {
-            $order = $this->order->resolveOrderFromRequest();
+            $order = $this->order->resolveOrderFromRequest(
+                lastRealOrder: $this->checkout->getLastRealOrder()
+            );
 
             if (!$this->validate($order)) {
                 throw new PaymentDataException(__('Invalid payment.'));
@@ -193,7 +138,9 @@ class BookSignedPayment implements HttpGetActionInterface
     {
         try {
             $this->order->cancelOrder(
-                $this->order->resolveOrderFromRequest()
+                $this->order->resolveOrderFromRequest(
+                    lastRealOrder: $this->checkout->getLastRealOrder()
+                )
             );
         } catch (Exception $e) {
             $this->log->exception($e);
