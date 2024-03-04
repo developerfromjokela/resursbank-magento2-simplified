@@ -64,6 +64,8 @@ class ClearSession
     }
 
     /**
+     * Intercept calls to the execute method.
+     *
      * @param Success|Failure $subject
      * @param ResultInterface|Redirect|Page $result
      * @return ResultInterface|Redirect|Page
