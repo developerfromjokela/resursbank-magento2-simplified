@@ -251,6 +251,8 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Set order ID.
+     *
      * Apply desired payment reference in API payload (i.e. this is the
      * reference the payment will be created with at Resurs Bank, instead of a
      * unique, random, value which would otherwise be utilised).
@@ -269,6 +271,8 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Set signing URLs.
+     *
      * Apply URL:s to be utilised when signing succeeds / fails (i.e. these
      * URLs will be triggered by the gateway after the client performs the
      * payment).
@@ -367,6 +371,8 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Prepare session for redirect to gateway.
+     *
      * Prepare redirecting client to gateway to perform payment. When creating
      * a payment session at Resurs Bank we attain some values we will need to
      * store in our PHP session for later use (see
@@ -419,6 +425,8 @@ class Payment extends AbstractHelper
     }
 
     /**
+     * Get success url.
+     *
      * @param int $quoteId
      * @return string
      */
