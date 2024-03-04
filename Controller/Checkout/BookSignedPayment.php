@@ -63,6 +63,8 @@ class BookSignedPayment implements HttpGetActionInterface
     }
 
     /**
+     * Main controller execution entry point.
+     *
      * @return ResultInterface
      * @throws Exception
      */
@@ -132,6 +134,8 @@ class BookSignedPayment implements HttpGetActionInterface
     }
 
     /**
+     * Cancel order.
+     *
      * @return void
      */
     private function cancelOrder(): void
@@ -148,10 +152,14 @@ class BookSignedPayment implements HttpGetActionInterface
     }
 
     /**
+     * Validate payment.
+     *
      * Make sure the payment associated with the supplied order utilises a
      * payment method from Resurs Bank, and that Simplified Flow is the
      * configured API.
      *
+     * @param OrderInterface $order
+     * @return bool
      * @throws NoSuchEntityException
      */
     private function validate(
