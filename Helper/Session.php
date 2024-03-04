@@ -107,6 +107,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Get government ID from session.
+     *
      * @return string|null - Null if a value cannot be found.
      */
     public function getGovId(): ?string
@@ -115,6 +117,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Unset government ID in session.
+     *
      * @return self
      */
     public function unsetGovId(): self
@@ -125,6 +129,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Set contact government ID in session.
+     *
      * Stores a customer's contact government ID in the session. Required for
      * company customers, personal SSN of a company reference.
      *
@@ -143,6 +149,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Get contact government ID from session.
+     *
      * @return string|null - Null if a value cannot be found.
      */
     public function getContactGovId(): ?string
@@ -151,6 +159,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Unset contact government ID in session.
+     *
      * @return self
      */
     public function unsetContactGovId(): self
@@ -175,6 +185,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Get customer type from session.
+     *
      * @return bool|null - Null if a value cannot be found.
      */
     public function getIsCompany(): ?bool
@@ -183,6 +195,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Unset customer type in session.
+     *
      * @return self
      */
     public function unsetIsCompany(): self
@@ -193,6 +207,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Set payment signing URL.
+     *
      * Stores payment signing (gateway) URL in session. Redirect URL at order
      * placement to perform payment.
      *
@@ -208,6 +224,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Get signing URL from session.
+     *
      * @return string|null - Null if a value cannot be found.
      */
     public function getPaymentSigningUrl(): ?string
@@ -216,6 +234,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Unset signing URL in session.
+     *
      * @return self
      */
     public function unsetPaymentSigningUrl(): self
@@ -240,6 +260,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Get payment ID from session.
+     *
      * @return string|null - Null if a value cannot be found.
      */
     public function getPaymentId(): ?string
@@ -248,6 +270,8 @@ class Session extends AbstractHelper implements ArgumentInterface
     }
 
     /**
+     * Unset payment ID in session.
+     *
      * @return self
      */
     public function unsetPaymentId(): self
