@@ -18,6 +18,8 @@ use Resursbank\Core\Helper\Url as Subject;
 class Url
 {
     /**
+     * Intercept calls to the getCheckoutRebuildRedirectUrl method.
+     *
      * @param Subject $subject
      * @param string $result
      * @return string
