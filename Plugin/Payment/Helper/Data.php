@@ -48,6 +48,8 @@ class Data
     }
 
     /**
+     * Intercept calls to the getResurModel method.
+     *
      * @param Subject $subject
      * @param PaymentMethodInterface|null $result
      * @return PaymentMethodInterface|null
