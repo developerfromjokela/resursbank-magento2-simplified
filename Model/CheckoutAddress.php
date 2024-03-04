@@ -108,6 +108,8 @@ class CheckoutAddress
     }
 
     /**
+     * Set post code property.
+     *
      * @param string $val
      * @param string $country
      * @return self
@@ -131,6 +133,8 @@ class CheckoutAddress
     }
 
     /**
+     * Get post code property.
+     *
      * @see CheckoutAddress::$postcode
      * @return string
      */
@@ -140,6 +144,8 @@ class CheckoutAddress
     }
 
     /**
+     * Set country property.
+     *
      * @see CheckoutAddress::$country
      * @param string $val
      * @return self
@@ -160,6 +166,8 @@ class CheckoutAddress
     }
 
     /**
+     * Get country property.
+     *
      * @see CheckoutAddress::$country
      * @return string
      */
@@ -169,6 +177,8 @@ class CheckoutAddress
     }
 
     /**
+     * Convert this object to an array.
+     *
      * @return array<string, mixed>
      */
     public function toArray(): array
