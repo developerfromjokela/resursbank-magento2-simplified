@@ -85,6 +85,8 @@ class ConfigProvider implements ConfigProviderInterface
     }
 
     /**
+     * Maps payment method.
+     *
      * Maps a payment method for the config provider. Note that not all data
      * from the payment method will be mapped in this process.
      *
