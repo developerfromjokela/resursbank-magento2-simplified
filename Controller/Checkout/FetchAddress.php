@@ -56,7 +56,7 @@ class FetchAddress implements HttpPostActionInterface
     }
 
     /**
-     * Main execution entry point.
+     * @inheritDoc
      *
      * @throws Exception
      * @return ResultInterface

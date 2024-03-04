@@ -63,7 +63,7 @@ class BookSignedPayment implements HttpGetActionInterface
     }
 
     /**
-     * Main controller execution entry point.
+     * @inheritDoc
      *
      * @return ResultInterface
      * @throws Exception
