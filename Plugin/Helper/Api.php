@@ -31,6 +31,8 @@ class Api
     }
 
     /**
+     * Intercept calls to the getUserAgent method.
+     *
      * @param Subject $subject
      * @param string $result
      * @return string

@@ -60,6 +60,8 @@ class Redirect implements HttpGetActionInterface
     }
 
     /**
+     * @inheritDoc
+     *
      * Redirect to signing URL. If there is none, redirect straight to success
      * page.
      *

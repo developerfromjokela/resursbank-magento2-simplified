@@ -74,6 +74,8 @@ class Session implements HttpPostActionInterface
     }
 
     /**
+     * @inheritDoc
+     *
      * @throws Exception
      * @return ResultInterface
      */
@@ -122,6 +124,8 @@ class Session implements HttpPostActionInterface
     }
 
     /**
+     * Check if payment method is valid.
+     *
      * Validates that a payment method is usable by the customer by comparing
      * the customer type of the method to the type the customer has selected.
      *

@@ -34,6 +34,8 @@ class FetchAddress implements ArgumentInterface
     }
 
     /**
+     * Get form key.
+     *
      * @return string
      * @throws LocalizedException
      */
@@ -43,6 +45,8 @@ class FetchAddress implements ArgumentInterface
     }
 
     /**
+     * Get private customer type.
+     *
      * Returns the term used to refer to the customer as a private citizen
      * within Resurs Bank's API.
      *
@@ -54,6 +58,8 @@ class FetchAddress implements ArgumentInterface
     }
 
     /**
+     * Get company customer type.
+     *
      * Returns the term used to refer to the customer as an
      * organization/company within Resurs Bank's API.
      *

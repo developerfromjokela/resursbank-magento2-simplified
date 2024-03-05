@@ -45,6 +45,8 @@ class Config extends AbstractConfig
     }
 
     /**
+     * Check if this flow is active.
+     *
      * @param string|null $scopeCode
      * @param string $scopeType
      * @return bool
@@ -58,6 +60,8 @@ class Config extends AbstractConfig
     }
 
     /**
+     * Check if Waiting For Fraud Controll setting is active.
+     *
      * @param string|null $scopeCode
      * @param string $scopeType
      * @return bool
@@ -75,6 +79,8 @@ class Config extends AbstractConfig
     }
 
     /**
+     * Check if Annul If Frozen setting is active.
+     *
      * @param string|null $scopeCode
      * @param string $scopeType
      * @return bool
@@ -92,6 +98,8 @@ class Config extends AbstractConfig
     }
 
     /**
+     * Check if Finalize if Booked setting is active.
+     *
      * @param null|string $scopeCode
      * @param string $scopeType
      * @return bool

@@ -57,8 +57,10 @@ class Layout
     }
 
     /**
+     * Intercept calls to the process method.
+     *
      * @param LayoutProcessor $subject
-     * @param array<mixed> $result
+     * @param array $result
      * @return array<int, array>
      * @throws Exception
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)

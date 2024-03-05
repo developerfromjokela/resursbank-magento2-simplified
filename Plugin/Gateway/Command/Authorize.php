@@ -108,6 +108,8 @@ class Authorize
     }
 
     /**
+     * Intercept calls to execute method.
+     *
      * @param Subject $subject
      * @param array<mixed> $data
      * @return void
