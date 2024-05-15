@@ -47,4 +47,12 @@
             name="resursbank_simplified_url"
             type="Resursbank\Simplified\Plugin\Helper\Url" />
     </type>
+
+    <!-- Apply additional payment method filtering. -->
+    <type name="Resursbank\Core\Plugin\Payment\Helper\Data">
+        <plugin
+            name="resursbank_simplified_core_plugin_payment_helper_data"
+            type="Resursbank\Simplified\Plugin\Core\Plugin\Payment\Helper\Data"
+        />
+    </type>
 </config>
