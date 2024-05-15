@@ -47,11 +47,4 @@
             name="resursbank_simplified_url"
             type="Resursbank\Simplified\Plugin\Helper\Url" />
     </type>
-
-    <!-- Apply additional payment method filtering. -->
-    <type name="Resursbank\Core\Plugin\Payment\Helper\Data">
-        <plugin
-            name="resursbank_simplified_filter_swish"
-            type="Resursbank\Simplified\Plugin\Payment\Helper\Data" />
-    </type>
 </config>
