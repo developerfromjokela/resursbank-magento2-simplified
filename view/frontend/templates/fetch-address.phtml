@@ -6,20 +6,18 @@
 
 declare(strict_types=1);
 
-use Magento\Framework\Escaper;
 use Magento\Framework\View\Element\Template;
 use Resursbank\Simplified\ViewModel\FetchAddress;
 
 /** @var Template $block */
 /** @var FetchAddress $viewModel */
-/** @var Escaper $escaper */
 if (isset($block)) {
     /** @noinspection PhpPossiblePolymorphicInvocationInspection */
     $viewModel = $block->getViewModel();
 }
 ?>
 
-<?php if (isset($escaper, $viewModel)): ?>
+<?php if (isset($viewModel)): ?>
     <!--suppress JSUnusedLocalSymbols -->
     <script>
         require([
@@ -29,9 +27,9 @@ if (isset($block)) {
         ) {
             var initializationData = {
                 privateCustomerType:
-                    '<?= $escaper->escapeHtml($viewModel->getPrivateCustomerType()) ?>',
+                    '<?= $block->escapeHtml($viewModel->getPrivateCustomerType()) ?>',
                 companyCustomerType:
-                    '<?= $escaper->escapeHtml($viewModel->getCompanyCustomerType()) ?>'
+                    '<?= $block->escapeHtml($viewModel->getCompanyCustomerType()) ?>'
             }
         });
     </script>

@@ -5,10 +5,17 @@
     "description": "Resurs Bank - Simplified Flow",
     "keywords": ["magento", "checkout", "resursbank", "simplified"],
     "license": ["Apache-2.0"],
+    "repositories": [
+        {
+            "url": "https://github.com/developerfromjokela/resursbank-magento2-core",
+            "type": "git"
+        }
+    ],
     "require": {
         "php": "^7.4.0 || ^8.1.0",
-        "resursbank/magento-core": "~1.0"
+        "resursbank/magento-core": "master"
     },
+    "minimum-stability": "dev",
     "autoload": {
         "files": [
             "registration.php"

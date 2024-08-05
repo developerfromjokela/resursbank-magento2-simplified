@@ -193,8 +193,8 @@ class BookSignedPayment implements HttpGetActionInterface
     {
         try {
             $this->order->cancelOrder(
-                order: $this->order->resolveOrderFromRequest(),
-                allowOffline: true
+                $this->order->resolveOrderFromRequest(),
+                true
             );
         } catch (Exception $e) {
             $this->log->exception($e);
