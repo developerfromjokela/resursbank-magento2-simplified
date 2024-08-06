@@ -1,7 +1,7 @@
 {
     "name": "resursbank/magento-simplified",
     "type": "magento2-module",
-    "version": "1.5.10",
+    "version": "1.5.11",
     "description": "Resurs Bank - Simplified Flow",
     "keywords": ["magento", "checkout", "resursbank", "simplified"],
     "license": ["Apache-2.0"],
@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": "^7.4.0 || ^8.1.0",
-        "resursbank/magento-core": "1.7.11"
+        "resursbank/magento-core": "1.7.12"
     },
     "minimum-stability": "stable",
     "autoload": {
