@@ -13,7 +13,7 @@
     ],
     "require": {
         "php": "^7.4.0 || ^8.1.0",
-        "resursbank/magento-core": "1.7.10"
+        "resursbank/magento-core": "1.7.11"
     },
     "minimum-stability": "stable",
     "autoload": {
